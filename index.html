@@ -7,15 +7,33 @@
     
     <!-- PWA 메타 태그 -->
     <meta name="description" content="고민 그만! 돌림판이 결정해드릴게요 🎯">
+    <meta name="keywords" content="돌림판, 결정장애, 선택, 랜덤, 결정, 룰렛, PWA">
+    <meta name="author" content="결정장애 돌림판">
     <meta name="theme-color" content="#4CAF50">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="돌림판">
     
+    <!-- Open Graph / 카카오톡 공유 최적화 -->
+    <!-- ⚠️ 아래 YOUR-GITHUB-ID를 실제 GitHub 아이디로 변경해주세요 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="결정장애 돌림판 🎯">
+    <meta property="og:description" content="결정하기 힘들 땐? 돌림판으로 결정해 보세요!">
+    <meta property="og:image" content="https://YOUR-GITHUB-ID.github.io/korean-roulette/og_image.png">
+    <meta property="og:url" content="https://YOUR-GITHUB-ID.github.io/korean-roulette/">
+    <meta property="og:site_name" content="결정장애 돌림판">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="결정장애 돌림판 🎯">
+    <meta name="twitter:description" content="결정하기 힘들 땐? 돌림판으로 결정해 보세요!">
+    <meta name="twitter:image" content="https://YOUR-GITHUB-ID.github.io/korean-roulette/og_image.png">
+    
     <!-- PWA 매니페스트 -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- 아이콘 링크 -->
+    <!-- 파비콘 -->
     <link rel="icon" type="image/png" sizes="48x48" href="icon-48x48.png">
     <link rel="icon" type="image/png" sizes="72x72" href="icon-72x72.png">
     <link rel="icon" type="image/png" sizes="96x96" href="icon-96x96.png">
@@ -23,16 +41,24 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
     
-    <!-- Apple 터치 아이콘 -->
-    <link rel="apple-touch-icon" href="icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="icon-192x192.png">
+    <!-- Apple 터치 아이콘 (모든 크기를 512x512로 통일) -->
+    <link rel="apple-touch-icon" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="1024x1024" href="icon-512x512.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen bg-gray-100">
+<body>
     <div class="min-h-screen bg-gray-100">
         <!-- 컴팩트한 헤더 -->
         <header class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-3 shadow-lg">

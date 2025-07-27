@@ -28,15 +28,131 @@ let isSpinning = false; // 회전 중복 방지 플래그
 let animationId = null; // 애니메이션 ID
 let preSelectedWinner = null; // 미리 결정된 승자
 
-// 반응형 캔버스 크기 계산 (모바일 + 데스크톱)
+// ===================================================================
+// 🚀 카카오톡 인앱 브라우저 자동 전환 기능
+// ===================================================================
+
+// 카카오톡 인앱 브라우저 감지 및 외부 브라우저로 전환
+const handleKakaoInAppBrowser = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isKakaoTalk = userAgent.includes('KAKAOTALK');
+    
+    if (isKakaoTalk) {
+        console.log('🔍 카카오톡 인앱 브라우저 감지됨');
+        
+        // iOS/Android 구분
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+        const isAndroid = /Android/.test(userAgent);
+        
+        if (isAndroid) {
+            // 안드로이드: Chrome Intent URL로 자동 전환
+            console.log('📱 안드로이드 - Chrome으로 자동 전환 시도');
+            const currentUrl = encodeURIComponent(window.location.href);
+            const chromeIntent = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+            
+            try {
+                window.location.href = chromeIntent;
+                // 2초 후에도 카카오톡에 있다면 수동 안내
+                setTimeout(() => {
+                    if (userAgent.includes('KAKAOTALK')) {
+                        showExternalBrowserGuide('Android');
+                    }
+                }, 2000);
+            } catch (error) {
+                console.warn('Chrome Intent 실행 실패:', error);
+                showExternalBrowserGuide('Android');
+            }
+        } else if (isIOS) {
+            // iOS: 수동 안내 (자동 전환 불가)
+            console.log('🍎 iOS - Safari 전환 안내 표시');
+            showExternalBrowserGuide('iOS');
+        } else {
+            // 기타 플랫폼
+            showExternalBrowserGuide('기타');
+        }
+        
+        return true; // 카카오톡 브라우저임을 반환
+    }
+    
+    return false; // 일반 브라우저임을 반환
+};
+
+// 외부 브라우저 이용 안내 표시
+const showExternalBrowserGuide = (platform) => {
+    const messages = {
+        'Android': '📱 더 나은 이용을 위해 Chrome 브라우저에서 열어주세요!\n\n1. 우측 상단 ⋮ 메뉴 클릭\n2. "다른 브라우저에서 열기" 선택\n3. Chrome 선택',
+        'iOS': '🍎 더 나은 이용을 위해 Safari에서 열어주세요!\n\n1. 우측 하단 Safari 아이콘 클릭\n또는\n1. 우측 상단 ⋯ 메뉴 클릭\n2. "Safari에서 열기" 선택',
+        '기타': '🌐 더 나은 이용을 위해 기본 브라우저에서 열어주세요!\n\n카카오톡 내장 브라우저에서는\n일부 기능이 제한될 수 있습니다.'
+    };
+    
+    const message = messages[platform] || messages['기타'];
+    
+    // 모달 스타일 알림창 생성
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+        box-sizing: border-box;
+    `;
+    
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    `;
+    
+    content.innerHTML = `
+        <div style="font-size: 1.5rem; margin-bottom: 16px;">🎯</div>
+        <h3 style="margin: 0 0 16px 0; font-size: 1.2rem; color: #333;">결정장애 돌림판</h3>
+        <p style="margin: 0 0 20px 0; line-height: 1.5; color: #666; white-space: pre-line;">${message}</p>
+        <button onclick="this.parentElement.parentElement.remove()" 
+                style="background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+            확인
+        </button>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    // 3초 후 자동으로 알림창 제거 (선택사항)
+    setTimeout(() => {
+        if (modal && modal.parentElement) {
+            modal.remove();
+        }
+    }, 10000);
+};
+
+// 반응형 캔버스 크기 계산 (상대 단위 적용)
 const initializeCanvas = () => {
     const containerWidth = canvas.parentElement.clientWidth;
+    const containerHeight = window.innerHeight * 0.4; // 화면 높이의 40%
     const isDesktop = window.innerWidth >= 768;
     
-    // 데스크톱: 320px, 모바일: 컨테이너에 맞춤 (최대 280px)
-    const maxSize = isDesktop 
-        ? 320 
-        : Math.min(containerWidth - 40, 280);
+    // 화면 크기에 따른 동적 크기 계산
+    let maxSize;
+    if (isDesktop) {
+        maxSize = Math.min(320, Math.min(window.innerWidth * 0.3, window.innerHeight * 0.4));
+    } else {
+        // 모바일: 뷰포트 기준 상대 크기
+        maxSize = Math.min(
+            containerWidth - 40,
+            Math.min(window.innerWidth * 0.7, window.innerHeight * 0.35),
+            280
+        );
+    }
     
     canvas.width = maxSize;
     canvas.height = maxSize;
@@ -698,6 +814,12 @@ const handleKeyPress = (event) => {
 // [6. 이벤트 리스너 연결 및 초기화]
 // ===================================================================
 document.addEventListener('DOMContentLoaded', () => {
+    // 🚀 카카오톡 인앱 브라우저 감지 및 처리 (최우선 실행)
+    const isKakaoInApp = handleKakaoInAppBrowser();
+    if (isKakaoInApp) {
+        console.log('⚠️ 카카오톡 인앱 브라우저 환경 - 일부 기능 제한 가능');
+    }
+    
     // 캔버스 크기 초기화
     canvasInfo = initializeCanvas();
     
@@ -750,15 +872,18 @@ document.addEventListener('DOMContentLoaded', () => {
         itemInput.focus();
     }
     
-    console.log(`🎪 === 돌림판 시스템 초기화 완료 ===`);
-    console.log(`📱 모바일 최적화 완료 (터치 친화적 UI)`);
+    console.log(`🎪 === 전문가급 PWA 돌림판 시스템 초기화 완료 ===`);
+    console.log(`📱 완전 반응형 모바일 최적화 (vw/vh 기반)`);
+    console.log(`🚀 카카오톡 인앱 브라우저 자동 전환 지원`);
     console.log(`📐 수학적으로 완벽한 계산식 적용`);
     console.log(`🎯 완전 분리된 로직 (drawRoulette + spin + reset)`);
     console.log(`✅ 100% 정확한 결과 보장`);
     console.log(`🔄 리셋 기능 추가`);
     console.log(`💾 즐겨찾기 저장/불러오기 기능 추가`);
-    console.log(`🚀 10바퀴 역동적 회전`);
+    console.log(`🔗 간편 링크 복사 공유 기능`);
+    console.log(`🎨 동적 뷰포트 크기 조정 시스템`);
     console.log(`📏 캔버스 크기: ${canvasInfo.centerX * 2}x${canvasInfo.centerY * 2}px`);
+    console.log(`🌐 화면 크기: ${window.innerWidth}x${window.innerHeight}px`);
     console.log(`═══════════════════════════════════\n`);
 });
 

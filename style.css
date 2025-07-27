@@ -1,7 +1,37 @@
-/* 결정장애 돌림판 - 모바일 최적화 스타일 */
+/* 결정장애 돌림판 - 전문가급 모바일 PWA 스타일 */
 
 /* ===================================== */
-/* 모바일 퍼스트 기본 설정 */
+/* 💻 전체 레이아웃 & 뷰포트 고정 */
+/* ===================================== */
+
+/* 브라우저 기본 여백 제거 및 뷰포트 고정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    position: fixed;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f3f4f6; /* 기본 배경색 */
+}
+
+/* 메인 앱 컨테이너 - 화면에 꽉 차게 */
+body > div {
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ===================================== */
+/* 📱 모바일 퍼스트 터치 최적화 */
 /* ===================================== */
 
 /* 전체적인 터치 최적화 */
@@ -22,12 +52,6 @@ input, textarea {
     user-select: text;
 }
 
-/* 스크롤 개선 */
-body {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-}
-
 /* ===================================== */
 /* 돌림판 캔버스 최적화 */
 /* ===================================== */
@@ -36,25 +60,35 @@ body {
     transform-origin: center center;
     transition: none;
     touch-action: none;
+    width: min(70vw, 70vh, 320px);
+    height: min(70vw, 70vh, 320px);
     max-width: 90vw;
-    max-height: 90vw;
-    width: 280px;
-    height: 280px;
+    max-height: 50vh;
 }
 
-/* 모바일에서 돌림판 크기 조정 */
-@media (max-width: 480px) {
+/* 세로 화면 최적화 */
+@media (orientation: portrait) {
     #roulette-canvas {
-        width: min(280px, 85vw) !important;
-        height: min(280px, 85vw) !important;
+        width: min(75vw, 40vh, 280px);
+        height: min(75vw, 40vh, 280px);
     }
 }
 
-/* 아주 작은 화면 */
-@media (max-width: 360px) {
+/* 가로 화면 최적화 */
+@media (orientation: landscape) {
     #roulette-canvas {
-        width: min(240px, 80vw) !important;
-        height: min(240px, 80vw) !important;
+        width: min(50vw, 60vh, 300px);
+        height: min(50vw, 60vh, 300px);
+    }
+}
+
+/* 초소형 화면 (320px 이하) */
+@media (max-width: 320px) {
+    #roulette-canvas {
+        width: 70vw;
+        height: 70vw;
+        max-width: 240px;
+        max-height: 240px;
     }
 }
 
@@ -144,18 +178,26 @@ body {
 /* 터치 친화적인 버튼 스타일 */
 /* ===================================== */
 
-/* 메인 버튼들 (돌리기, 리셋) */
+/* 메인 버튼들 (돌리기, 리셋, 공유) - 반응형 크기 */
 button {
-    min-height: 48px; /* 터치 최소 크기 */
+    min-height: max(48px, 8vh); /* 터치 최소 크기 + 화면 비례 */
     touch-action: manipulation;
     -webkit-appearance: none;
     appearance: none;
+    font-size: clamp(0.875rem, 4vw, 1.125rem); /* 반응형 폰트 크기 */
+    padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem);
 }
 
 /* 터치 피드백 효과 */
 button:active {
     transform: scale(0.98);
     transition: transform 0.1s ease;
+}
+
+/* 메인 액션 버튼들 크기 최적화 */
+#spin-button, #reset-button, #share-button {
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
+    min-height: max(60px, 10vh);
 }
 
 /* ===================================== */
@@ -262,37 +304,76 @@ button:active {
 /* ===================================== */
 
 input[type="text"] {
-    font-size: 16px; /* iOS 줌 방지 */
-    min-height: 48px;
+    font-size: max(16px, 4vw); /* iOS 줌 방지 + 반응형 */
+    min-height: max(48px, 8vh);
+    padding: clamp(0.75rem, 3vw, 1rem);
+    border-radius: clamp(0.5rem, 2vw, 0.75rem);
     -webkit-appearance: none;
     appearance: none;
+}
+
+/* 결과 텍스트 반응형 크기 */
+#result {
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
+    min-height: max(4rem, 12vh);
+    padding: clamp(1rem, 4vw, 1.5rem);
 }
 
 /* ===================================== */
 /* 스크롤 및 영역 최적화 */
 /* ===================================== */
 
-/* 반응형 컨테이너 - PC와 모바일 모두 고려 */
+/* ===================================== */
+/* 📐 반응형 레이아웃 & 섹션 크기 조정 */
+/* ===================================== */
+
+/* 헤더 크기 최적화 */
+header {
+    height: max(60px, 8vh);
+    min-height: 50px;
+    padding: clamp(0.5rem, 2vh, 1rem) clamp(1rem, 4vw, 1.5rem);
+}
+
+header h1 {
+    font-size: clamp(1.125rem, 5vw, 1.5rem);
+}
+
+/* 메인 컨테이너 */
 main {
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
+    padding: clamp(0.75rem, 3vw, 1.5rem);
+    padding-left: max(clamp(0.75rem, 3vw, 1.5rem), env(safe-area-inset-left));
+    padding-right: max(clamp(0.75rem, 3vw, 1.5rem), env(safe-area-inset-right));
+    padding-bottom: max(clamp(1rem, 4vh, 2rem), env(safe-area-inset-bottom));
+    gap: clamp(0.75rem, 3vh, 1.5rem);
+    height: calc(100vh - max(60px, 8vh) - max(40px, 6vh)); /* 헤더-푸터 높이 제외 */
+    overflow-y: auto;
+}
+
+/* 섹션 패딩 최적화 */
+section {
+    padding: clamp(1rem, 4vw, 1.5rem);
+    border-radius: clamp(0.75rem, 3vw, 1rem);
+}
+
+/* 푸터 크기 최적화 */
+footer {
+    height: max(40px, 6vh);
+    min-height: 30px;
+    padding: clamp(0.5rem, 2vh, 0.75rem);
+    font-size: clamp(0.75rem, 3vw, 0.875rem);
 }
 
 /* 데스크톱에서 적절한 크기로 제한 */
 @media (min-width: 768px) {
     main {
-        max-width: 400px; /* 약간 더 큰 크기로 조정 */
+        max-width: min(400px, 90vw);
+        margin: 0 auto;
         padding: 2rem;
     }
     
-    /* 헤더도 같은 크기로 제한 */
-    header > div {
-        max-width: 400px;
-    }
-    
-    /* 푸터도 같은 크기로 제한 */
-    footer > div {
-        max-width: 400px;
+    header > div, footer > div {
+        max-width: min(400px, 90vw);
+        margin: 0 auto;
     }
 }
 
