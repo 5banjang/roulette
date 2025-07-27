@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결정장애 돌림판</title>
+    
+    <!-- PWA 메타 태그 -->
+    <meta name="description" content="고민 그만! 돌림판이 결정해드릴게요 🎯">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="돌림판">
+    
+    <!-- PWA 매니페스트 -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- 아이콘 링크 -->
+    <link rel="icon" type="image/png" sizes="48x48" href="icon-48x48.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="icon-96x96.png">
+    <link rel="icon" type="image/png" sizes="144x144" href="icon-144x144.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
+    
+    <!-- Apple 터치 아이콘 -->
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon-192x192.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-100">
+        <!-- 컴팩트한 헤더 -->
+        <header class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-3 shadow-lg">
+            <div class="max-w-md mx-auto">
+                <h1 class="text-xl font-bold text-center">
+                    🎯 결정장애 돌림판
+                </h1>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 영역 - 반응형 컨테이너 -->
+        <main class="max-w-md mx-auto p-4 space-y-4 min-h-[calc(100vh-60px)] flex flex-col">
+            <!-- 항목 입력 섹션 -->
+            <section class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex gap-2 mb-3">
+                    <input 
+                        type="text" 
+                        id="item-input"
+                        placeholder="항목 입력 (예: 치킨)"
+                        class="flex-1 px-4 py-3 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        aria-label="돌림판에 추가할 항목을 입력하세요"
+                    />
+                    <button 
+                        type="button"
+                        id="add-button"
+                        class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 active:bg-blue-700 transition-colors min-w-[80px]"
+                        aria-label="항목 추가"
+                    >
+                        ➕
+                    </button>
+                </div>
+            
+                <!-- 추가된 항목들 -->
+                <div id="items-list" class="flex flex-wrap gap-2">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </section>
+            
+            <!-- 즐겨찾기 섹션 -->
+            <section class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-lg font-semibold">💾</span>
+                    <h3 class="text-lg font-semibold text-gray-800">즐겨찾기</h3>
+                </div>
+                
+                <!-- 저장 영역 -->
+                <div class="flex gap-2 mb-4">
+                    <input 
+                        type="text" 
+                        id="favorite-name-input"
+                        placeholder="돌림판 이름"
+                        class="flex-1 px-4 py-3 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                    />
+                    <button 
+                        type="button"
+                        id="save-favorite-button"
+                        class="px-6 py-3 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-600 active:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px]"
+                        disabled
+                    >
+                        💾
+                    </button>
+                </div>
+                
+                <!-- 저장된 즐겨찾기 목록 -->
+                <div id="favorites-list" class="space-y-2">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+                
+                <!-- 전체 삭제 버튼 -->
+                <button 
+                    type="button"
+                    id="clear-all-favorites-button"
+                    class="w-full mt-3 py-2 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors"
+                    style="display: none;"
+                >
+                    🗑️ 전체 삭제
+                </button>
+            </section>
+
+            <!-- 돌림판 섹션 - 메인 영역 -->
+            <section class="bg-white rounded-xl shadow-lg p-4 flex-1 flex flex-col justify-center">
+                <!-- 캔버스 영역 -->
+                <div class="flex justify-center mb-4 relative">
+                    <!-- 고정 화살표 -->
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 z-20">
+                        <div class="arrow-pointer"></div>
+                    </div>
+                    
+                    <canvas 
+                        id="roulette-canvas"
+                        width="280"
+                        height="280"
+                        class="border-4 border-gray-200 rounded-full shadow-lg relative z-10 max-w-full"
+                        aria-label="돌림판 영역"
+                    >
+                        돌림판을 표시하려면 JavaScript가 필요합니다.
+                    </canvas>
+                </div>
+
+                <!-- 돌리기, 리셋, 공유 버튼 -->
+                <div class="grid grid-cols-3 gap-3">
+                    <button 
+                        type="button"
+                        id="spin-button"
+                        class="py-4 bg-green-500 text-white text-lg font-bold rounded-xl hover:bg-green-600 active:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                        aria-label="돌림판 돌리기"
+                        disabled
+                    >
+                        <div class="flex items-center justify-center gap-2">
+                            <span>🎯</span>
+                            <span>돌리기!</span>
+                        </div>
+                    </button>
+                    <button 
+                        type="button"
+                        id="reset-button"
+                        class="py-4 bg-red-500 text-white text-lg font-bold rounded-xl hover:bg-red-600 active:bg-red-700 transition-colors shadow-lg"
+                        aria-label="돌림판 리셋하기"
+                    >
+                        <div class="flex items-center justify-center gap-2">
+                            <span>🔄</span>
+                            <span>리셋</span>
+                        </div>
+                    </button>
+                    <button 
+                        type="button"
+                        id="share-button"
+                        class="py-4 bg-blue-500 text-white text-lg font-bold rounded-xl hover:bg-blue-600 active:bg-blue-700 transition-colors shadow-lg"
+                        aria-label="돌림판 링크 복사"
+                    >
+                        <div class="flex items-center justify-center gap-2">
+                            <span>🔗</span>
+                            <span>공유</span>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 결과 섹션 -->
+            <section class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-lg font-semibold">🎯</span>
+                    <h3 class="text-lg font-semibold text-gray-800">결과</h3>
+                </div>
+                <div 
+                    id="result"
+                    class="text-center text-lg text-gray-600 min-h-[4rem] flex items-center justify-center bg-gray-50 rounded-xl p-4"
+                    aria-live="polite"
+                    aria-label="돌림판 결과"
+                >
+                    항목을 추가하고 돌림판을 돌려보세요!
+                </div>
+            </section>
+        </main>
+
+        <!-- 컴팩트한 푸터 -->
+        <footer class="text-center py-3 text-gray-400 text-sm">
+            <div class="max-w-md mx-auto">
+                💫 결정장애 해결사
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- PWA Service Worker 등록 -->
+    <script>
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker 등록 성공:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker 등록 실패:', error);
+                    });
+            });
+        }
+
+        // PWA 설치 배너
+        let deferredPrompt;
+        const installButton = document.createElement('button');
+        installButton.textContent = '앱 설치';
+        installButton.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-600 transition-colors z-50';
+        installButton.style.display = 'none';
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA 설치 배너 준비됨');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 설치 버튼 표시
+            document.body.appendChild(installButton);
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`사용자 선택: ${outcome}`);
+                
+                if (outcome === 'accepted') {
+                    console.log('PWA 설치됨');
+                }
+                
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            }
+        });
+
+        // 앱이 설치된 후
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA가 성공적으로 설치되었습니다!');
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+        });
+
+        // PWA 실행 감지
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('PWA 모드로 실행 중');
+                // PWA 모드에서만 보이는 기능 추가 가능
+            }
+        });
+    </script>
+</body>
+</html> 
