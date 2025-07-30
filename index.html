@@ -495,7 +495,7 @@
 
     <script>
         // ===================================== //
-        // 🎯 메인 페이지 - localStorage 항목 관리 //
+        // 🎯 메인 페이지 - URL 파라미터 전달 방식 //
         // ===================================== //
         
         // 상태 관리
@@ -781,10 +781,10 @@
         };
         
         // ===================================== //
-        // 🎯 돌리기 버튼 - localStorage 저장 및 이동 //
+        // 🎯 돌리기 버튼 - URL 파라미터로 전달  //
         // ===================================== //
         
-        // 돌리기 버튼 클릭 처리
+        // 돌리기 버튼 클릭 처리 (URL 파라미터 방식)
         const handleSpinClick = () => {
             if (items.length === 0) {
                 showToast('먼저 항목을 추가해주세요!', 'error');
@@ -792,19 +792,20 @@
             }
             
             try {
-                // items 배열을 JSON 문자열로 변환하여 localStorage에 저장
-                const itemsJson = JSON.stringify(items);
-                localStorage.setItem('rouletteItems', itemsJson);
+                // items 배열을 URL 파라미터로 변환 (한글 깨짐 방지)
+                const encodedItems = items.map(item => encodeURIComponent(item)).join(',');
+                const targetUrl = `result.html?items=${encodedItems}`;
                 
-                console.log('🎯 items 전달:', items);
-                console.log('📦 localStorage 저장 완료');
+                console.log('🎯 전달할 항목들:', items);
+                console.log('📦 URL 파라미터:', encodedItems);
+                console.log('🚀 이동할 주소:', targetUrl);
                 
                 // result.html 페이지로 이동
-                window.location.href = 'result.html';
+                window.location.href = targetUrl;
                 
             } catch (error) {
-                console.error('데이터 저장 실패:', error);
-                showToast('데이터 저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                console.error('URL 생성 실패:', error);
+                showToast('페이지 이동에 실패했습니다. 다시 시도해주세요.', 'error');
             }
         };
         
@@ -893,6 +894,7 @@
             }
             
             console.log('🎯 메인 페이지 초기화 완료!');
+            console.log('📦 URL 파라미터 전달 방식');
         };
         
         // DOM 로드 완료 후 초기화
@@ -902,7 +904,7 @@
             init();
         }
         
-        console.log('🎨 메인 페이지 로드 완료 - localStorage 항목 관리');
+        console.log('🎨 메인 페이지 로드 완료 - URL 파라미터 방식');
     </script>
     
     <!-- PWA Service Worker 등록 -->
