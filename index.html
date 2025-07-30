@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>결정장애 돌림판 - 단순하고 안정적</title>
+    <title>결정장애 돌림판 - 안정성 최우선</title>
     
     <!-- Pretendard 폰트 -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
     
-    <!-- GSAP 애니메이션 라이브러리 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    
     <!-- PWA 메타 태그 -->
-    <meta name="description" content="단순하고 안정적인 결정장애 돌림판 🎯">
+    <meta name="description" content="안정성과 정확성을 최우선으로 하는 결정장애 돌림판 🎯">
     <meta name="theme-color" content="#007BFF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -22,7 +19,7 @@
     <!-- Open Graph / 카카오톡 공유 최적화 -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="결정장애 돌림판 🎯">
-    <meta property="og:description" content="결정하기 힘들 땐? 깔끔하고 단순한 돌림판으로 결정해보세요!">
+    <meta property="og:description" content="안정적이고 정확한 돌림판으로 결정해보세요!">
     <meta property="og:url" content="https://example.com/roulette/">
     <meta property="og:site_name" content="결정장애 돌림판">
     <meta property="og:locale" content="ko_KR">
@@ -36,7 +33,7 @@
     
     <style>
         /* ===================================== */
-        /* 🎯 단순함과 안정성 디자인 시스템     */
+        /* 🎯 안정성 최우선 디자인 시스템       */
         /* ===================================== */
         
         /* 기본 리셋 */
@@ -48,16 +45,64 @@
         
         html, body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f4f7f6;
+            background-color: #f8f9fa;
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
             min-height: 100vh;
         }
         
-        /* 메인 컨테이너 */
-        main {
-            max-width: 500px;
+        /* 카카오톡 브라우저 안내 */
+        .kakao-notice {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+        
+        .kakao-notice-content {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 90%;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .kakao-notice-content h3 {
+            margin-bottom: 15px;
+            color: #007BFF;
+            font-size: 1.2rem;
+        }
+        
+        .kakao-notice-content p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .kakao-notice-content button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        /* 메인 래퍼 */
+        .wrapper {
+            max-width: 480px;
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
@@ -68,37 +113,37 @@
         /* 헤더 */
         .header {
             text-align: center;
-            padding: 30px 0;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 30px;
+            padding: 25px 0;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 25px;
         }
         
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: #007BFF;
             margin-bottom: 8px;
         }
         
         .header p {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #666;
         }
         
         /* 섹션 */
         .section {
-            margin-bottom: 40px;
-            padding: 25px;
+            margin-bottom: 30px;
+            padding: 20px;
             border: 1px solid #e9ecef;
             border-radius: 8px;
             background-color: white;
         }
         
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -107,18 +152,18 @@
         /* 입력 시스템 */
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
         
         input[type="text"] {
             flex: 1;
-            min-width: 200px;
-            padding: 12px 16px;
+            min-width: 180px;
+            padding: 10px 14px;
             border: 2px solid #e9ecef;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-family: inherit;
             color: #333;
             background-color: white;
@@ -136,12 +181,12 @@
         
         /* 버튼 시스템 */
         .btn {
-            padding: 12px 20px;
+            padding: 10px 16px;
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
             font-family: inherit;
             cursor: pointer;
@@ -149,10 +194,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            min-width: 80px;
+            gap: 5px;
+            min-width: 70px;
             text-decoration: none;
             outline: none;
+            white-space: nowrap;
         }
         
         .btn:hover {
@@ -169,15 +215,15 @@
         }
         
         .btn-large {
-            padding: 16px 32px;
-            font-size: 1.1rem;
-            min-width: 140px;
+            padding: 14px 28px;
+            font-size: 1rem;
+            min-width: 120px;
         }
         
         .btn-small {
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            min-width: 60px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            min-width: 50px;
         }
         
         .btn-outline {
@@ -196,21 +242,21 @@
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 15px;
-            min-height: 40px;
+            margin-top: 10px;
+            min-height: 35px;
             align-content: flex-start;
         }
         
         .item-tag {
             background-color: #e3f2fd;
             color: #007BFF;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             border: 1px solid #bbdefb;
             transition: all 0.2s ease;
         }
@@ -223,14 +269,14 @@
             background: #007BFF;
             border: none;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             transition: background-color 0.2s ease;
         }
@@ -242,15 +288,15 @@
         /* 즐겨찾기 목록 */
         .favorites-list {
             list-style: none;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
         .favorite-item {
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -268,28 +314,30 @@
         .favorite-name {
             font-weight: 600;
             color: #007BFF;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
+            font-size: 0.9rem;
         }
         
         .favorite-details {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #666;
         }
         
         .favorite-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
         
         .empty-state {
             text-align: center;
             color: #999;
             font-style: italic;
-            padding: 20px;
+            padding: 15px;
             background-color: #f8f9fa;
             border-radius: 6px;
-            margin: 15px 0;
+            margin: 10px 0;
             border: 1px dashed #dee2e6;
+            font-size: 0.85rem;
         }
         
         /* 돌림판 컨테이너 */
@@ -297,41 +345,41 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px;
-            padding: 20px 0;
+            gap: 20px;
+            padding: 15px 0;
         }
         
         .wheel-wrapper {
             position: relative;
             width: 100%;
-            max-width: 350px;
+            max-width: 300px;
             aspect-ratio: 1/1;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        /* SVG 돌림판 */
+        /* Canvas 돌림판 */
         #wheel-canvas {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             background: white;
             border: 3px solid #007BFF;
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
         }
         
         /* 화살표 포인터 */
         .arrow-pointer {
             position: absolute;
-            top: -12px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 30px solid #007BFF;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 25px solid #007BFF;
             z-index: 10;
         }
         
@@ -339,7 +387,7 @@
         .button-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
             width: 100%;
         }
@@ -347,14 +395,14 @@
         /* 결과 표시 */
         .result-display {
             text-align: center;
-            padding: 25px;
+            padding: 20px;
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 8px;
             color: #333;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            min-height: 80px;
+            min-height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -386,17 +434,17 @@
         .share-modal-content {
             background: white;
             color: #333;
-            padding: 30px;
+            padding: 25px;
             border-radius: 8px;
             text-align: center;
             max-width: 90%;
-            max-width: 350px;
+            max-width: 320px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
         
         /* 반응형 디자인 */
         @media (max-width: 600px) {
-            main {
+            .wrapper {
                 margin: 0;
                 padding: 15px;
                 box-shadow: none;
@@ -408,12 +456,12 @@
             }
             
             .header h1 {
-                font-size: 1.7rem;
+                font-size: 1.6rem;
             }
             
             .section {
-                padding: 20px;
-                margin-bottom: 25px;
+                padding: 15px;
+                margin-bottom: 20px;
             }
             
             .input-group {
@@ -433,12 +481,12 @@
             }
             
             .wheel-wrapper {
-                max-width: 280px;
+                max-width: 250px;
             }
             
             .favorite-item {
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
                 text-align: center;
             }
             
@@ -449,16 +497,16 @@
         }
         
         @media (max-width: 400px) {
-            main {
+            .wrapper {
                 padding: 10px;
             }
             
             .section {
-                padding: 15px;
+                padding: 12px;
             }
             
             .wheel-wrapper {
-                max-width: 250px;
+                max-width: 220px;
             }
         }
         
@@ -495,15 +543,16 @@
             right: 20px;
             background: #007BFF;
             color: white;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: 6px;
             font-weight: 500;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-            max-width: 300px;
+            max-width: 280px;
             word-wrap: break-word;
-            transform: translateX(350px);
+            transform: translateX(320px);
             transition: transform 0.3s ease;
+            font-size: 0.85rem;
         }
         
         .toast.show {
@@ -524,6 +573,18 @@
     </style>
 </head>
 <body>
+    <!-- 카카오톡 브라우저 안내 -->
+    <div class="kakao-notice" id="kakao-notice">
+        <div class="kakao-notice-content">
+            <h3>🌐 더 나은 환경을 위해</h3>
+            <p id="kakao-notice-text">
+                카카오톡 내장 브라우저에서는 일부 기능이 제한될 수 있습니다.<br>
+                우측 상단 메뉴에서 "다른 브라우저로 열기"를 선택해주세요!
+            </p>
+            <button onclick="closeKakaoNotice()">확인</button>
+        </div>
+    </div>
+
     <!-- 공유 모달 -->
     <div class="share-modal" id="share-modal">
         <div class="share-modal-content">
@@ -534,11 +595,11 @@
     </div>
 
     <!-- 메인 앱 -->
-    <main>
+    <div class="wrapper">
         <!-- 헤더 -->
         <header class="header">
             <h1>🎯 결정장애 돌림판</h1>
-            <p>단순하고 안정적인 결정 도우미</p>
+            <p>안정성과 정확성을 최우선으로</p>
         </header>
         
         <!-- 항목 추가 섹션 -->
@@ -551,7 +612,7 @@
                 <input 
                     type="text" 
                     id="item-input" 
-                    placeholder="선택할 항목을 입력하세요 (예: 치킨, 피자, 햄버거)"
+                    placeholder="선택할 항목을 입력하세요"
                     maxlength="50"
                     aria-label="돌림판에 추가할 항목을 입력하세요"
                 >
@@ -598,15 +659,12 @@
             <div class="wheel-container">
                 <div class="wheel-wrapper">
                     <div class="arrow-pointer"></div>
-                    <svg 
+                    <canvas 
                         id="wheel-canvas"
-                        width="100%" 
-                        height="100%" 
-                        viewBox="0 0 300 300"
+                        width="300" 
+                        height="300"
                         aria-label="돌림판"
-                    >
-                        <!-- SVG 내용은 JavaScript로 동적 생성 -->
-                    </svg>
+                    ></canvas>
                 </div>
                 <div class="button-group">
                     <button type="button" class="btn btn-large" id="spin-btn" disabled>
@@ -635,12 +693,24 @@
                 <div class="empty-state">돌림판을 돌려서 결과를 확인해보세요!</div>
             </div>
         </section>
-    </main>
+    </div>
 
     <script>
         // ===================================== //
-        // 🎯 단순하고 안정적인 돌림판 시스템    //
+        // 🎯 안정성과 정확성 최우선 시스템      //
         // ===================================== //
+        
+        // 상태 관리 (명확한 선언)
+        let currentRotation = 0;    // 현재 각도
+        let isSpinning = false;     // 회전 상태
+        let items = [];             // 항목 목록
+        let favorites = [];         // 즐겨찾기 목록
+        
+        // 미리 정의된 10개 다채로운 색상 배열
+        const COLORS = [
+            '#ff8b8b', '#ffc977', '#fffb8b', '#c2ff8b', '#8bffc2',
+            '#8bffff', '#8bc2ff', '#c28bff', '#ff8bff', '#ffc28b'
+        ];
         
         // DOM 요소 참조
         const itemInput = document.getElementById('item-input');
@@ -649,210 +719,167 @@
         const favoriteNameInput = document.getElementById('favorite-name-input');
         const saveFavoriteBtn = document.getElementById('save-favorite-btn');
         const favoritesList = document.getElementById('favorites-list');
-        const wheel = document.getElementById('wheel-canvas');
+        const canvas = document.getElementById('wheel-canvas');
+        const ctx = canvas.getContext('2d');
         const spinBtn = document.getElementById('spin-btn');
         const resetBtn = document.getElementById('reset-btn');
         const shareBtn = document.getElementById('share-btn');
         const resultDisplay = document.getElementById('result-display');
         
-        // 앱 상태
-        let items = [];
-        let favorites = [];
-        let isSpinning = false;
-        
         // ===================================== //
-        // 🎨 SVG 돌림판 그리기                  //
+        // 🎨 Canvas 돌림판 그리기               //
         // ===================================== //
         
-        // SVG 돌림판 그리기 (항상 0도 상태)
-        const drawRoulette = () => {
-            wheel.innerHTML = '';
+        // 돌림판 그리기
+        const drawWheel = () => {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            
+            // 캔버스 초기화
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             if (items.length === 0) {
-                drawEmptyWheel();
+                drawEmptyWheel(centerX, centerY, radius);
                 return;
             }
             
-            const centerX = 150;
-            const centerY = 150;
-            const radius = 120;
-            const sliceAngle = 360 / items.length;
+            const sliceAngle = (2 * Math.PI) / items.length;
             
             // 각 조각 그리기
             items.forEach((item, index) => {
-                const startAngle = index * sliceAngle;
-                const endAngle = (index + 1) * sliceAngle;
+                const startAngle = index * sliceAngle + (currentRotation * Math.PI / 180);
+                const endAngle = (index + 1) * sliceAngle + (currentRotation * Math.PI / 180);
                 
-                // 단순한 색상 생성 (파란색 계열)
-                const lightness = 85 - (index % 3) * 10; // 85%, 75%, 65%
-                const color = `hsl(210, 100%, ${lightness}%)`;
+                // 색상 선택 (순환)
+                const color = COLORS[index % COLORS.length];
                 
                 // 조각 그리기
-                const slice = createSlicePath(centerX, centerY, radius, startAngle, endAngle, color);
-                wheel.appendChild(slice);
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
                 
                 // 텍스트 그리기
-                const text = createSliceText(centerX, centerY, radius * 0.7, startAngle + sliceAngle / 2, item);
-                wheel.appendChild(text);
+                const textAngle = startAngle + sliceAngle / 2;
+                const textX = centerX + Math.cos(textAngle) * (radius * 0.7);
+                const textY = centerY + Math.sin(textAngle) * (radius * 0.7);
+                
+                ctx.save();
+                ctx.translate(textX, textY);
+                ctx.rotate(textAngle + Math.PI / 2);
+                ctx.fillStyle = '#333333';
+                ctx.font = '14px Pretendard, sans-serif';
+                ctx.fontWeight = 'bold';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item, 0, 0);
+                ctx.restore();
             });
             
             // 중앙 원 그리기
-            const centerCircle = createCenterCircle(centerX, centerY);
-            wheel.appendChild(centerCircle);
-            
-            console.log(`🎨 돌림판 그리기 완료: ${items.length}개 조각`);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 15, 0, 2 * Math.PI);
+            ctx.fillStyle = '#007BFF';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
         };
         
         // 빈 돌림판 그리기
-        const drawEmptyWheel = () => {
-            const centerX = 150;
-            const centerY = 150;
-            const radius = 120;
-            
+        const drawEmptyWheel = (centerX, centerY, radius) => {
             // 배경 원
-            const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            bgCircle.setAttribute('cx', centerX);
-            bgCircle.setAttribute('cy', centerY);
-            bgCircle.setAttribute('r', radius);
-            bgCircle.setAttribute('fill', '#f8f9fa');
-            bgCircle.setAttribute('stroke', '#dee2e6');
-            bgCircle.setAttribute('stroke-width', '2');
-            wheel.appendChild(bgCircle);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fill();
+            ctx.strokeStyle = '#dee2e6';
+            ctx.lineWidth = 2;
+            ctx.stroke();
             
             // 안내 텍스트
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', centerX);
-            text.setAttribute('y', centerY);
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('dominant-baseline', 'middle');
-            text.setAttribute('fill', '#999');
-            text.setAttribute('font-size', '14');
-            text.setAttribute('font-weight', '500');
-            text.textContent = '항목을 추가해주세요';
-            wheel.appendChild(text);
-        };
-        
-        // SVG 조각 패스 생성
-        const createSlicePath = (centerX, centerY, radius, startAngle, endAngle, color) => {
-            const startRad = (startAngle - 90) * Math.PI / 180;
-            const endRad = (endAngle - 90) * Math.PI / 180;
+            ctx.fillStyle = '#999999';
+            ctx.font = '16px Pretendard, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('항목을 추가해주세요', centerX, centerY);
             
-            const x1 = centerX + radius * Math.cos(startRad);
-            const y1 = centerY + radius * Math.sin(startRad);
-            const x2 = centerX + radius * Math.cos(endRad);
-            const y2 = centerY + radius * Math.sin(endRad);
-            
-            const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
-            
-            const pathData = [
-                `M ${centerX} ${centerY}`,
-                `L ${x1} ${y1}`,
-                `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                'Z'
-            ].join(' ');
-            
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', pathData);
-            path.setAttribute('fill', color);
-            path.setAttribute('stroke', '#007BFF');
-            path.setAttribute('stroke-width', '1');
-            
-            return path;
-        };
-        
-        // SVG 텍스트 생성
-        const createSliceText = (centerX, centerY, textRadius, angle, text) => {
-            const angleRad = (angle - 90) * Math.PI / 180;
-            const x = centerX + textRadius * Math.cos(angleRad);
-            const y = centerY + textRadius * Math.sin(angleRad);
-            
-            const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            textElement.setAttribute('x', x);
-            textElement.setAttribute('y', y);
-            textElement.setAttribute('text-anchor', 'middle');
-            textElement.setAttribute('dominant-baseline', 'middle');
-            textElement.setAttribute('fill', '#333');
-            textElement.setAttribute('font-size', '12');
-            textElement.setAttribute('font-weight', '600');
-            textElement.setAttribute('transform', `rotate(${angle}, ${x}, ${y})`);
-            
-            textElement.textContent = text;
-            
-            return textElement;
-        };
-        
-        // 중앙 원 생성
-        const createCenterCircle = (centerX, centerY) => {
-            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            
-            // 외곽 원
-            const outerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            outerCircle.setAttribute('cx', centerX);
-            outerCircle.setAttribute('cy', centerY);
-            outerCircle.setAttribute('r', '12');
-            outerCircle.setAttribute('fill', 'white');
-            outerCircle.setAttribute('stroke', '#007BFF');
-            outerCircle.setAttribute('stroke-width', '2');
-            
-            // 내부 원
-            const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            innerCircle.setAttribute('cx', centerX);
-            innerCircle.setAttribute('cy', centerY);
-            innerCircle.setAttribute('r', '6');
-            innerCircle.setAttribute('fill', '#007BFF');
-            
-            group.appendChild(outerCircle);
-            group.appendChild(innerCircle);
-            
-            return group;
+            // 중앙 점
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = '#007BFF';
+            ctx.fill();
         };
         
         // ===================================== //
-        // 🎯 안정적인 회전 로직                 //
+        // 🎯 회전 로직 (가장 중요)              //
         // ===================================== //
         
-        // 돌림판 돌리기 (안정적인 방식)
+        // 회전 애니메이션을 위한 Ease-out 함수
+        const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+        
+        // 돌림판 돌리기
         const spin = () => {
-            if (isSpinning || items.length === 0) return;
+            // 1. isSpinning 체크 및 설정
+            if (isSpinning) return;
+            if (items.length === 0) return;
             
             isSpinning = true;
             updateSpinButton();
             
-            // 🎯 1단계: 승자 선결정
+            // 2. 승자 먼저 결정
             const winnerIndex = Math.floor(Math.random() * items.length);
             const winnerItem = items[winnerIndex];
             
             console.log(`🎯 승자 결정: [${winnerIndex}] "${winnerItem}"`);
             
-            // 🧮 2단계: 절대 목표 각도 계산
+            // 3. 목표 각도 계산 (정확한 공식 사용)
             const sliceAngle = 360 / items.length;
-            const winnerAngle = winnerIndex * sliceAngle;
-            const targetRotation = (360 * 8) + winnerAngle + (sliceAngle / 2) + (Math.random() - 0.5) * sliceAngle * 0.3;
+            const randomOffset = Math.random() * sliceAngle * 0.8 + sliceAngle * 0.1;
+            const targetRotation = (360 * 5) + (winnerIndex * sliceAngle) + randomOffset;
             
-            console.log(`🎯 목표 각도: ${targetRotation.toFixed(1)}도`);
+            console.log(`📐 목표 각도: ${targetRotation.toFixed(1)}도`);
             
-            // 🎬 3단계: GSAP 애니메이션
-            gsap.to(wheel, {
-                rotation: targetRotation,
-                duration: 4,
-                ease: 'power3.out',
-                onComplete: () => {
-                    // ⚠️ 중요: 반드시 isSpinning을 false로 리셋
-                    isSpinning = false;
-                    finishSpin(winnerItem);
+            // 4. 애니메이션 설정
+            const startRotation = currentRotation;
+            const rotationDiff = targetRotation - startRotation;
+            const duration = 3000; // 3초
+            const startTime = Date.now();
+            
+            // 5. requestAnimationFrame을 사용한 애니메이션
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOut(progress);
+                
+                // 현재 회전 각도 계산
+                currentRotation = startRotation + (rotationDiff * easedProgress);
+                
+                // 돌림판 다시 그리기
+                drawWheel();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 6. 애니메이션 완료 - 결과 표시 및 초기화
+                    currentRotation = targetRotation % 360; // 정규화
+                    isSpinning = false; // ⚠️ 반드시 false로 리셋
+                    
+                    showResult(winnerItem);
+                    updateSpinButton();
+                    
+                    console.log(`🏆 최종 결과: "${winnerItem}"`);
+                    console.log(`🔄 isSpinning 리셋 완료`);
                 }
-            });
-        };
-        
-        // 회전 완료 처리
-        const finishSpin = (winnerItem) => {
-            // 결과 표시
-            showResult(winnerItem);
+            };
             
-            // UI 상태 업데이트
-            updateSpinButton();
-            
-            console.log(`🏆 최종 결과: "${winnerItem}"`);
+            animate();
         };
         
         // ===================================== //
@@ -890,10 +917,10 @@
             itemInput.value = '';
             itemInput.focus();
             
-            // 돌림판 초기화 및 UI 업데이트
-            resetWheel();
+            // 상태 초기화 및 UI 업데이트
+            resetRotation();
             updateItemsDisplay();
-            drawRoulette();
+            drawWheel();
             updateSpinButton();
             updateSaveFavoriteButton();
             
@@ -907,10 +934,10 @@
             const removedItem = items[index];
             items.splice(index, 1);
             
-            // 돌림판 초기화 및 UI 업데이트
-            resetWheel();
+            // 상태 초기화 및 UI 업데이트
+            resetRotation();
             updateItemsDisplay();
-            drawRoulette();
+            drawWheel();
             updateSpinButton();
             updateSaveFavoriteButton();
             
@@ -921,9 +948,10 @@
             showToast(`"${removedItem}" 항목이 삭제되었습니다!`, 'info');
         };
         
-        // 돌림판 회전 상태 초기화
-        const resetWheel = () => {
-            gsap.set(wheel, { rotation: 0 });
+        // 회전 상태 초기화 (중요!)
+        const resetRotation = () => {
+            currentRotation = 0; // 항상 0도로 강제 리셋
+            console.log('🔄 currentRotation 0도로 리셋');
         };
         
         // 항목 목록 UI 업데이트
@@ -1032,9 +1060,9 @@
             
             items = [...favorite.items];
             
-            resetWheel();
+            resetRotation(); // 상태 초기화
             updateItemsDisplay();
-            drawRoulette();
+            drawWheel();
             updateSpinButton();
             updateSaveFavoriteButton();
             resetResult();
@@ -1152,16 +1180,13 @@
                 }
             }
             
-            // 애니메이션 중단
-            gsap.killTweensOf(wheel);
-            
             // 상태 초기화
             items = [];
             isSpinning = false;
+            resetRotation(); // currentRotation = 0
             
-            resetWheel();
             updateItemsDisplay();
-            drawRoulette();
+            drawWheel();
             updateSpinButton();
             updateSaveFavoriteButton();
             resetResult();
@@ -1215,6 +1240,44 @@
         };
         
         // ===================================== //
+        // 🌐 카카오톡 브라우저 감지              //
+        // ===================================== //
+        
+        // 카카오톡 인앱 브라우저 감지
+        const detectKakaoBrowser = () => {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const isKakaoTalk = userAgent.includes('KAKAOTALK');
+            
+            if (isKakaoTalk) {
+                console.log('🔍 카카오톡 인앱 브라우저 감지됨');
+                
+                const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+                const isAndroid = /Android/.test(userAgent);
+                
+                let message = '카카오톡 내장 브라우저에서는 일부 기능이 제한될 수 있습니다.<br>';
+                
+                if (isAndroid) {
+                    message += '우측 상단 ⋮ 메뉴에서 "다른 브라우저로 열기"를 선택해주세요!';
+                } else if (isIOS) {
+                    message += '우측 하단 Safari 아이콘을 클릭하거나, 우측 상단 ⋯ 메뉴에서 "Safari에서 열기"를 선택해주세요!';
+                } else {
+                    message += '우측 상단 메뉴에서 "다른 브라우저로 열기"를 선택해주세요!';
+                }
+                
+                document.getElementById('kakao-notice-text').innerHTML = message;
+                document.getElementById('kakao-notice').style.display = 'flex';
+                
+                return true;
+            }
+            
+            return false;
+        };
+        
+        const closeKakaoNotice = () => {
+            document.getElementById('kakao-notice').style.display = 'none';
+        };
+        
+        // ===================================== //
         // 🔔 알림 시스템                        //
         // ===================================== //
         
@@ -1222,9 +1285,9 @@
         const showResult = (selectedItem) => {
             resultDisplay.innerHTML = `
                 <div>
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🎉</div>
-                    <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${selectedItem}</div>
-                    <div style="font-size: 1rem; color: #666;">으로 결정!</div>
+                    <div style="font-size: 1.8rem; margin-bottom: 8px;">🎉</div>
+                    <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;">${selectedItem}</div>
+                    <div style="font-size: 0.9rem; color: #666;">으로 결정!</div>
                 </div>
             `;
             resultDisplay.classList.add('highlight');
@@ -1319,8 +1382,20 @@
             }
         };
         
+        // Canvas 크기 조정
+        const resizeCanvas = () => {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth, container.clientHeight);
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+            drawWheel();
+        };
+        
         // 초기화 함수
         const init = () => {
+            // 카카오톡 브라우저 감지
+            detectKakaoBrowser();
+            
             // 이벤트 리스너 등록
             addBtn.addEventListener('click', addItem);
             spinBtn.addEventListener('click', spin);
@@ -1331,17 +1406,22 @@
             favoriteNameInput.addEventListener('keypress', handleKeyPress);
             favoriteNameInput.addEventListener('input', updateSaveFavoriteButton);
             document.addEventListener('keydown', handleGlobalKeyDown);
+            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(resizeCanvas, 100);
+            });
             
             // 저장된 데이터 불러오기
             loadFavoritesFromStorage();
             
             // 초기 상태 설정
-            resetWheel();
+            resetRotation(); // currentRotation = 0
             
             // 초기 UI 설정
             updateItemsDisplay();
             updateFavoritesDisplay();
-            drawRoulette();
+            resizeCanvas();
+            drawWheel();
             updateSpinButton();
             updateSaveFavoriteButton();
             resetResult();
@@ -1351,11 +1431,15 @@
                 itemInput.focus();
             }
             
-            console.log('🎯 단순하고 안정적인 돌림판 초기화 완료!');
-            console.log('✨ 깔끔한 디자인');
-            console.log('🚀 안정적인 회전 로직');
-            console.log('⭐ 즐겨찾기 시스템');
+            console.log('🎯 안정성과 정확성 최우선 돌림판 초기화 완료!');
+            console.log('📐 미리 정의된 10개 색상 배열 적용');
+            console.log('🎪 requestAnimationFrame 기반 애니메이션');
+            console.log('🔄 명확한 상태 관리 (currentRotation, isSpinning, items)');
+            console.log('⚠️ isSpinning 안전 리셋 보장');
+            console.log('🎨 Canvas 기반 알록달록한 돌림판');
+            console.log('⭐ 완벽한 즐겨찾기 시스템');
             console.log('🔗 공유 기능');
+            console.log('🌐 카카오톡 브라우저 대응');
             console.log('📱 완벽한 반응형');
             console.log('♿ 접근성 최적화');
         };
@@ -1371,9 +1455,10 @@
         window.removeItem = removeItem;
         window.loadFavorite = loadFavorite;
         window.deleteFavorite = deleteFavorite;
+        window.closeKakaoNotice = closeKakaoNotice;
         window.closeShareModal = closeShareModal;
         
-        console.log('🎨 단순하고 안정적인 결정장애 돌림판 로드 완료');
+        console.log('🎨 안정성과 정확성 최우선 결정장애 돌림판 로드 완료');
     </script>
     
     <!-- PWA Service Worker 등록 -->
