@@ -59,10 +59,34 @@
     box-sizing: border-box;
 }
 
+/* 가로 스크롤 방지를 위한 추가 설정 */
+*, *::before, *::after {
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+/* 컨테이너 레이아웃 최적화 */
+.min-h-screen {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Flex 컨테이너 최적화 */
+.flex {
+    min-width: 0; /* flex item 축소 허용 */
+}
+
+.flex-grow, .flex-1 {
+    min-width: 0; /* flex-grow 아이템이 너무 커지지 않도록 */
+}
+
 html, body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #f3f4f6;
-    overflow-x: hidden;
+    overflow-x: hidden; /* 가로 스크롤 원천 차단 */
+    width: 100%;
+    max-width: 100%;
 }
 
 /* 모바일 전용 스타일 */
@@ -73,6 +97,7 @@ html, body {
         position: fixed;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: none;
+        overflow-x: hidden;
     }
     
     body > div {
@@ -80,6 +105,36 @@ html, body {
         height: 100vh;
         overflow-y: auto;
         overflow-x: hidden;
+    }
+    
+    /* 모바일에서 flex 컨테이너 최적화 */
+    .flex.flex-wrap {
+        align-items: stretch;
+    }
+    
+    /* 모바일에서 입력창 최적화 */
+    .flex-grow {
+        min-width: 200px; /* 최소 너비 보장 */
+        flex-basis: 60%; /* 기본 너비 설정 */
+    }
+    
+    /* 모바일에서 버튼 최적화 */
+    .flex-1 {
+        min-width: 90px; /* 버튼 최소 너비 */
+        flex-basis: calc(33.333% - 8px); /* 3개 버튼이 한 줄에 들어갈 수 있도록 */
+    }
+    
+    /* 작은 화면에서 버튼들이 세로로 배치되도록 */
+    @media (max-width: 360px) {
+        .flex-1 {
+            flex-basis: calc(50% - 8px); /* 2개씩 배치 */
+        }
+    }
+    
+    @media (max-width: 280px) {
+        .flex-1 {
+            flex-basis: 100%; /* 1개씩 배치 */
+        }
     }
 }
 
@@ -433,10 +488,16 @@ input[type="text"]:focus {
         height: max(60px, 8vh);
         min-height: 50px;
         padding: clamp(0.5rem, 2vh, 1rem) clamp(1rem, 4vw, 1.5rem);
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
     header h1 {
         font-size: clamp(1.125rem, 5vw, 1.5rem);
+        width: 100%;
+        max-width: 100%;
+        word-wrap: break-word;
     }
 
     main {
@@ -447,11 +508,27 @@ input[type="text"]:focus {
         gap: clamp(0.75rem, 3vh, 1.5rem);
         height: calc(100vh - max(60px, 8vh) - max(40px, 6vh));
         overflow-y: auto;
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
     }
 
     section {
         padding: clamp(1rem, 4vw, 1.5rem);
         border-radius: clamp(0.75rem, 3vw, 1rem);
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* 모바일에서 flex 컨테이너와 아이템들의 간격 조정 */
+    .flex.flex-wrap.justify-center {
+        margin: 0 -0.25rem; /* 음수 마진으로 좌우 공간 확보 */
+    }
+    
+    .mx-1 {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
     }
 
     footer {
@@ -459,6 +536,9 @@ input[type="text"]:focus {
         min-height: 30px;
         padding: clamp(0.5rem, 2vh, 0.75rem);
         font-size: clamp(0.75rem, 3vw, 0.875rem);
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 }
 
@@ -466,6 +546,10 @@ input[type="text"]:focus {
 header {
     padding: 1rem;
     background: linear-gradient(135deg, #10b981, #3b82f6);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 header h1 {
@@ -480,6 +564,9 @@ main {
     gap: 1.5rem;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 section {
@@ -487,6 +574,10 @@ section {
     border-radius: 1rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 footer {
@@ -494,6 +585,10 @@ footer {
     text-align: center;
     color: #9ca3af;
     font-size: 0.875rem;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 /* 데스크톱 레이아웃 최적화 */
@@ -517,11 +612,28 @@ footer {
         height: auto;
         min-height: calc(100vh - 200px);
         flex: 1;
+        width: 100%;
+        overflow-x: hidden;
     }
     
     section {
         padding: 2rem;
         border-radius: 1rem;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* 데스크톱에서 flex 컨테이너 조정 */
+    .flex.flex-wrap.justify-center {
+        justify-content: flex-start; /* 데스크톱에서는 왼쪽 정렬 */
+        margin: 0;
+    }
+    
+    /* 데스크톱에서는 버튼들이 적당한 크기를 유지하도록 */
+    .flex-1[class*="min-w-"] {
+        flex: 0 1 auto; /* 데스크톱에서는 고정 크기 */
+        max-width: none;
     }
     
     footer {
@@ -671,10 +783,10 @@ footer {
     </style>
 </head>
 <body>
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-100" style="width: 100%; max-width: 100vw; overflow-x: hidden;">
         <!-- 컴팩트한 헤더 -->
         <header class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 md:px-8 py-3 md:py-6 shadow-lg">
-            <div class="max-w-md md:max-w-2xl mx-auto">
+            <div class="max-w-full md:max-w-2xl mx-auto" style="width: 100%; max-width: 100%; overflow-x: hidden;">
                 <h1 class="text-xl md:text-3xl font-bold text-center">
                     🎯 결정장애 돌림판
                 </h1>
@@ -682,21 +794,21 @@ footer {
         </header>
 
         <!-- 메인 콘텐츠 영역 - 반응형 컨테이너 -->
-        <main class="max-w-md md:max-w-2xl mx-auto p-4 md:p-8 space-y-4 md:space-y-6 min-h-[calc(100vh-60px)] md:min-h-0 flex flex-col">
+        <main class="max-w-full md:max-w-2xl mx-auto p-4 md:p-8 space-y-4 md:space-y-6 min-h-[calc(100vh-60px)] md:min-h-0 flex flex-col" style="width: 100%; max-width: 100%; overflow-x: hidden;">
             <!-- 항목 입력 섹션 -->
             <section class="bg-white rounded-xl shadow-lg p-4 md:p-6">
-                <div class="flex gap-2 md:gap-3 mb-3 md:mb-4">
+                <div class="flex flex-wrap justify-center gap-2 md:gap-3 mb-3 md:mb-4">
                     <input 
                         type="text" 
                         id="item-input"
                         placeholder="항목 입력 (예: 치킨)"
-                        class="flex-1 px-4 py-3 md:px-5 md:py-4 text-lg md:text-xl border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="flex-grow min-w-0 px-4 py-3 md:px-5 md:py-4 text-lg md:text-xl border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 mx-1"
                         aria-label="돌림판에 추가할 항목을 입력하세요"
                     />
                     <button 
                         type="button"
                         id="add-button"
-                        class="px-6 py-3 md:px-8 md:py-4 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 active:bg-blue-700 transition-colors min-w-[80px] md:min-w-[100px] text-lg md:text-xl"
+                        class="px-6 py-3 md:px-8 md:py-4 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 active:bg-blue-700 transition-colors min-w-[80px] md:min-w-[100px] text-lg md:text-xl mx-1"
                         aria-label="항목 추가"
                     >
                         ➕
@@ -717,17 +829,17 @@ footer {
                 </div>
                 
                 <!-- 저장 영역 -->
-                <div class="flex gap-2 md:gap-3 mb-4 md:mb-6">
+                <div class="flex flex-wrap justify-center gap-2 md:gap-3 mb-4 md:mb-6">
                     <input 
                         type="text" 
                         id="favorite-name-input"
                         placeholder="돌림판 이름"
-                        class="flex-1 px-4 py-3 md:px-5 md:py-4 text-lg md:text-xl border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                        class="flex-grow min-w-0 px-4 py-3 md:px-5 md:py-4 text-lg md:text-xl border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 mx-1"
                     />
                     <button 
                         type="button"
                         id="save-favorite-button"
-                        class="px-6 py-3 md:px-8 md:py-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-600 active:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] md:min-w-[100px] text-lg md:text-xl"
+                        class="px-6 py-3 md:px-8 md:py-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-600 active:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] md:min-w-[100px] text-lg md:text-xl mx-1"
                         disabled
                     >
                         💾
@@ -771,11 +883,11 @@ footer {
                 </div>
 
                 <!-- 돌리기, 리셋, 공유 버튼 -->
-                <div class="grid grid-cols-3 gap-3 md:gap-6">
+                <div class="flex flex-wrap justify-center gap-3 md:gap-6">
                     <button 
                         type="button"
                         id="spin-button"
-                        class="py-4 md:py-6 bg-green-500 text-white text-lg md:text-xl font-bold rounded-xl hover:bg-green-600 active:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                        class="flex-1 min-w-[100px] max-w-[200px] py-4 md:py-6 bg-green-500 text-white text-lg md:text-xl font-bold rounded-xl hover:bg-green-600 active:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg mx-1"
                         aria-label="돌림판 돌리기"
                         disabled
                     >
@@ -788,7 +900,7 @@ footer {
                     <button 
                         type="button"
                         id="reset-button"
-                        class="py-4 md:py-6 bg-red-500 text-white text-lg md:text-xl font-bold rounded-xl hover:bg-red-600 active:bg-red-700 transition-colors shadow-lg"
+                        class="flex-1 min-w-[100px] max-w-[200px] py-4 md:py-6 bg-red-500 text-white text-lg md:text-xl font-bold rounded-xl hover:bg-red-600 active:bg-red-700 transition-colors shadow-lg mx-1"
                         aria-label="돌림판 리셋하기"
                     >
                         <div class="flex items-center justify-center gap-2">
@@ -799,7 +911,7 @@ footer {
                     <button 
                         type="button"
                         id="share-button"
-                        class="py-4 md:py-6 bg-blue-500 text-white text-lg md:text-xl font-bold rounded-xl hover:bg-blue-600 active:bg-blue-700 transition-colors shadow-lg"
+                        class="flex-1 min-w-[100px] max-w-[200px] py-4 md:py-6 bg-blue-500 text-white text-lg md:text-xl font-bold rounded-xl hover:bg-blue-600 active:bg-blue-700 transition-colors shadow-lg mx-1"
                         aria-label="돌림판 링크 복사"
                     >
                         <div class="flex items-center justify-center gap-2">
@@ -829,7 +941,7 @@ footer {
 
         <!-- 컴팩트한 푸터 -->
         <footer class="text-center py-3 md:py-6 text-gray-400 text-sm md:text-base">
-            <div class="max-w-md md:max-w-2xl mx-auto">
+            <div class="max-w-full md:max-w-2xl mx-auto" style="width: 100%; max-width: 100%; overflow-x: hidden;">
                 💫 결정장애 해결사
             </div>
         </footer>
