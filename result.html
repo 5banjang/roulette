@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결정장애 돌림판 - 결과</title>
+    
+    <!-- Pretendard 폰트 -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
+    
+    <!-- PWA 메타 태그 -->
+    <meta name="description" content="결정장애 돌림판 - 결과를 확인해보세요!">
+    <meta name="theme-color" content="#007BFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="돌림판">
+    
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" href="icon-512x512.png">
+    <link rel="apple-touch-icon" href="icon-512x512.png">
+    
+    <style>
+        /* ===================================== */
+        /* 🎯 결과 페이지 - 돌림판 전용 디자인   */
+        /* ===================================== */
+        
+        /* 기본 리셋 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: white;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* 메인 래퍼 */
+        .wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 헤더 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #007BFF;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        /* 돌림판 컨테이너 */
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 20px 0;
+            width: 100%;
+        }
+        
+        .wheel-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Canvas 돌림판 */
+        #wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #007BFF;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #wheel-canvas.spinning {
+            box-shadow: 0 8px 30px rgba(0, 123, 255, 0.4);
+        }
+        
+        /* 화살표 포인터 */
+        .arrow-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 30px solid #007BFF;
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        
+        /* 결과 표시 */
+        .result-display {
+            text-align: center;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .result-display.highlight {
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            border-color: #007BFF;
+            color: #007BFF;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+        
+        /* 에러 상태 */
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .error-container h2 {
+            color: #856404;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+        
+        .error-container p {
+            color: #856404;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .back-btn {
+            padding: 12px 24px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        /* 로딩 상태 */
+        .loading-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #007BFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        /* 다시하기 버튼 */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 120px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background-color: white;
+            color: #007BFF;
+            border: 2px solid #007BFF;
+        }
+        
+        .btn-outline:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 600px) {
+            .wrapper {
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .wheel-wrapper {
+                max-width: 280px;
+            }
+            
+            .result-display {
+                padding: 25px;
+                font-size: 1.1rem;
+                min-height: 100px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .wrapper {
+                padding: 12px;
+            }
+            
+            .wheel-wrapper {
+                max-width: 250px;
+            }
+        }
+        
+        /* 접근성 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        *:focus {
+            outline: 2px solid #007BFF;
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 메인 앱 -->
+    <div class="wrapper">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>🎯 결정장애 돌림판</h1>
+            <p>결과를 확인해보세요!</p>
+        </header>
+        
+        <!-- 로딩 상태 -->
+        <div class="loading-container" id="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">돌림판을 준비하고 있습니다...</div>
+        </div>
+        
+        <!-- 에러 상태 -->
+        <div class="error-container" id="error-container" style="display: none;">
+            <h2>⚠️ 항목이 없습니다</h2>
+            <p>항목이 없습니다. 메인 페이지로 돌아가 항목을 추가해주세요.</p>
+            <a href="index.html" class="back-btn">
+                <span>🏠</span>
+                메인 페이지로 돌아가기
+            </a>
+        </div>
+        
+        <!-- 돌림판 컨테이너 -->
+        <div class="wheel-container" id="wheel-container" style="display: none;">
+            <div class="wheel-wrapper">
+                <div class="arrow-pointer"></div>
+                <canvas 
+                    id="wheel-canvas"
+                    width="350" 
+                    height="350"
+                    aria-label="돌림판"
+                ></canvas>
+            </div>
+            
+            <!-- 결과 표시 -->
+            <div class="result-display" id="result-display">
+                <div class="loading-text">돌림판이 돌아가고 있습니다...</div>
+            </div>
+            
+            <!-- 액션 버튼들 -->
+            <div class="action-buttons" id="action-buttons" style="display: none;">
+                <button type="button" class="btn" onclick="restartSpin()">
+                    <span>🔄</span>
+                    다시 돌리기
+                </button>
+                <a href="index.html" class="btn btn-outline">
+                    <span>🏠</span>
+                    메인으로 돌아가기
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================== //
+        // 🎯 결과 페이지 - 돌림판 회전 시스템    //
+        // ===================================== //
+        
+        // 상태 관리
+        let items = [];
+        let currentRotation = 0;
+        let isSpinning = false;
+        
+        // 미리 정의된 10개 다채로운 색상 배열
+        const COLORS = [
+            '#ff8b8b', '#ffc977', '#fffb8b', '#c2ff8b', '#8bffc2',
+            '#8bffff', '#8bc2ff', '#c28bff', '#ff8bff', '#ffc28b'
+        ];
+        
+        // DOM 요소 참조
+        const loadingContainer = document.getElementById('loading-container');
+        const errorContainer = document.getElementById('error-container');
+        const wheelContainer = document.getElementById('wheel-container');
+        const canvas = document.getElementById('wheel-canvas');
+        const ctx = canvas.getContext('2d');
+        const resultDisplay = document.getElementById('result-display');
+        const actionButtons = document.getElementById('action-buttons');
+        
+        // ===================================== //
+        // 📦 데이터 수신 및 초기화               //
+        // ===================================== //
+        
+        // localStorage에서 항목 데이터 가져오기
+        const loadItemsFromStorage = () => {
+            try {
+                const itemsJson = localStorage.getItem('rouletteItems');
+                
+                if (!itemsJson) {
+                    console.warn('⚠️ localStorage에 항목이 없습니다');
+                    return null;
+                }
+                
+                const parsedItems = JSON.parse(itemsJson);
+                
+                if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
+                    console.warn('⚠️ 유효하지 않은 항목 데이터');
+                    return null;
+                }
+                
+                console.log('📦 항목 데이터 수신 성공:', parsedItems);
+                return parsedItems;
+                
+            } catch (error) {
+                console.error('❌ 데이터 파싱 실패:', error);
+                return null;
+            }
+        };
+        
+        // ===================================== //
+        // 🎨 Canvas 돌림판 그리기               //
+        // ===================================== //
+        
+        // 돌림판 그리기
+        const drawWheel = () => {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 20;
+            
+            // 캔버스 초기화
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (items.length === 0) return;
+            
+            const sliceAngle = (2 * Math.PI) / items.length;
+            
+            // 각 조각 그리기
+            items.forEach((item, index) => {
+                const startAngle = index * sliceAngle + (currentRotation * Math.PI / 180);
+                const endAngle = (index + 1) * sliceAngle + (currentRotation * Math.PI / 180);
+                
+                // 색상 선택 (순환)
+                const color = COLORS[index % COLORS.length];
+                
+                // 조각 그리기
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // 텍스트 그리기
+                const textAngle = startAngle + sliceAngle / 2;
+                const textX = centerX + Math.cos(textAngle) * (radius * 0.7);
+                const textY = centerY + Math.sin(textAngle) * (radius * 0.7);
+                
+                ctx.save();
+                ctx.translate(textX, textY);
+                ctx.rotate(textAngle + Math.PI / 2);
+                ctx.fillStyle = '#333333';
+                ctx.font = 'bold 16px Pretendard, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item, 0, 0);
+                ctx.restore();
+            });
+            
+            // 중앙 원 그리기
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = '#007BFF';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        };
+        
+        // ===================================== //
+        // 🎯 돌림판 회전 로직                   //
+        // ===================================== //
+        
+        // 회전 애니메이션을 위한 Ease-out 함수
+        const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+        
+        // 돌림판 돌리기 (승자 선결정 후 절대 목표 각도)
+        const spinWheel = () => {
+            if (isSpinning || items.length === 0) return;
+            
+            isSpinning = true;
+            canvas.classList.add('spinning');
+            
+            // 1. 승자 먼저 결정
+            const winnerIndex = Math.floor(Math.random() * items.length);
+            const winnerItem = items[winnerIndex];
+            
+            console.log(`🎯 승자 선결정: [${winnerIndex}] "${winnerItem}"`);
+            
+            // 2. 목표 각도 계산 (정확한 공식)
+            const sliceAngle = 360 / items.length;
+            const randomOffset = Math.random() * sliceAngle * 0.8 + sliceAngle * 0.1;
+            const targetRotation = (360 * 6) + (winnerIndex * sliceAngle) + randomOffset;
+            
+            console.log(`📐 절대 목표 각도: ${targetRotation.toFixed(1)}도`);
+            
+            // 3. 애니메이션 설정
+            const startRotation = currentRotation;
+            const rotationDiff = targetRotation - startRotation;
+            const duration = 4000; // 4초
+            const startTime = Date.now();
+            
+            // 4. requestAnimationFrame을 사용한 애니메이션
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOut(progress);
+                
+                // 현재 회전 각도 계산
+                currentRotation = startRotation + (rotationDiff * easedProgress);
+                
+                // 돌림판 다시 그리기
+                drawWheel();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 5. 애니메이션 완료 - 결과 표시
+                    currentRotation = targetRotation % 360; // 정규화
+                    isSpinning = false;
+                    canvas.classList.remove('spinning');
+                    
+                    // 결과 표시
+                    showResult(winnerItem);
+                    
+                    console.log(`🏆 최종 결과: "${winnerItem}"`);
+                }
+            };
+            
+            animate();
+        };
+        
+        // ===================================== //
+        // 🏆 결과 표시                          //
+        // ===================================== //
+        
+        // 결과 표시
+        const showResult = (selectedItem) => {
+            resultDisplay.innerHTML = `
+                <div>
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🎉</div>
+                    <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 8px;">${selectedItem}</div>
+                    <div style="font-size: 1rem; color: #666;">으로 결정!</div>
+                </div>
+            `;
+            
+            resultDisplay.classList.add('highlight');
+            
+            // 2초 후 하이라이트 제거
+            setTimeout(() => {
+                resultDisplay.classList.remove('highlight');
+            }, 2000);
+            
+            // 액션 버튼들 표시
+            setTimeout(() => {
+                actionButtons.style.display = 'flex';
+            }, 1000);
+            
+            // 접근성 알림
+            announceResult(selectedItem);
+        };
+        
+        // 스크린 리더 알림
+        const announceResult = (result) => {
+            const announcement = document.createElement('div');
+            announcement.className = 'sr-only';
+            announcement.setAttribute('aria-live', 'assertive');
+            announcement.textContent = `돌림판 결과: ${result}이(가) 선택되었습니다.`;
+            
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                if (announcement.parentElement) {
+                    document.body.removeChild(announcement);
+                }
+            }, 1000);
+        };
+        
+        // ===================================== //
+        // 🔄 다시 돌리기                        //
+        // ===================================== //
+        
+        // 다시 돌리기
+        const restartSpin = () => {
+            // UI 리셋
+            resultDisplay.innerHTML = '<div class="loading-text">돌림판이 돌아가고 있습니다...</div>';
+            resultDisplay.classList.remove('highlight');
+            actionButtons.style.display = 'none';
+            
+            // 회전 상태 리셋
+            currentRotation = 0;
+            drawWheel();
+            
+            // 1초 후 다시 회전
+            setTimeout(() => {
+                spinWheel();
+            }, 1000);
+        };
+        
+        // ===================================== //
+        // 🎮 초기화 및 실행                     //
+        // ===================================== //
+        
+        // Canvas 크기 조정
+        const resizeCanvas = () => {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth, container.clientHeight);
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+            
+            // 높은 해상도를 위한 스케일링
+            const scale = window.devicePixelRatio || 1;
+            canvas.width = 350 * scale;
+            canvas.height = 350 * scale;
+            ctx.scale(scale, scale);
+            
+            drawWheel();
+        };
+        
+        // 페이지 초기화
+        const initPage = () => {
+            console.log('🚀 결과 페이지 초기화 시작');
+            
+            // 1단계: 데이터 수신
+            const loadedItems = loadItemsFromStorage();
+            
+            if (!loadedItems) {
+                // 에러 상태 표시
+                loadingContainer.style.display = 'none';
+                errorContainer.style.display = 'block';
+                console.log('❌ 항목이 없어 에러 페이지 표시');
+                return;
+            }
+            
+            // 항목 설정
+            items = loadedItems;
+            
+            // 2단계: UI 전환
+            setTimeout(() => {
+                loadingContainer.style.display = 'none';
+                wheelContainer.style.display = 'flex';
+                
+                // 3단계: 돌림판 그리기
+                resizeCanvas();
+                console.log('🎨 돌림판 그리기 완료');
+                
+                // 4단계: 1초 후 자동 회전
+                setTimeout(() => {
+                    console.log('🎯 자동 회전 시작');
+                    spinWheel();
+                }, 1000);
+                
+            }, 1000);
+        };
+        
+        // 이벤트 리스너 등록
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(resizeCanvas, 100);
+        });
+        
+        // 키보드 단축키
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'r' || event.key === 'R') {
+                event.preventDefault();
+                if (!isSpinning && actionButtons.style.display !== 'none') {
+                    restartSpin();
+                }
+            }
+            
+            if (event.key === 'Escape' || event.key === 'h' || event.key === 'H') {
+                event.preventDefault();
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // DOM 로드 완료 후 초기화
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
+        
+        // 전역 함수로 노출
+        window.restartSpin = restartSpin;
+        
+        console.log('🎨 결과 페이지 로드 완료');
+    </script>
+</body>
+</html> 
