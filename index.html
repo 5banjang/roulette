@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>결정장애 돌림판 - 절대 회전 각도 시스템</title>
+    <title>결정장애 돌림판 - 단순하고 안정적</title>
     
     <!-- Pretendard 폰트 -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -13,17 +13,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     
     <!-- PWA 메타 태그 -->
-    <meta name="description" content="절대 회전 각도 시스템으로 완벽하게 작동하는 결정장애 돌림판 🎯">
-    <meta name="theme-color" content="#00ADB5">
+    <meta name="description" content="단순하고 안정적인 결정장애 돌림판 🎯">
+    <meta name="theme-color" content="#007BFF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="돌림판">
-    <meta name="mobile-web-app-capable" content="yes">
     
     <!-- Open Graph / 카카오톡 공유 최적화 -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="결정장애 돌림판 🎯">
-    <meta property="og:description" content="결정하기 힘들 땐? 돌림판으로 결정해 보세요! 완벽한 즐겨찾기와 사운드 효과">
+    <meta property="og:description" content="결정하기 힘들 땐? 깔끔하고 단순한 돌림판으로 결정해보세요!">
     <meta property="og:url" content="https://example.com/roulette/">
     <meta property="og:site_name" content="결정장애 돌림판">
     <meta property="og:locale" content="ko_KR">
@@ -37,7 +36,7 @@
     
     <style>
         /* ===================================== */
-        /* 🎨 절대 회전 각도 시스템 디자인      */
+        /* 🎯 단순함과 안정성 디자인 시스템     */
         /* ===================================== */
         
         /* 기본 리셋 */
@@ -49,128 +48,66 @@
         
         html, body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #FFFFFF;
+            background-color: #f4f7f6;
+            color: #333;
             line-height: 1.6;
             overflow-x: hidden;
             min-height: 100vh;
         }
         
-        /* 카카오톡 인앱브라우저 감지 및 안내 */
-        .kakao-browser-notice {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-        }
-        
-        .kakao-notice-content {
-            background: white;
-            color: #333;
-            padding: 30px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        .kakao-notice-content h3 {
-            margin-bottom: 16px;
-            color: #FF6B6B;
-            font-size: 1.3rem;
-        }
-        
-        .kakao-notice-content p {
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        
-        .kakao-notice-content button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        
         /* 메인 컨테이너 */
-        .app-container {
-            max-width: 600px;
+        main {
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
         
         /* 헤더 */
         .header {
             text-align: center;
-            padding: 32px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
         }
         
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #007BFF;
             margin-bottom: 8px;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
         }
         
         .header p {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 300;
+            font-size: 1rem;
+            color: #666;
         }
         
-        /* 글래스모피즘 카드 */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 24px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+        /* 섹션 */
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background-color: white;
         }
         
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
-        }
-        
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #FFD700;
+            gap: 8px;
         }
         
         /* 입력 시스템 */
         .input-group {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
@@ -178,184 +115,150 @@
         input[type="text"] {
             flex: 1;
             min-width: 200px;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid transparent;
-            border-radius: 15px;
-            color: #333;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
             font-size: 1rem;
             font-family: inherit;
-            transition: all 0.3s ease;
+            color: #333;
+            background-color: white;
+            transition: border-color 0.2s ease;
             outline: none;
         }
         
         input[type="text"]:focus {
-            border-color: #FFD700;
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
-            background: rgba(255, 255, 255, 1);
+            border-color: #007BFF;
         }
         
         input[type="text"]::placeholder {
-            color: #888;
+            color: #999;
         }
         
         /* 버튼 시스템 */
         .btn {
-            padding: 16px 24px;
-            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            padding: 12px 20px;
+            background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 15px;
+            border-radius: 6px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.2s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            min-width: 120px;
+            gap: 6px;
+            min-width: 80px;
             text-decoration: none;
             outline: none;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
         }
         
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background-color: #0056b3;
         }
         
         .btn:active {
-            transform: translateY(0);
+            background-color: #004494;
         }
         
         .btn:disabled {
-            background: rgba(255, 255, 255, 0.3);
-            color: rgba(255, 255, 255, 0.6);
+            background-color: #6c757d;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .btn:disabled::before {
-            display: none;
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(45deg, #FF416C, #FF4B2B);
-        }
-        
-        .btn-success {
-            background: linear-gradient(45deg, #11998e, #38ef7d);
         }
         
         .btn-large {
-            padding: 20px 32px;
-            font-size: 1.2rem;
-            min-width: 180px;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            min-width: 140px;
         }
         
         .btn-small {
-            padding: 10px 16px;
+            padding: 8px 12px;
             font-size: 0.9rem;
-            min-width: 90px;
+            min-width: 60px;
+        }
+        
+        .btn-outline {
+            background-color: white;
+            color: #007BFF;
+            border: 2px solid #007BFF;
+        }
+        
+        .btn-outline:hover {
+            background-color: #007BFF;
+            color: white;
         }
         
         /* 항목 태그 */
         .items-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-            min-height: 60px;
+            gap: 8px;
+            margin-top: 15px;
+            min-height: 40px;
             align-content: flex-start;
         }
         
         .item-tag {
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-            color: white;
-            padding: 12px 18px;
-            border-radius: 25px;
-            font-size: 1rem;
+            background-color: #e3f2fd;
+            color: #007BFF;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(5px);
+            gap: 6px;
+            border: 1px solid #bbdefb;
+            transition: all 0.2s ease;
         }
         
         .item-tag:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            background-color: #bbdefb;
         }
         
         .remove-btn {
-            background: rgba(255, 107, 107, 0.8);
+            background: #007BFF;
             border: none;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             color: white;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease;
         }
         
         .remove-btn:hover {
-            background: #FF416C;
-            transform: scale(1.1);
+            background: #0056b3;
         }
         
-        /* 즐겨찾기 시스템 */
+        /* 즐겨찾기 목록 */
         .favorites-list {
             list-style: none;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .favorite-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 16px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
+            transition: background-color 0.2s ease;
         }
         
         .favorite-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateX(8px);
+            background-color: #e9ecef;
         }
         
         .favorite-info {
@@ -364,29 +267,29 @@
         
         .favorite-name {
             font-weight: 600;
-            color: #FFD700;
-            margin-bottom: 6px;
-            font-size: 1.1rem;
+            color: #007BFF;
+            margin-bottom: 4px;
         }
         
         .favorite-details {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            color: #666;
         }
         
         .favorite-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .empty-state {
             text-align: center;
-            color: rgba(255, 255, 255, 0.6);
+            color: #999;
             font-style: italic;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px dashed #dee2e6;
         }
         
         /* 돌림판 컨테이너 */
@@ -394,19 +297,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 30px;
+            gap: 25px;
             padding: 20px 0;
         }
         
         .wheel-wrapper {
             position: relative;
-            width: 90%;
+            width: 100%;
+            max-width: 350px;
             aspect-ratio: 1/1;
-            max-width: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
-            filter: drop-shadow(0 12px 48px rgba(0, 0, 0, 0.3));
         }
         
         /* SVG 돌림판 */
@@ -414,43 +316,30 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-            backdrop-filter: blur(10px);
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: white;
+            border: 3px solid #007BFF;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
         }
         
         /* 화살표 포인터 */
         .arrow-pointer {
             position: absolute;
-            top: -15px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 40px solid #FFD700;
-            z-index: 10;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
-        
-        .arrow-pointer::after {
-            content: '';
-            position: absolute;
-            top: -36px;
-            left: -12px;
-            width: 0;
-            height: 0;
             border-left: 12px solid transparent;
             border-right: 12px solid transparent;
-            border-top: 32px solid #FFA500;
+            border-top: 30px solid #007BFF;
+            z-index: 10;
         }
         
         /* 버튼 그룹 */
         .button-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
             justify-content: center;
             width: 100%;
         }
@@ -458,62 +347,25 @@
         /* 결과 표시 */
         .result-display {
             text-align: center;
-            padding: 30px;
-            background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
-            border-radius: 20px;
-            color: white;
-            font-size: 1.4rem;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            color: #333;
+            font-size: 1.2rem;
             font-weight: 600;
-            min-height: 100px;
+            min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            backdrop-filter: blur(10px);
-            transition: all 0.5s ease;
+            transition: all 0.3s ease;
         }
         
         .result-display.highlight {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #333;
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
-            animation: resultGlow 1s ease-in-out;
-        }
-        
-        /* 사운드 컨트롤 */
-        .sound-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 20px;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .sound-toggle {
-            background: linear-gradient(45deg, #4ECDC4, #44A08D);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-        }
-        
-        .sound-toggle.muted {
-            background: linear-gradient(45deg, #666, #555);
-        }
-        
-        .sound-toggle:hover {
-            transform: scale(1.1);
+            background-color: #e3f2fd;
+            border-color: #007BFF;
+            color: #007BFF;
+            transform: scale(1.02);
         }
         
         /* 공유 모달 */
@@ -523,7 +375,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
             justify-content: center;
@@ -532,54 +384,36 @@
         }
         
         .share-modal-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #333;
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 8px;
             text-align: center;
             max-width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* 애니메이션 */
-        @keyframes resultGlow {
-            0%, 100% {
-                box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
-            }
-            50% {
-                box-shadow: 0 16px 50px rgba(255, 215, 0, 0.8);
-            }
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .item-tag {
-            animation: slideIn 0.3s ease;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
         
         /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 16px;
-                gap: 20px;
+        @media (max-width: 600px) {
+            main {
+                margin: 0;
+                padding: 15px;
+                box-shadow: none;
+                min-height: 100vh;
+            }
+            
+            .header {
+                padding: 20px 0;
             }
             
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.7rem;
             }
             
-            .glass-card {
+            .section {
                 padding: 20px;
+                margin-bottom: 25px;
             }
             
             .input-group {
@@ -599,12 +433,12 @@
             }
             
             .wheel-wrapper {
-                width: 95%;
+                max-width: 280px;
             }
             
             .favorite-item {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
                 text-align: center;
             }
             
@@ -614,17 +448,17 @@
             }
         }
         
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.8rem;
+        @media (max-width: 400px) {
+            main {
+                padding: 10px;
             }
             
-            .glass-card {
-                padding: 16px;
+            .section {
+                padding: 15px;
             }
             
             .wheel-wrapper {
-                width: 98%;
+                max-width: 250px;
             }
         }
         
@@ -638,7 +472,7 @@
         }
         
         *:focus {
-            outline: 3px solid #FFD700;
+            outline: 2px solid #007BFF;
             outline-offset: 2px;
         }
         
@@ -659,18 +493,16 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            background: #007BFF;
             color: white;
-            padding: 16px 24px;
-            border-radius: 15px;
-            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 500;
             z-index: 1000;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 350px;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+            max-width: 300px;
             word-wrap: break-word;
-            transform: translateX(400px);
+            transform: translateX(350px);
             transition: transform 0.3s ease;
         }
         
@@ -679,62 +511,39 @@
         }
         
         .toast.success {
-            background: linear-gradient(45deg, #11998e, #38ef7d);
+            background: #28a745;
         }
         
         .toast.error {
-            background: linear-gradient(45deg, #FF416C, #FF4B2B);
+            background: #dc3545;
         }
         
         .toast.info {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: #17a2b8;
         }
     </style>
 </head>
 <body>
-    <!-- 카카오톡 브라우저 안내 모달 -->
-    <div class="kakao-browser-notice" id="kakao-notice">
-        <div class="kakao-notice-content">
-            <h3>🌐 더 나은 환경을 위해</h3>
-            <p id="kakao-notice-text">
-                카카오톡 내장 브라우저에서는 일부 기능이 제한될 수 있습니다.<br>
-                우측 상단 메뉴에서 "다른 브라우저로 열기"를 선택해주세요!
-            </p>
-            <button onclick="closeKakaoNotice()">확인</button>
-        </div>
-    </div>
-
     <!-- 공유 모달 -->
     <div class="share-modal" id="share-modal">
         <div class="share-modal-content">
-            <h3 style="margin-bottom: 20px;">🔗 링크 복사 완료!</h3>
+            <h3 style="margin-bottom: 15px; color: #007BFF;">🔗 링크 복사 완료!</h3>
             <p style="margin-bottom: 20px;">링크가 클립보드에 복사되었습니다.<br>친구들과 공유해보세요!</p>
             <button class="btn" onclick="closeShareModal()">확인</button>
         </div>
     </div>
 
-    <!-- 오디오 요소 -->
-    <audio id="spin-sound" preload="auto" loop>
-        <source src="./sounds/spinning.mp3" type="audio/mpeg">
-        <source src="./sounds/spinning.ogg" type="audio/ogg">
-    </audio>
-    
-    <audio id="result-sound" preload="auto">
-        <source src="./sounds/result.mp3" type="audio/mpeg">
-        <source src="./sounds/result.ogg" type="audio/ogg">
-    </audio>
-
     <!-- 메인 앱 -->
-    <div class="app-container">
+    <main>
         <!-- 헤더 -->
         <header class="header">
             <h1>🎯 결정장애 돌림판</h1>
-            <p>절대 회전 각도 시스템으로 더욱 정확하고 완벽하게</p>
+            <p>단순하고 안정적인 결정 도우미</p>
         </header>
         
         <!-- 항목 추가 섹션 -->
-        <section class="glass-card">
-            <h2 class="card-title">
+        <section class="section">
+            <h2 class="section-title">
                 <span>📝</span>
                 항목 추가
             </h2>
@@ -757,8 +566,8 @@
         </section>
         
         <!-- 즐겨찾기 섹션 -->
-        <section class="glass-card">
-            <h2 class="card-title">
+        <section class="section">
+            <h2 class="section-title">
                 <span>⭐</span>
                 즐겨찾기
             </h2>
@@ -770,7 +579,7 @@
                     maxlength="30"
                     aria-label="즐겨찾기에 저장할 돌림판 이름을 입력하세요"
                 >
-                <button type="button" class="btn btn-secondary" id="save-favorite-btn" disabled>
+                <button type="button" class="btn" id="save-favorite-btn" disabled>
                     <span>💾</span>
                     저장
                 </button>
@@ -778,19 +587,13 @@
             <ul class="favorites-list" id="favorites-list">
                 <div class="empty-state">저장된 즐겨찾기가 없습니다.</div>
             </ul>
-            <div class="sound-controls">
-                <button type="button" class="sound-toggle" id="sound-toggle" title="사운드 켜기/끄기">
-                    <span id="sound-icon">🔊</span>
-                </button>
-                <span>사운드 효과</span>
-            </div>
         </section>
         
         <!-- 돌림판 섹션 -->
-        <section class="glass-card">
-            <h2 class="card-title">
+        <section class="section">
+            <h2 class="section-title">
                 <span>🎲</span>
-                절대 회전 각도 돌림판
+                돌림판
             </h2>
             <div class="wheel-container">
                 <div class="wheel-wrapper">
@@ -806,15 +609,15 @@
                     </svg>
                 </div>
                 <div class="button-group">
-                    <button type="button" class="btn btn-large btn-success" id="spin-btn" disabled>
+                    <button type="button" class="btn btn-large" id="spin-btn" disabled>
                         <span>🎯</span>
                         돌리기!
                     </button>
-                    <button type="button" class="btn btn-danger" id="reset-btn">
+                    <button type="button" class="btn btn-outline" id="reset-btn">
                         <span>🔄</span>
                         리셋
                     </button>
-                    <button type="button" class="btn btn-secondary" id="share-btn">
+                    <button type="button" class="btn btn-outline" id="share-btn">
                         <span>🔗</span>
                         공유
                     </button>
@@ -823,8 +626,8 @@
         </section>
         
         <!-- 결과 섹션 -->
-        <section class="glass-card">
-            <h2 class="card-title">
+        <section class="section">
+            <h2 class="section-title">
                 <span>🏆</span>
                 결과
             </h2>
@@ -832,11 +635,11 @@
                 <div class="empty-state">돌림판을 돌려서 결과를 확인해보세요!</div>
             </div>
         </section>
-    </div>
+    </main>
 
     <script>
         // ===================================== //
-        // 🚀 절대 회전 각도 시스템             //
+        // 🎯 단순하고 안정적인 돌림판 시스템    //
         // ===================================== //
         
         // DOM 요소 참조
@@ -851,25 +654,18 @@
         const resetBtn = document.getElementById('reset-btn');
         const shareBtn = document.getElementById('share-btn');
         const resultDisplay = document.getElementById('result-display');
-        const soundToggle = document.getElementById('sound-toggle');
-        const soundIcon = document.getElementById('sound-icon');
-        const spinSound = document.getElementById('spin-sound');
-        const resultSound = document.getElementById('result-sound');
         
-        // 앱 상태 (절대 회전 각도 원칙)
+        // 앱 상태
         let items = [];
         let favorites = [];
         let isSpinning = false;
-        let currentRotationValue = 0; // 애니메이션 완료 후 최종 각도 저장용 (계산에는 사용하지 않음)
-        let soundEnabled = true;
         
         // ===================================== //
-        // 🎨 SVG 돌림판 그리기 시스템           //
+        // 🎨 SVG 돌림판 그리기                  //
         // ===================================== //
         
-        // SVG 돌림판 그리기 (항상 0도 상태로 그리기)
+        // SVG 돌림판 그리기 (항상 0도 상태)
         const drawRoulette = () => {
-            // SVG 초기화
             wheel.innerHTML = '';
             
             if (items.length === 0) {
@@ -887,17 +683,15 @@
                 const startAngle = index * sliceAngle;
                 const endAngle = (index + 1) * sliceAngle;
                 
-                // 색상 생성
-                const hue = (index * 360 / items.length) % 360;
-                const saturation = 70 + (index % 3) * 10;
-                const lightness = 55 + (index % 2) * 10;
-                const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                // 단순한 색상 생성 (파란색 계열)
+                const lightness = 85 - (index % 3) * 10; // 85%, 75%, 65%
+                const color = `hsl(210, 100%, ${lightness}%)`;
                 
-                // 조각 패스 생성
+                // 조각 그리기
                 const slice = createSlicePath(centerX, centerY, radius, startAngle, endAngle, color);
                 wheel.appendChild(slice);
                 
-                // 텍스트 생성
+                // 텍스트 그리기
                 const text = createSliceText(centerX, centerY, radius * 0.7, startAngle + sliceAngle / 2, item);
                 wheel.appendChild(text);
             });
@@ -906,7 +700,7 @@
             const centerCircle = createCenterCircle(centerX, centerY);
             wheel.appendChild(centerCircle);
             
-            console.log(`🎨 돌림판 그리기 완료: ${items.length}개 조각, 0도 상태`);
+            console.log(`🎨 돌림판 그리기 완료: ${items.length}개 조각`);
         };
         
         // 빈 돌림판 그리기
@@ -920,8 +714,8 @@
             bgCircle.setAttribute('cx', centerX);
             bgCircle.setAttribute('cy', centerY);
             bgCircle.setAttribute('r', radius);
-            bgCircle.setAttribute('fill', 'rgba(255, 255, 255, 0.1)');
-            bgCircle.setAttribute('stroke', 'rgba(255, 255, 255, 0.3)');
+            bgCircle.setAttribute('fill', '#f8f9fa');
+            bgCircle.setAttribute('stroke', '#dee2e6');
             bgCircle.setAttribute('stroke-width', '2');
             wheel.appendChild(bgCircle);
             
@@ -931,9 +725,9 @@
             text.setAttribute('y', centerY);
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('dominant-baseline', 'middle');
-            text.setAttribute('fill', 'rgba(255, 255, 255, 0.6)');
-            text.setAttribute('font-size', '16');
-            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('fill', '#999');
+            text.setAttribute('font-size', '14');
+            text.setAttribute('font-weight', '500');
             text.textContent = '항목을 추가해주세요';
             wheel.appendChild(text);
         };
@@ -960,8 +754,8 @@
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             path.setAttribute('d', pathData);
             path.setAttribute('fill', color);
-            path.setAttribute('stroke', '#ffffff');
-            path.setAttribute('stroke-width', '2');
+            path.setAttribute('stroke', '#007BFF');
+            path.setAttribute('stroke-width', '1');
             
             return path;
         };
@@ -977,13 +771,10 @@
             textElement.setAttribute('y', y);
             textElement.setAttribute('text-anchor', 'middle');
             textElement.setAttribute('dominant-baseline', 'middle');
-            textElement.setAttribute('fill', '#ffffff');
-            textElement.setAttribute('font-size', '14');
-            textElement.setAttribute('font-weight', 'bold');
+            textElement.setAttribute('fill', '#333');
+            textElement.setAttribute('font-size', '12');
+            textElement.setAttribute('font-weight', '600');
             textElement.setAttribute('transform', `rotate(${angle}, ${x}, ${y})`);
-            
-            // 텍스트 그림자 효과
-            textElement.style.filter = 'drop-shadow(1px 1px 2px rgba(0,0,0,0.7))';
             
             textElement.textContent = text;
             
@@ -998,17 +789,17 @@
             const outerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             outerCircle.setAttribute('cx', centerX);
             outerCircle.setAttribute('cy', centerY);
-            outerCircle.setAttribute('r', '15');
-            outerCircle.setAttribute('fill', 'rgba(255, 255, 255, 0.2)');
-            outerCircle.setAttribute('stroke', '#FFD700');
-            outerCircle.setAttribute('stroke-width', '3');
+            outerCircle.setAttribute('r', '12');
+            outerCircle.setAttribute('fill', 'white');
+            outerCircle.setAttribute('stroke', '#007BFF');
+            outerCircle.setAttribute('stroke-width', '2');
             
             // 내부 원
             const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             innerCircle.setAttribute('cx', centerX);
             innerCircle.setAttribute('cy', centerY);
-            innerCircle.setAttribute('r', '8');
-            innerCircle.setAttribute('fill', '#FFD700');
+            innerCircle.setAttribute('r', '6');
+            innerCircle.setAttribute('fill', '#007BFF');
             
             group.appendChild(outerCircle);
             group.appendChild(innerCircle);
@@ -1017,75 +808,61 @@
         };
         
         // ===================================== //
-        // 🎯 절대 회전 각도 스핀 로직           //
+        // 🎯 안정적인 회전 로직                 //
         // ===================================== //
         
-        // 돌림판 돌리기 (절대 회전 각도 방식)
+        // 돌림판 돌리기 (안정적인 방식)
         const spin = () => {
             if (isSpinning || items.length === 0) return;
             
             isSpinning = true;
             updateSpinButton();
             
-            // 사운드 재생
-            playSpinSound();
-            
-            // 🎯 1단계: 승자 결정
+            // 🎯 1단계: 승자 선결정
             const winnerIndex = Math.floor(Math.random() * items.length);
             const winnerItem = items[winnerIndex];
             
-            console.log(`🎯 === 절대 회전 각도 시스템 ===`);
-            console.log(`🏆 승자 결정: [${winnerIndex}] "${winnerItem}"`);
+            console.log(`🎯 승자 결정: [${winnerIndex}] "${winnerItem}"`);
             
-            // 🧮 2단계: 절대 목표 각도 계산 (항상 0도 기준)
+            // 🧮 2단계: 절대 목표 각도 계산
             const sliceAngle = 360 / items.length;
             const winnerAngle = winnerIndex * sliceAngle;
-            const targetRotation = (360 * 10) + winnerAngle + (sliceAngle / 2);
+            const targetRotation = (360 * 8) + winnerAngle + (sliceAngle / 2) + (Math.random() - 0.5) * sliceAngle * 0.3;
             
-            console.log(`📐 조각 크기: ${sliceAngle.toFixed(1)}도`);
-            console.log(`📍 승자 각도: ${winnerAngle.toFixed(1)}도`);
-            console.log(`🎯 절대 목표: ${targetRotation.toFixed(1)}도 (10바퀴 + ${(winnerAngle + sliceAngle / 2).toFixed(1)}도)`);
+            console.log(`🎯 목표 각도: ${targetRotation.toFixed(1)}도`);
             
-            // 🎬 3단계: GSAP로 절대 각도까지 애니메이션
+            // 🎬 3단계: GSAP 애니메이션
             gsap.to(wheel, {
                 rotation: targetRotation,
-                duration: 5,
+                duration: 4,
                 ease: 'power3.out',
                 onComplete: () => {
-                    finishSpin(winnerItem, targetRotation);
+                    // ⚠️ 중요: 반드시 isSpinning을 false로 리셋
+                    isSpinning = false;
+                    finishSpin(winnerItem);
                 }
             });
         };
         
         // 회전 완료 처리
-        const finishSpin = (winnerItem, finalRotation) => {
-            isSpinning = false;
-            currentRotationValue = finalRotation; // 최종 각도 저장 (다음 계산에는 사용하지 않음)
-            
-            // 사운드 처리
-            stopSpinSound();
-            playResultSound();
-            
+        const finishSpin = (winnerItem) => {
             // 결과 표시
             showResult(winnerItem);
             
-            // UI 상태 복원
+            // UI 상태 업데이트
             updateSpinButton();
             
-            console.log(`🏁 회전 완료: ${finalRotation.toFixed(1)}도`);
-            console.log(`🎉 최종 결과: "${winnerItem}"`);
-            console.log(`============================\n`);
+            console.log(`🏆 최종 결과: "${winnerItem}"`);
         };
         
         // ===================================== //
-        // 📝 항목 관리 시스템                   //
+        // 📝 항목 관리                          //
         // ===================================== //
         
         // 항목 추가
         const addItem = () => {
             const value = itemInput.value.trim();
             
-            // 입력 검증
             if (!value) {
                 showToast('항목을 입력해주세요!', 'error');
                 itemInput.focus();
@@ -1109,21 +886,18 @@
                 return;
             }
             
-            // 항목 추가
             items.push(value);
             itemInput.value = '';
             itemInput.focus();
             
-            // 🔄 상태 초기화: 항상 0도로 리셋
-            resetWheelRotation();
+            // 돌림판 초기화 및 UI 업데이트
+            resetWheel();
             updateItemsDisplay();
             drawRoulette();
             updateSpinButton();
             updateSaveFavoriteButton();
             
             showToast(`"${value}" 항목이 추가되었습니다!`, 'success');
-            
-            console.log(`➕ 항목 추가: "${value}" (총 ${items.length}개) - 돌림판 0도 리셋`);
         };
         
         // 항목 제거
@@ -1133,28 +907,23 @@
             const removedItem = items[index];
             items.splice(index, 1);
             
-            // 🔄 상태 초기화: 항상 0도로 리셋
-            resetWheelRotation();
+            // 돌림판 초기화 및 UI 업데이트
+            resetWheel();
             updateItemsDisplay();
             drawRoulette();
             updateSpinButton();
             updateSaveFavoriteButton();
             
-            // 결과 초기화
             if (items.length === 0) {
                 resetResult();
             }
             
             showToast(`"${removedItem}" 항목이 삭제되었습니다!`, 'info');
-            
-            console.log(`➖ 항목 제거: "${removedItem}" (총 ${items.length}개) - 돌림판 0도 리셋`);
         };
         
-        // 돌림판 회전 상태 초기화 (절대 각도 원칙)
-        const resetWheelRotation = () => {
+        // 돌림판 회전 상태 초기화
+        const resetWheel = () => {
             gsap.set(wheel, { rotation: 0 });
-            currentRotationValue = 0;
-            console.log('🔄 돌림판 회전 0도 리셋');
         };
         
         // 항목 목록 UI 업데이트
@@ -1222,7 +991,6 @@
                 return;
             }
             
-            // 중복 이름 체크
             const existingIndex = favorites.findIndex(fav => fav.name === name);
             
             if (existingIndex !== -1) {
@@ -1248,8 +1016,6 @@
             updateSaveFavoriteButton();
             
             showToast(`"${name}" 즐겨찾기가 저장되었습니다!`, 'success');
-            
-            console.log(`💾 즐겨찾기 저장: "${name}" (${items.length}개 항목)`);
         };
         
         // 즐겨찾기 불러오기
@@ -1266,8 +1032,7 @@
             
             items = [...favorite.items];
             
-            // 🔄 상태 초기화: 항상 0도로 리셋
-            resetWheelRotation();
+            resetWheel();
             updateItemsDisplay();
             drawRoulette();
             updateSpinButton();
@@ -1275,8 +1040,6 @@
             resetResult();
             
             showToast(`"${favorite.name}" 즐겨찾기를 불러왔습니다!`, 'info');
-            
-            console.log(`📂 즐겨찾기 불러오기: "${favorite.name}" (${favorite.items.length}개 항목) - 돌림판 0도 리셋`);
         };
         
         // 즐겨찾기 삭제
@@ -1294,8 +1057,6 @@
             updateFavoritesDisplay();
             
             showToast(`"${favorite.name}" 즐겨찾기가 삭제되었습니다!`, 'info');
-            
-            console.log(`🗑️ 즐겨찾기 삭제: "${favorite.name}"`);
         };
         
         // 즐겨찾기 목록 UI 업데이트
@@ -1335,7 +1096,7 @@
                 loadBtn.onclick = () => loadFavorite(index);
                 
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-small btn-danger';
+                deleteBtn.className = 'btn btn-small btn-outline';
                 deleteBtn.innerHTML = '<span>🗑️</span> 삭제';
                 deleteBtn.onclick = () => deleteFavorite(index);
                 
@@ -1380,87 +1141,6 @@
         };
         
         // ===================================== //
-        // 🔊 사운드 시스템                      //
-        // ===================================== //
-        
-        // 사운드 토글
-        const toggleSound = () => {
-            soundEnabled = !soundEnabled;
-            
-            if (soundEnabled) {
-                soundIcon.textContent = '🔊';
-                soundToggle.classList.remove('muted');
-                showToast('사운드가 켜졌습니다', 'info');
-            } else {
-                soundIcon.textContent = '🔇';
-                soundToggle.classList.add('muted');
-                stopSpinSound();
-                showToast('사운드가 꺼졌습니다', 'info');
-            }
-            
-            localStorage.setItem('roulette-sound-enabled', soundEnabled.toString());
-        };
-        
-        const playSpinSound = () => {
-            if (!soundEnabled) return;
-            
-            try {
-                spinSound.currentTime = 0;
-                const playPromise = spinSound.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.warn('스핀 사운드 재생 실패:', error);
-                    });
-                }
-            } catch (error) {
-                console.warn('스핀 사운드 재생 오류:', error);
-            }
-        };
-        
-        const stopSpinSound = () => {
-            try {
-                spinSound.pause();
-                spinSound.currentTime = 0;
-            } catch (error) {
-                console.warn('스핀 사운드 정지 오류:', error);
-            }
-        };
-        
-        const playResultSound = () => {
-            if (!soundEnabled) return;
-            
-            try {
-                resultSound.currentTime = 0;
-                const playPromise = resultSound.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.warn('결과 사운드 재생 실패:', error);
-                    });
-                }
-            } catch (error) {
-                console.warn('결과 사운드 재생 오류:', error);
-            }
-        };
-        
-        const loadSoundSettings = () => {
-            try {
-                const saved = localStorage.getItem('roulette-sound-enabled');
-                if (saved !== null) {
-                    soundEnabled = saved === 'true';
-                    
-                    if (!soundEnabled) {
-                        soundIcon.textContent = '🔇';
-                        soundToggle.classList.add('muted');
-                    }
-                }
-            } catch (error) {
-                console.warn('사운드 설정 불러오기 실패:', error);
-            }
-        };
-        
-        // ===================================== //
         // 🔄 리셋 시스템                        //
         // ===================================== //
         
@@ -1474,30 +1154,23 @@
             
             // 애니메이션 중단
             gsap.killTweensOf(wheel);
-            stopSpinSound();
             
             // 상태 초기화
             items = [];
             isSpinning = false;
             
-            // 🔄 절대 각도 리셋
-            resetWheelRotation();
-            
-            // UI 업데이트
+            resetWheel();
             updateItemsDisplay();
             drawRoulette();
             updateSpinButton();
             updateSaveFavoriteButton();
             resetResult();
             
-            // 입력창 초기화
             itemInput.value = '';
             favoriteNameInput.value = '';
             itemInput.focus();
             
             showToast('모든 항목이 초기화되었습니다!', 'info');
-            
-            console.log('🔄 전체 리셋 완료 - 돌림판 0도 리셋');
         };
         
         // ===================================== //
@@ -1512,7 +1185,6 @@
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(currentUrl);
                     showShareModal();
-                    console.log('📋 클립보드 복사 성공:', currentUrl);
                 } else {
                     // 폴백 방법
                     const textArea = document.createElement('textarea');
@@ -1525,10 +1197,8 @@
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
                     showShareModal();
-                    console.log('📋 수동 복사 성공:', currentUrl);
                 }
             } catch (error) {
-                console.warn('⚠️ 클립보드 복사 실패:', error);
                 showToast('링크 복사에 실패했습니다. 주소창의 URL을 복사해주세요.', 'error');
             }
         };
@@ -1545,44 +1215,6 @@
         };
         
         // ===================================== //
-        // 🌐 카카오톡 브라우저 감지              //
-        // ===================================== //
-        
-        // 카카오톡 인앱 브라우저 감지
-        const detectKakaoBrowser = () => {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            const isKakaoTalk = userAgent.includes('KAKAOTALK');
-            
-            if (isKakaoTalk) {
-                console.log('🔍 카카오톡 인앱 브라우저 감지됨');
-                
-                const isIOS = /iPad|iPhone|iPod/.test(userAgent);
-                const isAndroid = /Android/.test(userAgent);
-                
-                let message = '카카오톡 내장 브라우저에서는 일부 기능이 제한될 수 있습니다.<br>';
-                
-                if (isAndroid) {
-                    message += '우측 상단 ⋮ 메뉴에서 "다른 브라우저로 열기"를 선택해주세요!';
-                } else if (isIOS) {
-                    message += '우측 하단 Safari 아이콘을 클릭하거나, 우측 상단 ⋯ 메뉴에서 "Safari에서 열기"를 선택해주세요!';
-                } else {
-                    message += '우측 상단 메뉴에서 "다른 브라우저로 열기"를 선택해주세요!';
-                }
-                
-                document.getElementById('kakao-notice-text').innerHTML = message;
-                document.getElementById('kakao-notice').style.display = 'flex';
-                
-                return true;
-            }
-            
-            return false;
-        };
-        
-        const closeKakaoNotice = () => {
-            document.getElementById('kakao-notice').style.display = 'none';
-        };
-        
-        // ===================================== //
         // 🔔 알림 시스템                        //
         // ===================================== //
         
@@ -1590,9 +1222,9 @@
         const showResult = (selectedItem) => {
             resultDisplay.innerHTML = `
                 <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🎉</div>
-                    <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 8px;">${selectedItem}</div>
-                    <div style="font-size: 1rem; opacity: 0.8;">으로 결정!</div>
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎉</div>
+                    <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${selectedItem}</div>
+                    <div style="font-size: 1rem; color: #666;">으로 결정!</div>
                 </div>
             `;
             resultDisplay.classList.add('highlight');
@@ -1624,12 +1256,10 @@
             
             document.body.appendChild(toast);
             
-            // 애니메이션
             setTimeout(() => {
                 toast.classList.add('show');
             }, 100);
             
-            // 3초 후 제거
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => {
@@ -1687,46 +1317,26 @@
                 event.preventDefault();
                 resetAll();
             }
-            
-            if (event.key === ' ' && event.target === document.body) {
-                event.preventDefault();
-                toggleSound();
-            }
-        };
-        
-        // 화면 크기 변경 대응
-        const handleResize = () => {
-            // SVG는 자동으로 반응형이므로 별도 처리 불필요
-            console.log('🔄 화면 크기 변경 감지');
         };
         
         // 초기화 함수
         const init = () => {
-            // 카카오톡 브라우저 감지
-            detectKakaoBrowser();
-            
             // 이벤트 리스너 등록
             addBtn.addEventListener('click', addItem);
             spinBtn.addEventListener('click', spin);
             resetBtn.addEventListener('click', resetAll);
             shareBtn.addEventListener('click', shareApp);
             saveFavoriteBtn.addEventListener('click', saveFavorite);
-            soundToggle.addEventListener('click', toggleSound);
             itemInput.addEventListener('keypress', handleKeyPress);
             favoriteNameInput.addEventListener('keypress', handleKeyPress);
             favoriteNameInput.addEventListener('input', updateSaveFavoriteButton);
             document.addEventListener('keydown', handleGlobalKeyDown);
-            window.addEventListener('resize', handleResize);
-            window.addEventListener('orientationchange', () => {
-                setTimeout(handleResize, 100);
-            });
             
             // 저장된 데이터 불러오기
             loadFavoritesFromStorage();
-            loadSoundSettings();
             
-            // 🔄 초기 상태: 돌림판 0도로 설정
-            resetWheelRotation();
+            // 초기 상태 설정
+            resetWheel();
             
             // 초기 UI 설정
             updateItemsDisplay();
@@ -1737,18 +1347,16 @@
             resetResult();
             
             // 초기 포커스
-            if (window.innerWidth > 768) {
+            if (window.innerWidth > 600) {
                 itemInput.focus();
             }
             
-            console.log('🎯 절대 회전 각도 시스템 초기화 완료!');
-            console.log('🚀 GSAP 애니메이션 라이브러리 적용');
-            console.log('📐 SVG 기반 고품질 돌림판');
-            console.log('🔄 누적 회전 금지 - 항상 0도 기준 계산');
-            console.log('⭐ 완벽한 즐겨찾기 시스템');
-            console.log('🔊 사운드 효과 지원');
-            console.log('📱 완벽한 반응형 지원');
-            console.log('🌐 카카오톡 브라우저 대응');
+            console.log('🎯 단순하고 안정적인 돌림판 초기화 완료!');
+            console.log('✨ 깔끔한 디자인');
+            console.log('🚀 안정적인 회전 로직');
+            console.log('⭐ 즐겨찾기 시스템');
+            console.log('🔗 공유 기능');
+            console.log('📱 완벽한 반응형');
             console.log('♿ 접근성 최적화');
         };
         
@@ -1763,10 +1371,9 @@
         window.removeItem = removeItem;
         window.loadFavorite = loadFavorite;
         window.deleteFavorite = deleteFavorite;
-        window.closeKakaoNotice = closeKakaoNotice;
         window.closeShareModal = closeShareModal;
         
-        console.log('🎨 절대 회전 각도 결정장애 돌림판 로드 완료');
+        console.log('🎨 단순하고 안정적인 결정장애 돌림판 로드 완료');
     </script>
     
     <!-- PWA Service Worker 등록 -->
