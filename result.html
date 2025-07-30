@@ -22,7 +22,7 @@
     
     <style>
         /* ===================================== */
-        /* 🎯 결과 페이지 - 돌림판 전용 디자인   */
+        /* 🎯 결과 페이지 - 미니멀리즘 디자인   */
         /* ===================================== */
         
         /* 기본 리셋 */
@@ -60,7 +60,7 @@
         }
         
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #007BFF;
             margin-bottom: 8px;
@@ -170,8 +170,9 @@
             line-height: 1.6;
         }
         
-        .back-btn {
-            padding: 12px 24px;
+        /* 버튼 시스템 */
+        .btn {
+            padding: 12px 20px;
             background-color: #007BFF;
             color: white;
             border: none;
@@ -185,12 +186,39 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            min-width: 120px;
+            outline: none;
         }
         
-        .back-btn:hover {
+        .btn:hover {
             background-color: #0056b3;
             transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            background-color: #004494;
+            transform: translateY(0);
+        }
+        
+        .btn-outline {
+            background-color: white;
+            color: #007BFF;
+            border: 2px solid #007BFF;
+        }
+        
+        .btn-outline:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        
+        /* 액션 버튼들 */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         /* 로딩 상태 */
@@ -219,50 +247,6 @@
             font-size: 1rem;
         }
         
-        /* 다시하기 버튼 */
-        .action-buttons {
-            display: flex;
-            gap: 16px;
-            margin-top: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 12px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            min-width: 120px;
-        }
-        
-        .btn:hover {
-            background-color: #0056b3;
-            transform: translateY(-1px);
-        }
-        
-        .btn-outline {
-            background-color: white;
-            color: #007BFF;
-            border: 2px solid #007BFF;
-        }
-        
-        .btn-outline:hover {
-            background-color: #007BFF;
-            color: white;
-        }
-        
         /* 반응형 디자인 */
         @media (max-width: 600px) {
             .wrapper {
@@ -270,7 +254,7 @@
             }
             
             .header h1 {
-                font-size: 1.6rem;
+                font-size: 1.7rem;
             }
             
             .wheel-wrapper {
@@ -349,7 +333,7 @@
         <div class="error-container" id="error-container" style="display: none;">
             <h2>⚠️ 항목이 없습니다</h2>
             <p>항목이 없습니다. 메인 페이지로 돌아가 항목을 추가해주세요.</p>
-            <a href="index.html" class="back-btn">
+            <a href="index.html" class="btn">
                 <span>🏠</span>
                 메인 페이지로 돌아가기
             </a>
@@ -374,7 +358,7 @@
             
             <!-- 액션 버튼들 -->
             <div class="action-buttons" id="action-buttons" style="display: none;">
-                <button type="button" class="btn" onclick="restartSpin()">
+                <button type="button" class="btn" id="restart-btn">
                     <span>🔄</span>
                     다시 돌리기
                 </button>
@@ -388,7 +372,7 @@
 
     <script>
         // ===================================== //
-        // 🎯 결과 페이지 - 돌림판 회전 시스템    //
+        // 🎯 결과 페이지 - 완벽한 피자 조각 시스템 //
         // ===================================== //
         
         // 상태 관리
@@ -410,6 +394,7 @@
         const ctx = canvas.getContext('2d');
         const resultDisplay = document.getElementById('result-display');
         const actionButtons = document.getElementById('action-buttons');
+        const restartBtn = document.getElementById('restart-btn');
         
         // ===================================== //
         // 📦 데이터 수신 및 초기화               //
@@ -442,11 +427,11 @@
         };
         
         // ===================================== //
-        // 🎨 Canvas 돌림판 그리기               //
+        // 🎨 완벽한 피자 조각 그리기 - drawRoulette //
         // ===================================== //
         
-        // 돌림판 그리기
-        const drawWheel = () => {
+        // 돌림판 그리기 (완벽한 피자 조각 그리기 설계도 적용)
+        const drawRoulette = () => {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = Math.min(centerX, centerY) - 20;
@@ -458,7 +443,7 @@
             
             const sliceAngle = (2 * Math.PI) / items.length;
             
-            // 각 조각 그리기
+            // 각 조각을 완벽한 피자 조각 그리기 설계도에 따라 그리기
             items.forEach((item, index) => {
                 const startAngle = index * sliceAngle + (currentRotation * Math.PI / 180);
                 const endAngle = (index + 1) * sliceAngle + (currentRotation * Math.PI / 180);
@@ -466,31 +451,34 @@
                 // 색상 선택 (순환)
                 const color = COLORS[index % COLORS.length];
                 
-                // 조각 그리기
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-                ctx.closePath();
-                ctx.fillStyle = color;
-                ctx.fill();
+                // 🍕 완벽한 피자 조각 그리기 순서 (반드시 지켜야 함!)
+                ctx.beginPath();                    // 1. 새로운 조각을 그리기 시작한다고 선언
+                ctx.moveTo(centerX, centerY);       // 2. 붓을 들어 캔버스의 **정중앙**으로 이동
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle); // 3. 정중앙에서부터 둥근 바깥 부분을 그림
+                ctx.closePath();                    // 4. 붓을 다시 **정중앙**으로 가져와 조각을 완벽하게 닫음
+                ctx.fillStyle = color;              // 5. 색상 설정
+                ctx.fill();                         // 6. 완성된 조각에 색을 칠함
+                
+                // 테두리 그리기
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // 텍스트 그리기
+                // 텍스트 그리기 (정확한 패턴 사용)
                 const textAngle = startAngle + sliceAngle / 2;
-                const textX = centerX + Math.cos(textAngle) * (radius * 0.7);
-                const textY = centerY + Math.sin(textAngle) * (radius * 0.7);
+                const textRadius = radius * 0.7;
+                const textX = centerX + Math.cos(textAngle) * textRadius;
+                const textY = centerY + Math.sin(textAngle) * textRadius;
                 
-                ctx.save();
-                ctx.translate(textX, textY);
-                ctx.rotate(textAngle + Math.PI / 2);
+                ctx.save();                         // 1. 현재 상태 저장
+                ctx.translate(textX, textY);        // 2. 좌표계를 텍스트 위치로 이동
+                ctx.rotate(textAngle + Math.PI / 2); // 3. 조각의 중앙 각도로 회전
                 ctx.fillStyle = '#333333';
                 ctx.font = 'bold 16px Pretendard, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(item, 0, 0);
-                ctx.restore();
+                ctx.fillText(item, 0, 0);           // 4. 텍스트 그리기
+                ctx.restore();                      // 5. 좌표계 복원
             });
             
             // 중앙 원 그리기
@@ -504,26 +492,26 @@
         };
         
         // ===================================== //
-        // 🎯 돌림판 회전 로직                   //
+        // 🎯 안정적인 회전 로직 (승자 선결정)    //
         // ===================================== //
         
         // 회전 애니메이션을 위한 Ease-out 함수
         const easeOut = (t) => 1 - Math.pow(1 - t, 3);
         
-        // 돌림판 돌리기 (승자 선결정 후 절대 목표 각도)
+        // 돌림판 돌리기 (승자 선결정 후 절대 목표 각도까지 회전)
         const spinWheel = () => {
             if (isSpinning || items.length === 0) return;
             
             isSpinning = true;
             canvas.classList.add('spinning');
             
-            // 1. 승자 먼저 결정
+            // 1. 승자 먼저 결정 (가장 안정적인 방법)
             const winnerIndex = Math.floor(Math.random() * items.length);
             const winnerItem = items[winnerIndex];
             
             console.log(`🎯 승자 선결정: [${winnerIndex}] "${winnerItem}"`);
             
-            // 2. 목표 각도 계산 (정확한 공식)
+            // 2. 절대 목표 각도 계산
             const sliceAngle = 360 / items.length;
             const randomOffset = Math.random() * sliceAngle * 0.8 + sliceAngle * 0.1;
             const targetRotation = (360 * 6) + (winnerIndex * sliceAngle) + randomOffset;
@@ -536,7 +524,7 @@
             const duration = 4000; // 4초
             const startTime = Date.now();
             
-            // 4. requestAnimationFrame을 사용한 애니메이션
+            // 4. 안정적인 애니메이션 루프
             const animate = () => {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
@@ -546,7 +534,7 @@
                 currentRotation = startRotation + (rotationDiff * easedProgress);
                 
                 // 돌림판 다시 그리기
-                drawWheel();
+                drawRoulette();
                 
                 if (progress < 1) {
                     requestAnimationFrame(animate);
@@ -613,24 +601,13 @@
         };
         
         // ===================================== //
-        // 🔄 다시 돌리기                        //
+        // 🔄 다시 돌리기 (가장 단순하고 확실한 방법) //
         // ===================================== //
         
-        // 다시 돌리기
-        const restartSpin = () => {
-            // UI 리셋
-            resultDisplay.innerHTML = '<div class="loading-text">돌림판이 돌아가고 있습니다...</div>';
-            resultDisplay.classList.remove('highlight');
-            actionButtons.style.display = 'none';
-            
-            // 회전 상태 리셋
-            currentRotation = 0;
-            drawWheel();
-            
-            // 1초 후 다시 회전
-            setTimeout(() => {
-                spinWheel();
-            }, 1000);
+        // 다시 돌리기 - 페이지 새로고침으로 항상 깨끗한 상태에서 시작
+        const handleRestartSpin = () => {
+            console.log('🔄 다시 돌리기 - 페이지 새로고침');
+            location.reload(); // 가장 단순하고 확실한 방법
         };
         
         // ===================================== //
@@ -650,7 +627,7 @@
             canvas.height = 350 * scale;
             ctx.scale(scale, scale);
             
-            drawWheel();
+            drawRoulette();
         };
         
         // 페이지 초기화
@@ -678,9 +655,9 @@
                 
                 // 3단계: 돌림판 그리기
                 resizeCanvas();
-                console.log('🎨 돌림판 그리기 완료');
+                console.log('🎨 완벽한 피자 조각 그리기 완료');
                 
-                // 4단계: 1초 후 자동 회전
+                // 4단계: 1초 후 자동 회전 시작
                 setTimeout(() => {
                     console.log('🎯 자동 회전 시작');
                     spinWheel();
@@ -690,6 +667,7 @@
         };
         
         // 이벤트 리스너 등록
+        restartBtn.addEventListener('click', handleRestartSpin);
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => {
             setTimeout(resizeCanvas, 100);
@@ -700,7 +678,7 @@
             if (event.key === 'r' || event.key === 'R') {
                 event.preventDefault();
                 if (!isSpinning && actionButtons.style.display !== 'none') {
-                    restartSpin();
+                    handleRestartSpin();
                 }
             }
             
@@ -717,10 +695,9 @@
             initPage();
         }
         
-        // 전역 함수로 노출
-        window.restartSpin = restartSpin;
-        
-        console.log('🎨 결과 페이지 로드 완료');
+        console.log('🎨 완벽한 피자 조각 돌림판 페이지 로드 완료');
+        console.log('🍕 설계도: beginPath → moveTo(중앙) → arc → closePath → fill');
+        console.log('🔄 다시 돌리기: location.reload()로 단순하고 확실하게');
     </script>
 </body>
 </html> 
