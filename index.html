@@ -952,15 +952,28 @@ const showExternalBrowserGuide = (platform) => {
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     `;
     
-    content.innerHTML = `
-        <div style="font-size: 1.5rem; margin-bottom: 16px;">🎯</div>
-        <h3 style="margin: 0 0 16px 0; font-size: 1.2rem; color: #333;">결정장애 돌림판</h3>
-        <p style="margin: 0 0 20px 0; line-height: 1.5; color: #666; white-space: pre-line;">${message}</p>
-        <button onclick="this.parentElement.parentElement.remove()" 
-                style="background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer;">
-            확인
-        </button>
-    `;
+    // 안전하게 요소 생성
+    const iconDiv = document.createElement('div');
+    iconDiv.style.cssText = 'font-size: 1.5rem; margin-bottom: 16px;';
+    iconDiv.textContent = '🎯';
+    
+    const titleH3 = document.createElement('h3');
+    titleH3.style.cssText = 'margin: 0 0 16px 0; font-size: 1.2rem; color: #333;';
+    titleH3.textContent = '결정장애 돌림판';
+    
+    const messageP = document.createElement('p');
+    messageP.style.cssText = 'margin: 0 0 20px 0; line-height: 1.5; color: #666; white-space: pre-line;';
+    messageP.textContent = message; // XSS 방지를 위해 textContent 사용
+    
+    const confirmBtn = document.createElement('button');
+    confirmBtn.style.cssText = 'background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer;';
+    confirmBtn.textContent = '확인';
+    confirmBtn.addEventListener('click', () => modal.remove());
+    
+    content.appendChild(iconDiv);
+    content.appendChild(titleH3);
+    content.appendChild(messageP);
+    content.appendChild(confirmBtn);
     
     modal.appendChild(content);
     document.body.appendChild(modal);
@@ -1199,14 +1212,14 @@ const startSpinAnimation = (targetRotation) => {
         drawRoulette();
         
         if (progress < 1) {
-            animationId = requestAnimationFrame(animate);
+            animationId = safeRequestAnimationFrame(animate);
         } else {
             // 애니메이션 완료
             finishSpin();
         }
     };
     
-    animationId = requestAnimationFrame(animate);
+    animationId = safeRequestAnimationFrame(animate);
 };
 
 // Easing 함수 (점진적 감속)
@@ -1280,22 +1293,21 @@ const reset = () => {
 // localStorage에서 즐겨찾기 목록 가져오기
 const getFavorites = () => {
     try {
-        const favorites = localStorage.getItem('roulette-favorites');
+        const favorites = safeLocalStorage.getItem('roulette-favorites');
         return favorites ? JSON.parse(favorites) : [];
     } catch (error) {
-        console.error('즐겨찾기 불러오기 오류:', error);
+        handleGlobalError(error, 'Storage');
         return [];
     }
 };
 
 // localStorage에 즐겨찾기 목록 저장
 const setFavorites = (favorites) => {
-    try {
-        localStorage.setItem('roulette-favorites', JSON.stringify(favorites));
+    const success = safeLocalStorage.setItem('roulette-favorites', JSON.stringify(favorites));
+    if (success) {
         console.log('즐겨찾기 저장 완료');
-    } catch (error) {
-        console.error('즐겨찾기 저장 오류:', error);
-        alert('저장 공간이 부족합니다. 일부 즐겨찾기를 삭제해주세요.');
+    } else {
+        alert('저장 공간이 부족하거나 저장에 실패했습니다. 일부 즐겨찾기를 삭제해주세요.');
     }
 };
 
@@ -1462,26 +1474,41 @@ const updateFavoritesList = () => {
         const favoriteItem = document.createElement('div');
         favoriteItem.className = 'flex items-center justify-between bg-gray-50 px-4 py-3 rounded-xl shadow-sm';
         
-        favoriteItem.innerHTML = `
-            <div class="flex-1 min-w-0">
-                <div class="text-base font-semibold text-gray-800 truncate">${favorite.name}</div>
-                <div class="text-sm text-gray-500">${favorite.items.length}개 항목 • ${new Date(favorite.createdAt).toLocaleDateString()}</div>
-            </div>
-            <div class="flex gap-2 ml-2">
-                <button 
-                    class="load-favorite-btn px-3 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors"
-                    data-index="${index}"
-                >
-                    📂
-                </button>
-                <button 
-                    class="delete-favorite-btn px-3 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors"
-                    data-index="${index}"
-                >
-                    🗑️
-                </button>
-            </div>
-        `;
+        // 안전하게 요소 생성
+        const mainDiv = document.createElement('div');
+        mainDiv.className = 'flex-1 min-w-0';
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'text-base font-semibold text-gray-800 truncate';
+        nameDiv.textContent = favorite.name; // XSS 방지를 위해 textContent 사용
+        
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'text-sm text-gray-500';
+        infoDiv.textContent = `${favorite.items.length}개 항목 • ${new Date(favorite.createdAt).toLocaleDateString()}`;
+        
+        mainDiv.appendChild(nameDiv);
+        mainDiv.appendChild(infoDiv);
+        
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'flex gap-2 ml-2';
+        
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'load-favorite-btn px-3 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors';
+        loadBtn.dataset.index = index;
+        loadBtn.textContent = '📂';
+        loadBtn.setAttribute('aria-label', `${favorite.name} 돌림판 불러오기`);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-favorite-btn px-3 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors';
+        deleteBtn.dataset.index = index;
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.setAttribute('aria-label', `${favorite.name} 돌림판 삭제`);
+        
+        buttonsDiv.appendChild(loadBtn);
+        buttonsDiv.appendChild(deleteBtn);
+        
+        favoriteItem.appendChild(mainDiv);
+        favoriteItem.appendChild(buttonsDiv);
         
         favoritesList.appendChild(favoriteItem);
     });
@@ -1516,16 +1543,27 @@ const updateSaveFavoriteButton = () => {
 
 // 항목 추가
 const addItem = () => {
-    const value = itemInput.value.trim();
-    
-    if (!value) {
-        alert('항목을 입력해주세요!');
-        itemInput.focus();
-        return;
-    }
-    
-    if (items.includes(value)) {
-        alert('이미 추가된 항목입니다!');
+    try {
+        const value = validateAndSanitizeInput(itemInput.value);
+        
+        if (!value) {
+            alert('항목을 입력해주세요!');
+            itemInput.focus();
+            return;
+        }
+        
+        if (items.includes(value)) {
+            alert('이미 추가된 항목입니다!');
+            itemInput.focus();
+            return;
+        }
+        
+        if (items.length >= 20) {
+            alert('최대 20개까지만 추가할 수 있습니다!');
+            return;
+        }
+    } catch (error) {
+        alert(error.message);
         itemInput.focus();
         return;
     }
@@ -1541,6 +1579,10 @@ const addItem = () => {
     drawRoulette(); // 초기 상태로 돌림판 다시 그리기
     updateSpinButtonState();
     updateSaveFavoriteButton(); // 저장 버튼 상태 업데이트
+    enhanceRouletteAccessibility(); // 캔버스 접근성 업데이트
+    
+    // 접근성 알림
+    announceToScreenReader(`"${value}" 항목이 추가되었습니다. 총 ${items.length}개 항목`);
     
     console.log(`➕ 항목 추가: "${value}" (총 ${items.length}개)`);
     console.log(`🔄 돌림판 각도 리셋: currentRotation = 0`);
@@ -1558,11 +1600,15 @@ const removeItem = (index) => {
     drawRoulette(); // 초기 상태로 돌림판 다시 그리기
     updateSpinButtonState();
     updateSaveFavoriteButton(); // 저장 버튼 상태 업데이트
+    enhanceRouletteAccessibility(); // 캔버스 접근성 업데이트
     
     if (items.length === 0) {
         resultElement.textContent = '항목을 추가하고 돌림판을 돌려보세요!';
         resultElement.className = 'text-center text-lg text-gray-600 min-h-[3rem] flex items-center justify-center';
     }
+    
+    // 접근성 알림
+    announceToScreenReader(`"${removedItem}" 항목이 삭제되었습니다. ${items.length > 0 ? `총 ${items.length}개 항목` : '항목이 없습니다'}`);
     
     console.log(`➖ 항목 제거: "${removedItem}" (총 ${items.length}개)`);
     console.log(`🔄 돌림판 각도 리셋: currentRotation = 0`);
@@ -1580,17 +1626,19 @@ const updateItemsList = () => {
     items.forEach((item, index) => {
         const tag = document.createElement('div');
         tag.className = 'item-tag';
-        tag.innerHTML = `
-            <span>${item}</span>
-            <button 
-                class="remove-btn" 
-                onclick="removeItem(${index})"
-                aria-label="${item} 삭제"
-                title="${item} 삭제"
-            >
-                ×
-            </button>
-        `;
+        // 안전하게 요소 생성
+        const itemSpan = document.createElement('span');
+        itemSpan.textContent = item; // XSS 방지를 위해 textContent 사용
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = '×';
+        removeBtn.setAttribute('aria-label', `${item} 삭제`);
+        removeBtn.setAttribute('title', `${item} 삭제`);
+        removeBtn.addEventListener('click', () => removeItem(index));
+        
+        tag.appendChild(itemSpan);
+        tag.appendChild(removeBtn);
         itemsList.appendChild(tag);
     });
     
@@ -1655,6 +1703,91 @@ const handleKeyPress = (event) => {
 };
 
 // ===================================================================
+// 🌐 접근성 개선 - 키보드 네비게이션 및 ARIA 지원
+// ===================================================================
+
+// 키보드 네비게이션 핸들러
+const handleGlobalKeyDown = (event) => {
+    // 입력 필드에 포커스가 있을 때는 기본 동작 유지
+    if (event.target.tagName === 'INPUT') {
+        return;
+    }
+    
+    // Ctrl/Cmd + Enter: 돌림판 돌리기
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        if (!spinButton.disabled) {
+            spin();
+        }
+        return;
+    }
+    
+    // Space 또는 Enter: 포커스된 버튼 클릭
+    if ((event.key === ' ' || event.key === 'Enter') && 
+        event.target.tagName === 'BUTTON') {
+        event.preventDefault();
+        event.target.click();
+        return;
+    }
+    
+    // Escape: 모달 닫기 (만약 있다면)
+    if (event.key === 'Escape') {
+        const modal = document.querySelector('[style*="position: fixed"]');
+        if (modal) {
+            modal.remove();
+        }
+        return;
+    }
+};
+
+// 버튼 포커스 가시성 개선
+const enhanceButtonFocus = () => {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('focus', () => {
+            button.style.outline = '2px solid #3b82f6';
+            button.style.outlineOffset = '2px';
+        });
+        
+        button.addEventListener('blur', () => {
+            button.style.outline = '';
+            button.style.outlineOffset = '';
+        });
+    });
+};
+
+// 돌림판 영역 키보드 접근성
+const enhanceRouletteAccessibility = () => {
+    canvas.setAttribute('tabindex', '0');
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', `돌림판 (${items.length}개 항목)`);
+    
+    canvas.addEventListener('keydown', (event) => {
+        if ((event.key === 'Enter' || event.key === ' ') && !spinButton.disabled) {
+            event.preventDefault();
+            spin();
+        }
+    });
+};
+
+// 스크린 리더를 위한 상태 알림
+const announceToScreenReader = (message) => {
+    const announcement = document.createElement('div');
+    announcement.className = 'sr-only';
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+        if (announcement.parentElement) {
+            document.body.removeChild(announcement);
+        }
+    }, 1000);
+};
+
+// ===================================================================
 // 🔗 간편 링크 복사 기능
 // ===================================================================
 
@@ -1716,6 +1849,236 @@ const showCopySuccess = () => {
 };
 
 // ===================================================================
+// ⚡ 성능 최적화 시스템
+// ===================================================================
+
+// Debounce 함수 (과도한 호출 방지)
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+// Throttle 함수 (애니메이션 최적화)
+const throttle = (func, limit) => {
+    let lastFunc;
+    let lastRan;
+    return function(...args) {
+        if (!lastRan) {
+            func.apply(this, args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(() => {
+                if ((Date.now() - lastRan) >= limit) {
+                    func.apply(this, args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    };
+};
+
+// 메모리 사용량 모니터링
+const monitorMemory = () => {
+    if (performance.memory) {
+        const memory = performance.memory;
+        console.log(`📊 메모리 사용량: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB / ${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
+        
+        // 메모리 사용량이 너무 높으면 경고
+        if (memory.usedJSHeapSize / memory.totalJSHeapSize > 0.9) {
+            console.warn('⚠️ 메모리 사용량이 높습니다. 가비지 컬렉션을 고려하세요.');
+        }
+    }
+};
+
+// DOM 업데이트 최적화를 위한 배치 처리
+const batchDOMUpdates = (updates) => {
+    requestAnimationFrame(() => {
+        updates.forEach(update => update());
+    });
+};
+
+// 이벤트 리스너 정리를 위한 WeakMap
+const eventListeners = new WeakMap();
+
+// 안전한 이벤트 리스너 추가
+const addSafeEventListener = (element, event, handler, options = {}) => {
+    try {
+        element.addEventListener(event, handler, options);
+        
+        // 정리를 위해 저장
+        if (!eventListeners.has(element)) {
+            eventListeners.set(element, []);
+        }
+        eventListeners.get(element).push({ event, handler, options });
+        
+    } catch (error) {
+        handleGlobalError(error, 'Event');
+    }
+};
+
+// 이벤트 리스너 정리
+const cleanupEventListeners = (element) => {
+    const listeners = eventListeners.get(element);
+    if (listeners) {
+        listeners.forEach(({ event, handler, options }) => {
+            try {
+                element.removeEventListener(event, handler, options);
+            } catch (error) {
+                console.warn('이벤트 리스너 정리 실패:', error);
+            }
+        });
+        eventListeners.delete(element);
+    }
+};
+
+// ===================================================================
+// 🛡️ 에러 처리 및 복구 시스템
+// ===================================================================
+
+// 전역 에러 핸들러
+const handleGlobalError = (error, context = 'Unknown') => {
+    console.error(`❌ [${context}] 오류 발생:`, error);
+    
+    // 사용자에게 친화적인 메시지 표시
+    const errorMessages = {
+        'Canvas': '돌림판 표시에 문제가 있습니다. 페이지를 새로고침해주세요.',
+        'Storage': '저장 기능에 문제가 있습니다. 브라우저 설정을 확인해주세요.',
+        'Animation': '애니메이션 재생에 문제가 있습니다.',
+        'Input': '입력 처리에 문제가 있습니다.',
+        'Network': '네트워크 연결을 확인해주세요.'
+    };
+    
+    const message = errorMessages[context] || '예상치 못한 오류가 발생했습니다.';
+    
+    // 치명적이지 않은 오류는 콘솔에만 기록
+    if (context === 'Animation' || context === 'Network') {
+        return;
+    }
+    
+    // 사용자에게 알림
+    setTimeout(() => {
+        alert(`⚠️ ${message}\n\n문제가 계속되면 페이지를 새로고침해주세요.`);
+    }, 100);
+};
+
+// 캔버스 초기화 안전 검사
+const safeInitializeCanvas = () => {
+    try {
+        if (!canvas || !ctx) {
+            throw new Error('Canvas 또는 Context를 찾을 수 없습니다');
+        }
+        
+        return initializeCanvas();
+    } catch (error) {
+        handleGlobalError(error, 'Canvas');
+        
+        // 기본값 반환
+        return {
+            centerX: 140,
+            centerY: 140,
+            radius: 120
+        };
+    }
+};
+
+// localStorage 안전 접근
+const safeLocalStorage = {
+    getItem: (key) => {
+        try {
+            return localStorage.getItem(key);
+        } catch (error) {
+            handleGlobalError(error, 'Storage');
+            return null;
+        }
+    },
+    
+    setItem: (key, value) => {
+        try {
+            localStorage.setItem(key, value);
+            return true;
+        } catch (error) {
+            handleGlobalError(error, 'Storage');
+            return false;
+        }
+    },
+    
+    removeItem: (key) => {
+        try {
+            localStorage.removeItem(key);
+            return true;
+        } catch (error) {
+            handleGlobalError(error, 'Storage');
+            return false;
+        }
+    }
+};
+
+// 사용자 입력 검증 및 정제
+const validateAndSanitizeInput = (input) => {
+    if (typeof input !== 'string') {
+        throw new Error('입력값이 문자열이 아닙니다');
+    }
+    
+    // 공백 제거
+    const trimmed = input.trim();
+    
+    // 길이 검증 (최대 50자)
+    if (trimmed.length > 50) {
+        throw new Error('항목 이름은 50자를 초과할 수 없습니다');
+    }
+    
+    // 특수문자 제한 (기본적인 문자, 숫자, 한글, 공백만 허용)
+    const allowedPattern = /^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s\-_().]+$/;
+    if (!allowedPattern.test(trimmed)) {
+        throw new Error('허용되지 않는 문자가 포함되어 있습니다');
+    }
+    
+    return trimmed;
+};
+
+// 애니메이션 안전 실행
+const safeRequestAnimationFrame = (callback) => {
+    try {
+        return requestAnimationFrame(callback);
+    } catch (error) {
+        handleGlobalError(error, 'Animation');
+        // 폴백: setTimeout 사용
+        return setTimeout(callback, 16); // ~60fps
+    }
+};
+
+// 캔버스 그리기 안전 실행
+const safeDrawRoulette = () => {
+    try {
+        drawRoulette();
+    } catch (error) {
+        handleGlobalError(error, 'Canvas');
+        
+        // 캔버스 복구 시도
+        try {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f3f4f6';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = '16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('돌림판 표시 오류', canvas.width / 2, canvas.height / 2);
+        } catch (fallbackError) {
+            console.error('캔버스 복구 실패:', fallbackError);
+        }
+    }
+};
+
+// ===================================================================
 // [7. 이벤트 리스너 연결 및 초기화]
 // ===================================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1725,8 +2088,17 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('⚠️ 카카오톡 인앱 브라우저 환경 - 일부 기능 제한 가능');
     }
     
-    // 캔버스 크기 초기화
-    canvasInfo = initializeCanvas();
+    // 캔버스 크기 초기화 (안전)
+    canvasInfo = safeInitializeCanvas();
+    
+    // 전역 에러 핸들러 등록
+    window.addEventListener('error', (event) => {
+        handleGlobalError(event.error, 'Global');
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        handleGlobalError(event.reason, 'Promise');
+    });
     
     // '추가', '돌리기!', '리셋' 버튼에 각각의 함수를 정확히 연결
     addButton.addEventListener('click', addItem);
@@ -1744,21 +2116,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // 화면 회전 및 리사이즈 대응
-    window.addEventListener('resize', () => {
-        setTimeout(() => {
-            canvasInfo = initializeCanvas();
-            drawRoulette();
-        }, 100);
-    });
+    // 화면 회전 및 리사이즈 대응 (성능 최적화)
+    const debouncedResize = debounce(() => {
+        canvasInfo = safeInitializeCanvas();
+        safeDrawRoulette();
+    }, 150);
+    
+    window.addEventListener('resize', debouncedResize);
     
     // 화면 방향 변경 대응
-    window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            canvasInfo = initializeCanvas();
-            drawRoulette();
-        }, 300);
-    });
+    window.addEventListener('orientationchange', debouncedResize);
     
     // 초기 상태 설정
     currentRotation = 0;
@@ -1766,16 +2133,25 @@ document.addEventListener('DOMContentLoaded', () => {
     preSelectedWinner = null;
     
     // 초기 UI 업데이트
-    drawRoulette();
+    safeDrawRoulette();
     updateItemsList();
     updateSpinButtonState();
     updateSaveFavoriteButton();
     updateFavoritesList();
     
+    // 접근성 기능 활성화
+    document.addEventListener('keydown', handleGlobalKeyDown);
+    enhanceButtonFocus();
+    enhanceRouletteAccessibility();
+    
     // 초기 포커스 (모바일에서는 자동 포커스 방지)
     if (window.innerWidth > 768) {
         itemInput.focus();
     }
+    
+    // 성능 모니터링 시작
+    monitorMemory();
+    setInterval(monitorMemory, 30000); // 30초마다 메모리 체크
     
     console.log(`🎪 === 전문가급 PWA 돌림판 시스템 초기화 완료 ===`);
     console.log(`📱 완전 반응형 모바일 최적화 (vw/vh 기반)`);
@@ -1787,6 +2163,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`💾 즐겨찾기 저장/불러오기 기능 추가`);
     console.log(`🔗 간편 링크 복사 공유 기능`);
     console.log(`🎨 동적 뷰포트 크기 조정 시스템`);
+    console.log(`🛡️ 강화된 보안 및 에러 처리`);
+    console.log(`🌐 접근성 개선 (키보드 네비게이션, ARIA)`);
+    console.log(`⚡ 성능 최적화 (debounce, throttle, 메모리 관리)`);
     console.log(`📏 캔버스 크기: ${canvasInfo.centerX * 2}x${canvasInfo.centerY * 2}px`);
     console.log(`🌐 화면 크기: ${window.innerWidth}x${window.innerHeight}px`);
     console.log(`═══════════════════════════════════\n`);
@@ -1794,35 +2173,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 전역 함수로 노출 (HTML에서 호출용)
 window.removeItem = removeItem; 
-
-// ===================================================================
-// 🚀 서비스 워커 등록 (PWA 오프라인 지원)
-// ===================================================================
-
-// 브라우저가 서비스 워커를 지원하는지 확인 후 등록
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then((registration) => {
-                console.log('🚀 === 서비스 워커 등록 성공 ===');
-                console.log(`📡 스코프: ${registration.scope}`);
-                console.log('💾 오프라인 캐싱 활성화됨');
-                console.log('🏠 홈 화면 추가 기능 지원');
-                
-                // 서비스 워커 업데이트 감지
-                registration.addEventListener('updatefound', () => {
-                    console.log('🔄 새로운 서비스 워커 업데이트 감지');
-                });
-            })
-            .catch((error) => {
-                console.warn('⚠️ 서비스 워커 등록 실패:', error);
-                console.log('📱 일반 웹앱 모드로 계속 진행');
-            });
-    });
-} else {
-    console.log('📱 이 브라우저는 서비스 워커를 지원하지 않습니다');
-    console.log('🌐 일반 웹 브라우저 모드로 작동합니다');
-}
 
 console.log('🔗 링크 복사 기능 활성화됨 - 모든 브라우저 지원');
     </script>
