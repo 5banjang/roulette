@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>결정장애 돌림판 - 항목 준비</title>
+    <title>결정장애 돌림판</title>
     
     <!-- Pretendard 폰트 -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -15,14 +15,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="돌림판">
-    
-    <!-- Open Graph / 카카오톡 공유 최적화 -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="결정장애 돌림판 🎯">
-    <meta property="og:description" content="항목을 준비하고 돌림판으로 결정해보세요!">
-    <meta property="og:url" content="https://example.com/roulette/">
-    <meta property="og:site_name" content="결정장애 돌림판">
-    <meta property="og:locale" content="ko_KR">
     
     <!-- 파비콘 -->
     <link rel="icon" type="image/png" href="icon-512x512.png">
@@ -52,7 +44,7 @@
             min-height: 100vh;
         }
         
-        /* 메인 래퍼 */
+        /* 메인 래퍼 - PC에서 최대 너비 480px 중앙 정렬 */
         .wrapper {
             max-width: 480px;
             margin: 0 auto;
@@ -131,7 +123,7 @@
             color: #999;
         }
         
-        /* 버튼 시스템 */
+        /* 버튼 시스템 - 파란색(#007BFF) 포인트 */
         .btn {
             padding: 12px 20px;
             background-color: #007BFF;
@@ -503,7 +495,7 @@
 
     <script>
         // ===================================== //
-        // 🎯 메인 페이지 - 항목 준비 시스템      //
+        // 🎯 메인 페이지 - localStorage 항목 관리 //
         // ===================================== //
         
         // 상태 관리
@@ -789,7 +781,7 @@
         };
         
         // ===================================== //
-        // 🎯 돌리기 버튼 - 페이지 이동           //
+        // 🎯 돌리기 버튼 - localStorage 저장 및 이동 //
         // ===================================== //
         
         // 돌리기 버튼 클릭 처리
@@ -901,9 +893,6 @@
             }
             
             console.log('🎯 메인 페이지 초기화 완료!');
-            console.log('📝 항목 준비 및 전달 시스템');
-            console.log('⭐ 즐겨찾기 관리');
-            console.log('🎯 result.html로 데이터 전달');
         };
         
         // DOM 로드 완료 후 초기화
@@ -913,12 +902,7 @@
             init();
         }
         
-        // 전역 함수로 노출
-        window.removeItem = removeItem;
-        window.loadFavorite = loadFavorite;
-        window.deleteFavorite = deleteFavorite;
-        
-        console.log('🎨 메인 페이지 로드 완료 - 항목 준비 전용');
+        console.log('🎨 메인 페이지 로드 완료 - localStorage 항목 관리');
     </script>
     
     <!-- PWA Service Worker 등록 -->
