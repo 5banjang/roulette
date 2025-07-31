@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>다트 게임!</title>
+    
+    <!-- Pretendard 폰트 -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
+    
+    <!-- GSAP 라이브러리 (애니메이션용) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        /* ===================================== */
+        /* 🎯 다트 게임 - 몰입형 전체화면 디자인  */
+        /* ===================================== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        /* 게임 컨테이너 */
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        
+        /* 헤더 */
+        .header {
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 5px;
+        }
+        
+        /* 과녁판 컨테이너 */
+        .target-board-container {
+            position: relative;
+            width: 90vw;
+            max-width: 350px;
+            aspect-ratio: 1/1;
+            margin: 20px auto;
+        }
+        
+        /* 과녁판 */
+        .target-board {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            background: #333;
+            border: 5px solid #fff;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            animation: rotate-board 10s linear infinite;
+        }
+        
+        /* 과녁판 회전 애니메이션 */
+        @keyframes rotate-board {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 과녁판 정지 상태 */
+        .target-board.stopped {
+            animation-play-state: paused;
+        }
+        
+        /* 과녁판 항목 */
+        .target-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #333;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            padding: 10px;
+            text-align: center;
+            word-break: break-all;
+            overflow: hidden;
+        }
+        
+        /* 중앙 원 */
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background: #007BFF;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid #fff;
+            z-index: 5;
+        }
+        
+        /* 화살 컨테이너 */
+        .arrow-container {
+            position: relative;
+            width: 60px;
+            height: 150px;
+            z-index: 20;
+            margin-bottom: 20px;
+        }
+        
+        /* 화살 */
+        .arrow {
+            width: 60px;
+            height: 150px;
+            background: linear-gradient(180deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
+            position: relative;
+            cursor: grab;
+            border-radius: 3px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .arrow:active {
+            cursor: grabbing;
+        }
+        
+        /* 화살 끝 */
+        .arrow::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid #FF4444;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        /* 화살 깃털 */
+        .arrow::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 15px;
+            background: #FFA500;
+            border-radius: 50%;
+        }
+        
+        /* 화살이 당겨졌을 때 */
+        .arrow.pulled {
+            transform: translateY(50px) scale(0.9);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+        }
+        
+        /* 화살 발사 중 */
+        .arrow.flying {
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateY(-200vh) scale(0.8);
+            opacity: 0.7;
+        }
+        
+        /* 결과 모달 */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 90vw;
+            max-height: 90vh;
+            color: #333;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .result-modal.show .result-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite alternate;
+        }
+        
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        
+        .result-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+        
+        .result-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .result-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* 버튼 */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #007BFF;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #007BFF;
+            border: 2px solid #007BFF;
+        }
+        
+        .btn-outline:hover {
+            background: #007BFF;
+            color: white;
+        }
+        
+        /* 지침 텍스트 */
+        .instructions {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        /* 과녁판 색상 배열 */
+        .color-0 { background: #FF6B6B; }
+        .color-1 { background: #4ECDC4; }
+        .color-2 { background: #45B7D1; }
+        .color-3 { background: #96CEB4; }
+        .color-4 { background: #FFEAA7; }
+        .color-5 { background: #DDA0DD; }
+        .color-6 { background: #98D8C8; }
+        .color-7 { background: #F7DC6F; }
+        .color-8 { background: #BB8FCE; }
+        .color-9 { background: #85C1E9; }
+        .color-10 { background: #F8C471; }
+        .color-11 { background: #82E0AA; }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 600px) {
+            .target-board-container {
+                width: 85vw;
+                max-width: 300px;
+            }
+            
+            .arrow-container {
+                width: 50px;
+                height: 120px;
+            }
+            
+            .arrow {
+                width: 50px;
+                height: 120px;
+            }
+            
+            .result-content {
+                padding: 30px;
+            }
+            
+            .result-emoji {
+                font-size: 3rem;
+            }
+            
+            .result-text {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .target-board-container {
+                margin: 10px auto;
+            }
+            
+            .arrow-container {
+                height: 100px;
+                margin-bottom: 10px;
+            }
+            
+            .arrow {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 게임 메인 컨테이너 -->
+    <div class="game-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>🎯 다트 게임</h1>
+            <p>화살을 아래로 당겨서 발사하세요!</p>
+        </header>
+        
+        <!-- 과녁판 -->
+        <div class="target-board-container">
+            <div class="target-board" id="target-board">
+                <!-- 항목들이 여기에 동적으로 생성됩니다 -->
+                <div class="center-circle"></div>
+            </div>
+        </div>
+        
+        <!-- 게임 지침 -->
+        <div class="instructions" id="instructions">
+            화살을 누르고 아래로 당긴 다음 놓으세요!
+        </div>
+        
+        <!-- 화살 -->
+        <div class="arrow-container">
+            <div class="arrow" id="arrow"></div>
+        </div>
+    </div>
+    
+    <!-- 결과 모달 -->
+    <div class="result-modal" id="result-modal">
+        <div class="result-content">
+            <div class="result-emoji" id="result-emoji">🎯</div>
+            <div class="result-text" id="result-text">결과</div>
+            <div class="result-subtitle">으로 결정!</div>
+            <div class="result-buttons">
+                <button class="btn btn-primary" id="restart-btn">
+                    <span>🔄</span>
+                    다시 하기
+                </button>
+                <a href="index.html" class="btn btn-outline">
+                    <span>🏠</span>
+                    메인으로
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================
+        // 🎯 다트 게임 - 실패 불가능한 설계
+        // ===================================================================
+        
+        // 전역 변수
+        let items = [];
+        let isGameActive = true;
+        let isDragging = false;
+        let dragStartY = 0;
+        let pullDistance = 0;
+        const maxPullDistance = 80;
+        
+        // DOM 요소 참조
+        const targetBoard = document.getElementById('target-board');
+        const arrow = document.getElementById('arrow');
+        const resultModal = document.getElementById('result-modal');
+        const resultEmoji = document.getElementById('result-emoji');
+        const resultText = document.getElementById('result-text');
+        const restartBtn = document.getElementById('restart-btn');
+        const instructions = document.getElementById('instructions');
+        
+        // 과녁판 색상 배열
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
+            '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
+        ];
+        
+        // ===================================================================
+        // 🔧 초기화 함수
+        // ===================================================================
+        
+        // URL 파라미터에서 항목 가져오기
+        const loadItemsFromUrl = () => {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const itemsParam = urlParams.get('items');
+                
+                if (!itemsParam) {
+                    console.warn('⚠️ URL 파라미터에 items가 없습니다');
+                    return [];
+                }
+                
+                const decodedItems = itemsParam.split(',').map(item => decodeURIComponent(item));
+                console.log('📦 항목 로드 성공:', decodedItems);
+                return decodedItems;
+                
+            } catch (error) {
+                console.error('❌ URL 파라미터 파싱 실패:', error);
+                return [];
+            }
+        };
+        
+        // 과녁판에 항목들을 원형으로 배치
+        const createTargetItems = () => {
+            if (items.length === 0) {
+                targetBoard.innerHTML = '<div class="center-circle"></div>';
+                return;
+            }
+            
+            const angleStep = 360 / items.length;
+            
+            items.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `target-item color-${index % 12}`;
+                itemDiv.textContent = item;
+                itemDiv.style.backgroundColor = colors[index % colors.length];
+                
+                // 각 항목을 원형으로 배치
+                const angle = index * angleStep;
+                itemDiv.style.transform = `rotate(${angle}deg) translate(25%, -50%)`;
+                itemDiv.style.clipPath = `polygon(0 0, 100% 25%, 100% 75%, 0 100%)`;
+                
+                // 데이터 속성으로 항목 정보 저장
+                itemDiv.dataset.index = index;
+                itemDiv.dataset.item = item;
+                itemDiv.dataset.angle = angle;
+                
+                targetBoard.appendChild(itemDiv);
+            });
+            
+            // 중앙 원 다시 추가
+            const centerCircle = document.createElement('div');
+            centerCircle.className = 'center-circle';
+            targetBoard.appendChild(centerCircle);
+            
+            console.log(`✅ ${items.length}개 항목이 과녁판에 배치되었습니다`);
+        };
+        
+        // ===================================================================
+        // 🏹 화살 드래그 및 발사 로직
+        // ===================================================================
+        
+        // 터치/마우스 이벤트 통합 함수
+        const getEventY = (event) => {
+            return event.type.includes('touch') ? event.touches[0]?.clientY || event.changedTouches[0]?.clientY : event.clientY;
+        };
+        
+        // 드래그 시작
+        const startDrag = (event) => {
+            if (!isGameActive) return;
+            
+            isDragging = true;
+            dragStartY = getEventY(event);
+            arrow.style.transition = 'none';
+            
+            console.log('🏹 화살 드래그 시작');
+        };
+        
+        // 드래그 중
+        const onDrag = (event) => {
+            if (!isDragging || !isGameActive) return;
+            
+            event.preventDefault();
+            const currentY = getEventY(event);
+            const deltaY = currentY - dragStartY;
+            
+            // 아래쪽으로만 당길 수 있도록 제한
+            if (deltaY > 0) {
+                pullDistance = Math.min(deltaY, maxPullDistance);
+                arrow.style.transform = `translateY(${pullDistance}px) scale(${1 - pullDistance * 0.002})`;
+                arrow.classList.add('pulled');
+                
+                // 당기는 정도에 따라 지침 텍스트 변경
+                const pullPercentage = (pullDistance / maxPullDistance) * 100;
+                if (pullPercentage < 30) {
+                    instructions.textContent = '더 아래로 당기세요!';
+                } else if (pullPercentage < 70) {
+                    instructions.textContent = '좋습니다! 더 당기거나 놓으세요!';
+                } else {
+                    instructions.textContent = '완벽! 이제 놓으세요!';
+                }
+            }
+        };
+        
+        // 드래그 종료 (화살 발사)
+        const endDrag = (event) => {
+            if (!isDragging || !isGameActive) return;
+            
+            isDragging = false;
+            
+            if (pullDistance > 20) { // 최소 당김 거리
+                fireArrow();
+            } else {
+                // 발사 실패 - 원래 위치로 복귀
+                arrow.style.transition = 'all 0.3s ease';
+                arrow.style.transform = '';
+                arrow.classList.remove('pulled');
+                instructions.textContent = '더 세게 당겨서 발사하세요!';
+            }
+            
+            pullDistance = 0;
+            console.log('🏹 화살 드래그 종료');
+        };
+        
+        // 화살 발사
+        const fireArrow = () => {
+            console.log('🚀 화살 발사!');
+            isGameActive = false;
+            
+            // 과녁판 회전 정지
+            targetBoard.classList.add('stopped');
+            
+            // 화살 발사 애니메이션
+            arrow.style.transition = 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            arrow.classList.add('flying');
+            arrow.classList.remove('pulled');
+            
+            instructions.textContent = '화살이 날아갑니다...';
+            
+            // 1초 후 결과 계산 및 표시
+            setTimeout(() => {
+                calculateResult();
+            }, 1000);
+        };
+        
+        // ===================================================================
+        // 🎯 충돌 감지 및 결과 계산
+        // ===================================================================
+        
+        const calculateResult = () => {
+            // 과녁판의 현재 회전 각도 계산
+            const computedStyle = window.getComputedStyle(targetBoard);
+            const transform = computedStyle.transform;
+            let currentRotation = 0;
+            
+            if (transform && transform !== 'none') {
+                const matrix = transform.match(/matrix\(([^)]+)\)/);
+                if (matrix) {
+                    const values = matrix[1].split(',').map(parseFloat);
+                    currentRotation = Math.atan2(values[1], values[0]) * (180 / Math.PI);
+                    if (currentRotation < 0) currentRotation += 360;
+                }
+            }
+            
+            console.log(`🎯 과녁판 현재 회전 각도: ${currentRotation.toFixed(1)}도`);
+            
+            // 화살이 맞은 조각 계산 (12시 방향 기준)
+            const anglePerSlice = 360 / items.length;
+            
+            // 화살이 12시 방향에서 쏘아지므로, 그 지점에 해당하는 조각 찾기
+            // 회전된 만큼 보정해서 계산
+            let targetAngle = (360 - currentRotation) % 360;
+            
+            // 어느 조각에 속하는지 계산
+            let hitIndex = Math.floor(targetAngle / anglePerSlice);
+            
+            // 인덱스 범위 보정
+            hitIndex = hitIndex % items.length;
+            if (hitIndex < 0) hitIndex += items.length;
+            
+            const hitItem = items[hitIndex];
+            
+            console.log(`🎯 명중한 조각: [${hitIndex}] "${hitItem}"`);
+            console.log(`📐 계산 과정: targetAngle=${targetAngle.toFixed(1)}도, anglePerSlice=${anglePerSlice.toFixed(1)}도`);
+            
+            // 결과 표시
+            showResult(hitItem);
+        };
+        
+        // ===================================================================
+        // 🏆 결과 표시
+        // ===================================================================
+        
+        const showResult = (selectedItem) => {
+            // 결과 모달 내용 설정
+            resultEmoji.textContent = '🎉';
+            resultText.textContent = selectedItem;
+            
+            // 모달 표시
+            resultModal.classList.add('show');
+            
+            // 애니메이션 효과
+            setTimeout(() => {
+                const content = resultModal.querySelector('.result-content');
+                content.style.transform = 'scale(1)';
+                content.style.opacity = '1';
+            }, 100);
+            
+            console.log(`🎊 결과 표시: "${selectedItem}"`);
+        };
+        
+        // ===================================================================
+        // 🔄 게임 재시작
+        // ===================================================================
+        
+        const restartGame = () => {
+            console.log('🔄 게임 재시작');
+            
+            // 모달 숨기기
+            resultModal.classList.remove('show');
+            
+            // 화살 초기 위치로 복구
+            arrow.style.transition = 'all 0.5s ease';
+            arrow.style.transform = '';
+            arrow.classList.remove('flying', 'pulled');
+            
+            // 과녁판 회전 재시작
+            targetBoard.classList.remove('stopped');
+            
+            // 게임 상태 초기화
+            setTimeout(() => {
+                isGameActive = true;
+                instructions.textContent = '화살을 누르고 아래로 당긴 다음 놓으세요!';
+                console.log('✅ 게임 재시작 완료');
+            }, 500);
+        };
+        
+        // ===================================================================
+        // 🎮 이벤트 리스너 등록
+        // ===================================================================
+        
+        // 화살 드래그 이벤트 (마우스)
+        arrow.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', endDrag);
+        
+        // 화살 드래그 이벤트 (터치)
+        arrow.addEventListener('touchstart', startDrag, { passive: false });
+        document.addEventListener('touchmove', onDrag, { passive: false });
+        document.addEventListener('touchend', endDrag);
+        
+        // 재시작 버튼
+        restartBtn.addEventListener('click', restartGame);
+        
+        // 키보드 접근성
+        document.addEventListener('keydown', (event) => {
+            if (event.key === ' ' || event.key === 'Enter') {
+                if (resultModal.classList.contains('show')) {
+                    restartGame();
+                } else if (isGameActive) {
+                    fireArrow();
+                }
+            }
+        });
+        
+        // ===================================================================
+        // 🚀 게임 초기화 및 시작
+        // ===================================================================
+        
+        const initGame = () => {
+            console.log('🎯 === 다트 게임 초기화 ===');
+            
+            // URL에서 항목 로드
+            items = loadItemsFromUrl();
+            
+            if (items.length < 2) {
+                // 항목이 부족한 경우 에러 처리
+                instructions.textContent = '항목이 부족합니다. 메인으로 돌아가서 최소 2개 항목을 추가해주세요.';
+                isGameActive = false;
+                
+                // 에러 상태에서도 메인으로 돌아갈 수 있도록
+                resultEmoji.textContent = '⚠️';
+                resultText.textContent = '항목 부족';
+                resultModal.querySelector('.result-subtitle').textContent = '메인에서 항목을 추가해주세요';
+                resultModal.classList.add('show');
+                return;
+            }
+            
+            // 과녁판 생성
+            createTargetItems();
+            
+            console.log(`✅ 다트 게임 초기화 완료: ${items.length}개 항목`);
+            console.log('📋 항목 목록:', items);
+            console.log('🔧 화살 드래그로 발사 가능');
+        };
+        
+        // DOM 로드 완료 후 게임 시작
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initGame);
+        } else {
+            initGame();
+        }
+        
+        // 화면 크기 변경 시 레이아웃 조정
+        window.addEventListener('resize', () => {
+            console.log('📱 화면 크기 변경 - 레이아웃 조정');
+        });
+        
+        console.log('🎯 다트 게임 페이지 로드 완료');
+    </script>
+</body>
+</html> 
