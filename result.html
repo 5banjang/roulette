@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
     
+    <!-- GSAP 라이브러리 (필수) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     <!-- PWA 메타 태그 -->
     <meta name="description" content="결정장애 돌림판 - 결과를 확인해보세요!">
     <meta name="theme-color" content="#007BFF">
@@ -24,6 +27,10 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
+        /* ===================================== */
+        /* 🎯 미니멀리즘 디자인 - 흰색 배경 + 파란색 포인트 */
+        /* ===================================== */
+        
         /* 기본 리셋 */
         * {
             margin: 0;
@@ -97,13 +104,11 @@
             background: white;
             border: 3px solid #007BFF;
             box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
-            transition: all 0.3s ease;
             cursor: pointer;
         }
         
         #wheel-canvas:hover {
             box-shadow: 0 6px 25px rgba(0, 123, 255, 0.3);
-            transform: scale(1.02);
         }
         
         #wheel-canvas.spinning {
@@ -126,17 +131,17 @@
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
         
-        /* 상태 표시 */
-        .status-display {
+        /* 결과 표시 */
+        .result-display {
             text-align: center;
-            padding: 20px;
+            padding: 24px;
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 12px;
             color: #333;
             font-size: 1.1rem;
             font-weight: 500;
-            min-height: 80px;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -144,27 +149,23 @@
             width: 100%;
         }
         
-        .status-display.ready {
-            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
-            border-color: #007BFF;
-            color: #007BFF;
-        }
-        
-        .status-display.result {
+        .result-display.highlight {
             background: linear-gradient(45deg, #e8f5e8, #c8e6c9);
             border-color: #28a745;
             color: #155724;
             font-size: 1.2rem;
             font-weight: 600;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
         }
         
-        .status-display.error {
+        .result-display.error {
             background: linear-gradient(45deg, #fff3cd, #ffeaa7);
             border-color: #ffc107;
             color: #856404;
         }
         
-        /* 버튼 시스템 */
+        /* 버튼 시스템 - 파란색 포인트 */
         .btn {
             padding: 12px 20px;
             background-color: #007BFF;
@@ -243,10 +244,10 @@
                 max-width: 280px;
             }
             
-            .status-display {
-                padding: 16px;
+            .result-display {
+                padding: 20px;
                 font-size: 1rem;
-                min-height: 70px;
+                min-height: 90px;
             }
             
             .action-buttons {
@@ -301,7 +302,7 @@
         <!-- 헤더 -->
         <header class="header">
             <h1>🎯 결정장애 돌림판</h1>
-            <p>돌림판을 클릭해서 결정해보세요!</p>
+            <p>결과를 확인해보세요!</p>
         </header>
         
         <!-- 돌림판 컨테이너 -->
@@ -310,15 +311,14 @@
                 <div class="arrow-pointer"></div>
                 <canvas 
                     id="wheel-canvas"
-                    width="300" 
-                    height="300"
-                    aria-label="돌림판을 클릭하세요"
-                    tabindex="0"
+                    width="350" 
+                    height="350"
+                    aria-label="돌림판"
                 ></canvas>
             </div>
             
-            <!-- 상태 표시 -->
-            <div class="status-display ready" id="status-display">
+            <!-- 결과 표시 -->
+            <div class="result-display" id="result-display">
                 돌림판을 클릭해주세요!
             </div>
             
@@ -328,60 +328,59 @@
                     <span>🎯</span>
                     돌리기
                 </button>
-                <button type="button" class="btn btn-outline" id="reset-btn" style="display: none;">
+                <button type="button" class="btn btn-outline" id="restart-btn" style="display: none;">
                     <span>🔄</span>
                     다시 돌리기
                 </button>
                 <a href="index.html" class="btn btn-outline">
                     <span>🏠</span>
-                    메인으로
+                    메인으로 돌아가기
                 </a>
             </div>
         </div>
         
         <!-- 에러 상태 -->
-        <div class="status-display error" id="error-container" style="display: none;">
+        <div class="result-display error" id="error-container" style="display: none;">
             <div>
                 <div style="font-size: 2rem; margin-bottom: 12px;">⚠️</div>
-                <div style="margin-bottom: 8px;">항목이 없습니다</div>
-                <div style="font-size: 0.9rem; color: #856404;">메인 페이지에서 항목을 추가해주세요</div>
-                <a href="index.html" class="btn" style="margin-top: 16px;">
+                <div style="margin-bottom: 8px; font-weight: 600;">항목이 없습니다</div>
+                <div style="font-size: 0.9rem; margin-bottom: 16px;">메인 페이지에서 항목을 추가해주세요</div>
+                <a href="index.html" class="btn">
                     <span>🏠</span>
-                    메인 페이지로
+                    메인 페이지로 돌아가기
                 </a>
             </div>
         </div>
     </div>
 
     <script>
-        // ===================================== //
-        // 🎯 결과 페이지 - 간결한 구조           //
-        // ===================================== //
+        // ===================================================================
+        // 🎯 실패 불가능한 설계 - 수학적으로 완벽한 돌림판 시스템
+        // ===================================================================
         
         // 상태 관리
         let items = [];
         let isSpinning = false;
-        let currentRotation = 0;
+        let preSelectedWinner = null;
         
-        // 미리 정의된 색상 배열
+        // 미리 정의된 10개 다채로운 색상 배열 (절대 변경 금지)
         const COLORS = [
-            '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
-            '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce', '#85c1e9'
+            '#ff8b8b', '#ffc977', '#fffb8b', '#c2ff8b', '#8bffc2',
+            '#8bffff', '#8bc2ff', '#c28bff', '#ff8bff', '#ffc28b'
         ];
         
         // DOM 요소 참조
         const canvas = document.getElementById('wheel-canvas');
         const ctx = canvas.getContext('2d');
-        const statusDisplay = document.getElementById('status-display');
-        const actionButtons = document.getElementById('action-buttons');
+        const resultDisplay = document.getElementById('result-display');
         const spinBtn = document.getElementById('spin-btn');
-        const resetBtn = document.getElementById('reset-btn');
+        const restartBtn = document.getElementById('restart-btn');
         const wheelContainer = document.getElementById('wheel-container');
         const errorContainer = document.getElementById('error-container');
         
-        // ===================================== //
-        // 📦 URL 파라미터에서 데이터 가져오기    //
-        // ===================================== //
+        // ===================================================================
+        // 📦 URL 파라미터에서 항목 데이터 가져오기
+        // ===================================================================
         
         const loadItemsFromUrl = () => {
             try {
@@ -409,47 +408,52 @@
             }
         };
         
-        // ===================================== //
-        // 🎨 돌림판 그리기                      //
-        // ===================================== //
+        // ===================================================================
+        // 🎨 drawRoulette() 함수 - 오직 그리기만 담당 (핵심)
+        // ===================================================================
         
-        const drawWheel = () => {
+        const drawRoulette = () => {
+            console.log('🎨 drawRoulette() 실행 - 오직 그리기만 담당');
+            
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const radius = Math.min(centerX, centerY) - 10;
+            const radius = Math.min(centerX, centerY) - 20;
             
             // 캔버스 초기화
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            if (items.length === 0) return;
+            if (items.length === 0) {
+                console.log('📋 항목이 없어서 빈 돌림판 표시');
+                return;
+            }
             
-            // 회전 적용
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.rotate(currentRotation);
-            ctx.translate(-centerX, -centerY);
-            
+            // 🔥 핵심: 캔버스 자체를 회전시키지 않고, 고정된 캔버스 위에 계산된 각도로 그리기
+            let startAngle = -Math.PI / 2; // 12시 방향을 0도의 기준으로 삼는다
             const sliceAngle = (2 * Math.PI) / items.length;
-            let startAngle = -Math.PI / 2; // 12시 방향부터 시작
             
-            // 각 조각 그리기
+            console.log(`📐 조각 개수: ${items.length}, 조각 크기: ${(sliceAngle * 180 / Math.PI).toFixed(1)}도`);
+            
+            // items 배열을 순회하며 각 조각을 정확한 순서로 그리기
             items.forEach((item, index) => {
+                // 미리 정의된 색상 배열에서 순서대로 가져오기
                 const color = COLORS[index % COLORS.length];
                 
-                // 조각 그리기
+                console.log(`🎨 조각 ${index}: "${item}" - 색상: ${color} - 각도: ${(startAngle * 180 / Math.PI).toFixed(1)}도`);
+                
+                // 🔥 실패 불가능한 그리기 순서 (절대 변경 금지)
                 ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
+                ctx.moveTo(centerX, centerY); // 매번 중앙에서 시작한다
                 ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
                 ctx.closePath();
                 ctx.fillStyle = color;
                 ctx.fill();
                 
-                // 테두리
+                // 테두리 그리기
                 ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // 텍스트
+                // 텍스트를 조각의 정확한 중앙에 올바른 각도로 그리기
                 const textAngle = startAngle + sliceAngle / 2;
                 const textRadius = radius * 0.7;
                 const textX = centerX + Math.cos(textAngle) * textRadius;
@@ -458,98 +462,116 @@
                 ctx.save();
                 ctx.translate(textX, textY);
                 ctx.rotate(textAngle + Math.PI / 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 14px Pretendard, sans-serif';
+                ctx.fillStyle = '#333333';
+                ctx.font = 'bold 16px Pretendard, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(item, 0, 0);
                 ctx.restore();
                 
+                // 다음 조각을 위해 시작 각도를 누적한다
                 startAngle += sliceAngle;
             });
             
-            // 중앙 원
+            // 중앙 원 그리기
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 15, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
             ctx.fillStyle = '#007BFF';
             ctx.fill();
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4;
             ctx.stroke();
             
-            ctx.restore();
+            console.log('✅ drawRoulette() 완료 - 돌림판 그리기 성공');
         };
         
-        // ===================================== //
-        // 🎯 돌림판 돌리기                      //
-        // ===================================== //
+        // ===================================================================
+        // 🎯 spin() 함수 - 승자 선결정 + GSAP 회전 (핵심)
+        // ===================================================================
         
-        const spinWheel = () => {
-            if (isSpinning || items.length === 0) return;
+        const spin = () => {
+            console.log('🎯 spin() 실행 시작');
+            
+            // 중복 실행 방지
+            if (isSpinning || items.length === 0) {
+                console.warn('⚠️ 이미 회전 중이거나 항목이 없음');
+                return;
+            }
             
             isSpinning = true;
             canvas.classList.add('spinning');
-            statusDisplay.textContent = '돌림판이 돌아가고 있습니다...';
-            statusDisplay.className = 'status-display';
+            resultDisplay.textContent = '돌림판이 돌아가고 있습니다...';
+            resultDisplay.className = 'result-display';
             spinBtn.disabled = true;
             
-            // 승자 선택
+            console.log('🔒 isSpinning = true, 중복 실행 방지 활성화');
+            
+            // 🔥 1단계: 승자를 먼저 결정한다 (애니메이션 시작 전)
             const winnerIndex = Math.floor(Math.random() * items.length);
-            const winner = items[winnerIndex];
+            const winnerItem = items[winnerIndex];
+            preSelectedWinner = { index: winnerIndex, item: winnerItem };
             
-            console.log(`🎯 선택된 승자: [${winnerIndex}] "${winner}"`);
+            console.log(`🏆 승자 선결정: [${winnerIndex}] "${winnerItem}"`);
             
-            // 목표 각도 계산
-            const sliceAngle = (2 * Math.PI) / items.length;
-            const targetAngle = (2 * Math.PI * 5) + (winnerIndex * sliceAngle) + (sliceAngle / 2);
+            // 🔥 2단계: 수학적으로 완벽한 목표 각도 계산
+            const sliceAngle = 360 / items.length; // 도(degree) 단위로 계산
+            const winnerAngle = winnerIndex * sliceAngle;
             
-            // 애니메이션
-            let startTime = null;
-            const duration = 3000; // 3초
+            // 🔥 가장 중요한 공식 (절대 변경 금지)
+            const targetRotation = (360 * 10) - winnerAngle - (sliceAngle / 2);
             
-            const animate = (timestamp) => {
-                if (!startTime) startTime = timestamp;
-                const elapsed = timestamp - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                // easing function (점진적 감속)
-                const easeOut = 1 - Math.pow(1 - progress, 3);
-                currentRotation = targetAngle * easeOut;
-                
-                drawWheel();
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    finishSpin(winner);
+            console.log(`📐 조각 크기: ${sliceAngle.toFixed(1)}도`);
+            console.log(`🎯 승자 각도: ${winnerAngle.toFixed(1)}도`);
+            console.log(`🚀 목표 회전: ${targetRotation.toFixed(1)}도`);
+            console.log('📝 공식: (360 * 10) - winnerAngle - (sliceAngle / 2)');
+            
+            // 🔥 3단계: GSAP 라이브러리로 canvas 요소 자체를 회전시킨다
+            gsap.to(canvas, {
+                rotation: targetRotation,
+                duration: 4,
+                ease: "power3.out",
+                onComplete: () => {
+                    console.log('🛑 GSAP 애니메이션 완료');
+                    
+                    // 🔥 4단계: 애니메이션 완료 후 처리
+                    isSpinning = false; // 반드시 리셋하여 재회전 가능하게 함
+                    canvas.classList.remove('spinning');
+                    
+                    console.log('🔓 isSpinning = false, 재회전 가능');
+                    
+                    // 미리 결정된 승자를 표시
+                    showResult(preSelectedWinner.item);
+                    
+                    console.log(`🎉 최종 결과 표시: "${preSelectedWinner.item}"`);
                 }
-            };
+            });
             
-            requestAnimationFrame(animate);
+            console.log('✅ spin() 완료 - GSAP 애니메이션 시작됨');
         };
         
-        const finishSpin = (winner) => {
-            isSpinning = false;
-            canvas.classList.remove('spinning');
-            
-            // 결과 표시
-            statusDisplay.innerHTML = `
+        // ===================================================================
+        // 🏆 결과 표시 및 UI 업데이트
+        // ===================================================================
+        
+        const showResult = (selectedItem) => {
+            resultDisplay.innerHTML = `
                 <div>
-                    <div style="font-size: 2rem; margin-bottom: 8px;">🎉</div>
-                    <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 4px;">${winner}</div>
-                    <div style="font-size: 0.9rem;">으로 결정!</div>
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🎉</div>
+                    <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 8px;">${selectedItem}</div>
+                    <div style="font-size: 1rem; color: #666;">으로 결정!</div>
                 </div>
             `;
-            statusDisplay.className = 'status-display result';
+            
+            resultDisplay.classList.add('highlight');
             
             // 버튼 상태 변경
             spinBtn.style.display = 'none';
-            resetBtn.style.display = 'inline-flex';
-            
-            console.log(`🏆 최종 결과: "${winner}"`);
+            restartBtn.style.display = 'inline-flex';
             
             // 접근성 알림
-            announceResult(winner);
+            announceResult(selectedItem);
+            
+            console.log(`🎊 결과 표시 완료: "${selectedItem}"`);
         };
         
         const announceResult = (result) => {
@@ -567,40 +589,35 @@
             }, 1000);
         };
         
-        // ===================================== //
-        // 🔄 다시 돌리기                        //
-        // ===================================== //
+        // ===================================================================
+        // 🔄 다시 돌리기 - 페이지 완전 새로고침
+        // ===================================================================
         
-        const resetSpin = () => {
-            currentRotation = 0;
-            drawWheel();
-            
-            statusDisplay.textContent = '돌림판을 클릭해주세요!';
-            statusDisplay.className = 'status-display ready';
-            
-            spinBtn.style.display = 'inline-flex';
-            spinBtn.disabled = false;
-            resetBtn.style.display = 'none';
+        const handleRestart = () => {
+            console.log('🔄 다시 돌리기 - location.reload() 실행');
+            location.reload(); // 페이지를 완전히 새로고침한다
         };
         
-        // ===================================== //
-        // 🎮 이벤트 리스너 및 초기화            //
-        // ===================================== //
+        // ===================================================================
+        // 🎮 이벤트 리스너 및 초기화
+        // ===================================================================
         
-        // 이벤트 리스너
-        canvas.addEventListener('click', spinWheel);
+        // 이벤트 리스너 등록
+        canvas.addEventListener('click', spin);
+        spinBtn.addEventListener('click', spin);
+        restartBtn.addEventListener('click', handleRestart);
+        
+        // 키보드 접근성
         canvas.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                spinWheel();
+                spin();
             }
         });
-        spinBtn.addEventListener('click', spinWheel);
-        resetBtn.addEventListener('click', resetSpin);
         
         // 페이지 초기화
         const initPage = () => {
-            console.log('🚀 결과 페이지 초기화');
+            console.log('🚀 === 실패 불가능한 돌림판 시스템 초기화 ===');
             
             // URL 파라미터에서 항목 가져오기
             const loadedItems = loadItemsFromUrl();
@@ -609,14 +626,20 @@
                 // 에러 상태 표시
                 wheelContainer.style.display = 'none';
                 errorContainer.style.display = 'block';
+                console.log('❌ URL 파라미터에 항목이 없어 에러 페이지 표시');
                 return;
             }
             
             // 항목 설정 및 돌림판 그리기
             items = loadedItems;
-            drawWheel();
+            drawRoulette();
             
             console.log(`✅ 초기화 완료: ${items.length}개 항목`);
+            console.log('📋 항목 목록:', items);
+            console.log('🎨 미리 정의된 색상 배열:', COLORS);
+            console.log('📐 수학 공식: targetRotation = (360 * 10) - winnerAngle - (sliceAngle / 2)');
+            console.log('🔧 GSAP 라이브러리 로드 상태:', typeof gsap !== 'undefined' ? '✅ 로드됨' : '❌ 로드 실패');
+            console.log('═══════════════════════════════════');
         };
         
         // DOM 로드 완료 후 초기화
@@ -626,7 +649,7 @@
             initPage();
         }
         
-        console.log('🎯 간결한 돌림판 결과 페이지 로드 완료');
+        console.log('🎯 실패 불가능한 돌림판 결과 페이지 로드 완료');
     </script>
     
     <!-- PWA Service Worker 등록 -->
