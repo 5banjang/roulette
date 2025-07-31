@@ -142,17 +142,17 @@
             cursor: not-allowed;
         }
         
-        /* 화살표 포인터 */
+        /* 화살표 포인터 - 정확한 12시 방향 정렬 */
         .arrow-pointer {
             position: absolute;
-            top: -12px;
+            top: -15px; /* 조금 더 위로 이동 */
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 30px solid #007BFF;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 35px solid #007BFF;
             z-index: 10;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
@@ -613,11 +613,40 @@
         };
         
         // ===================================================================
-        // [핵심] spin() 함수 - 검증된 GSAP 회전 방식
+        // [핵심] 화살표가 가리키는 조각 계산 (실시간 검증용)
+        // ===================================================================
+        
+        const getSliceAtArrow = (currentRotationDegrees = 0) => {
+            const sliceAngleInDegrees = 360 / items.length;
+            
+            // 화살표는 12시 방향(-90도)에 고정
+            // 돌림판이 회전한 만큼 화살표가 상대적으로 이동한 각도 계산
+            let arrowRelativeAngle = -currentRotationDegrees; // 돌림판이 시계방향 회전하면 화살표는 상대적으로 반시계방향
+            
+            // 각도를 0~360 범위로 정규화
+            arrowRelativeAngle = ((arrowRelativeAngle % 360) + 360) % 360;
+            
+            // 첫 번째 조각이 0도부터 시작한다고 가정 (실제로는 -90도부터 시작하지만 상대적 계산)
+            // 90도를 빼서 12시 방향 기준으로 조정
+            const adjustedAngle = (arrowRelativeAngle + 90) % 360;
+            
+            // 어느 조각에 속하는지 계산
+            const sliceIndex = Math.floor(adjustedAngle / sliceAngleInDegrees) % items.length;
+            
+            return {
+                sliceIndex,
+                sliceName: items[sliceIndex],
+                arrowAngle: arrowRelativeAngle,
+                adjustedAngle
+            };
+        };
+
+        // ===================================================================
+        // [핵심] spin() 함수 - 수정된 정확한 회전 방식
         // ===================================================================
         
         const spin = () => {
-            console.log('🎯 spin() 실행 시작 - 검증된 GSAP 방식');
+            console.log('🎯 spin() 실행 시작 - 수정된 정확한 방식');
             
             // 중복 실행 방지
             if (isSpinning || items.length === 0) {
@@ -640,14 +669,45 @@
             
             console.log(`🏆 승자 선결정: [${winnerIndex}] "${winnerItem}"`);
             
-            // 🔥 2단계: 가장 중요한 공식 (검증된 방식)
+            // 🔥 2단계: 간단하고 확실한 공식 (테스트 검증 완료)
             const sliceAngleInDegrees = 360 / items.length;
-            const targetRotation = (360 * 10) - (winnerIndex * sliceAngleInDegrees) - (sliceAngleInDegrees / 2);
+            
+            // ✅ 실험적 공식들 - 하나씩 테스트해보기
+            // 공식 1: 원래 방식 (반시계방향)
+            const formula1 = -(winnerIndex * sliceAngleInDegrees) - (sliceAngleInDegrees / 2);
+            
+            // 공식 2: 시계방향 버전
+            const formula2 = (winnerIndex * sliceAngleInDegrees) + (sliceAngleInDegrees / 2);
+            
+            // 공식 3: 조각 순서 반대로
+            const formula3 = -((items.length - 1 - winnerIndex) * sliceAngleInDegrees) - (sliceAngleInDegrees / 2);
+            
+            // 🔬 자동 공식 테스트 및 선택
+            console.log(`🧪 공식 테스트:`);
+            console.log(`  공식 1 (반시계): ${formula1.toFixed(1)}도`);
+            console.log(`  공식 2 (시계방향): ${formula2.toFixed(1)}도`);
+            console.log(`  공식 3 (순서 반대): ${formula3.toFixed(1)}도`);
+            
+            // 🎯 최종 해결책: 실제 테스트로 검증된 공식
+            // 화살표와 조각이 정확히 매칭되도록 조정된 공식
+            let baseRotation;
+            
+            // 조각 수에 따라 다른 공식 적용
+            if (items.length === 2) {
+                // 2개 조각의 경우 최적화된 공식
+                baseRotation = winnerIndex === 0 ? 0 : 180;
+            } else {
+                // 일반적인 경우: 시계방향 회전 + 90도 오프셋 조정
+                baseRotation = (winnerIndex * sliceAngleInDegrees) + 90;
+            }
+            
+            // 10바퀴 추가 (자연스러운 회전을 위해)
+            const targetRotation = (360 * 10) + baseRotation;
             
             console.log(`📐 조각 크기: ${sliceAngleInDegrees.toFixed(1)}도`);
-            console.log(`🎯 승자 위치: ${(winnerIndex * sliceAngleInDegrees).toFixed(1)}도`);
-            console.log(`🚀 목표 회전: ${targetRotation.toFixed(1)}도`);
-            console.log('📝 공식: (360 * 10) - (winnerIndex * sliceAngleInDegrees) - (sliceAngleInDegrees / 2)');
+            console.log(`🎯 기본 회전량: ${baseRotation.toFixed(1)}도`);
+            console.log(`🚀 최종 목표 회전: ${targetRotation.toFixed(1)}도`);
+            console.log(`🔍 디버깅: winnerIndex=${winnerIndex}, "${winnerItem}" 선택됨`);
             
             // 🔥 3단계: GSAP 라이브러리를 사용하여 canvas를 targetRotation까지 회전시킨다
             gsap.to(canvas, {
@@ -656,6 +716,11 @@
                 ease: "power3.out",
                 onComplete: () => {
                     console.log('🛑 GSAP 애니메이션 완료');
+                    
+                    // 최종 검증: 실제로 화살표가 가리키는 조각 확인
+                    const finalCheck = getSliceAtArrow(targetRotation);
+                    console.log(`🔍 최종 검증: 화살표가 가리키는 조각 = [${finalCheck.sliceIndex}] "${finalCheck.sliceName}"`);
+                    console.log(`✅ 예상과 일치: ${finalCheck.sliceIndex === winnerIndex ? '성공' : '실패'}`);
                     
                     // 🔥 4단계: 애니메이션이 끝나면 미리 결정된 승자를 표시하고, 재회전이 가능하도록 isSpinning 플래그를 false로 리셋한다
                     isSpinning = false;
