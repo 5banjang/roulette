@@ -2,149 +2,1101 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>결정장애 돌림판</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결정장애 다트</title>
+    
+    <!-- Pretendard 폰트 -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
+    
+    <!-- PWA 메타 태그 -->
+    <meta name="description" content="결정장애 다트 - 다트로 결정을 내려보세요!">
+    <meta name="theme-color" content="#007BFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="다트게임">
+    
+    <!-- Open Graph / 카카오톡 공유 최적화 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="결정장애 다트 🎯">
+    <meta property="og:description" content="다트로 결정을 내려보세요!">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="결정장애 다트">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:image" content="og_image.png">
+    
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" href="icon-512x512.png">
+    <link rel="apple-touch-icon" href="icon-512x512.png">
+    
+    <!-- PWA 매니페스트 -->
+    <link rel="manifest" href="manifest.json">
+    
     <style>
-        :root { --main-color: #007BFF; --light-gray: #f8f9fa; --border-color: #dee2e6; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { font-family: 'Pretendard', sans-serif; background-color: white; color: #333; }
-        body { display: flex; justify-content: center; align-items: flex-start; padding-top: 2rem; }
-        .wrapper { max-width: 480px; width: 100%; padding: 1rem; }
-        .header { text-align: center; margin-bottom: 2rem; }
-        .header h1 { font-size: 1.8rem; font-weight: 700; color: var(--main-color); }
-        .section { background-color: var(--light-gray); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; }
-        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-        input[type="text"] { flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; }
-        .btn { padding: 0.75rem 1rem; background-color: var(--main-color); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background-color 0.2s; }
-        .btn:hover { background-color: #0056b3; }
-        .btn:disabled { background-color: #6c757d; cursor: not-allowed; }
-        .items-container { display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 2rem; }
-        .item-tag { background-color: #e3f2fd; color: var(--main-color); padding: 0.5rem 0.75rem; border-radius: 20px; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .remove-btn { background: none; border: none; cursor: pointer; color: var(--main-color); font-weight: bold; }
-        #spin-button { width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700; }
-        .favorites-list { list-style: none; }
-        .favorite-item { background-color: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
-        .favorite-name { font-weight: 600; }
+        /* ===================================== */
+        /* 🎯 다트 게임 메인 페이지 - 미니멀리즘   */
+        /* ===================================== */
+        
+        /* 기본 리셋 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: white;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* 메인 래퍼 - PC에서 최대 너비 480px 중앙 정렬 */
+        .wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 카카오톡 브라우저 안내 */
+        .kakao-notice {
+            background: #fee500;
+            color: #333;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .kakao-notice.show {
+            display: block;
+        }
+        
+        /* 헤더 */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #007BFF;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        /* 섹션 */
+        .section {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 입력 시스템 */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            color: #333;
+            background-color: white;
+            transition: border-color 0.2s ease;
+            outline: none;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+        
+        /* 버튼 시스템 - 파란색(#007BFF) 포인트 */
+        .btn {
+            padding: 12px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 80px;
+            text-decoration: none;
+            outline: none;
+            white-space: nowrap;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            background-color: #004494;
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            min-width: 60px;
+        }
+        
+        .btn-outline {
+            background-color: white;
+            color: #007BFF;
+            border: 2px solid #007BFF;
+        }
+        
+        .btn-outline:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        /* 게임 시작 버튼 - 가장 중요! */
+        #start-game-btn {
+            padding: 20px 40px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            min-width: 200px;
+            background: linear-gradient(45deg, #007BFF, #0056b3);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+        
+        #start-game-btn:hover {
+            background: linear-gradient(45deg, #0056b3, #004494);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 123, 255, 0.4);
+        }
+        
+        #start-game-btn:disabled {
+            background: #6c757d;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        /* 항목 태그 */
+        .items-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            min-height: 40px;
+            align-content: flex-start;
+        }
+        
+        .item-tag {
+            background-color: #e3f2fd;
+            color: #007BFF;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #bbdefb;
+            transition: all 0.2s ease;
+        }
+        
+        .item-tag:hover {
+            background-color: #bbdefb;
+            transform: scale(1.02);
+        }
+        
+        .remove-btn {
+            background: #007BFF;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+        
+        .remove-btn:hover {
+            background: #0056b3;
+        }
+        
+        /* 즐겨찾기 목록 */
+        .favorites-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+        
+        .favorite-item {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        
+        .favorite-item:hover {
+            background-color: #f8f9fa;
+            border-color: #007BFF;
+            transform: translateY(-1px);
+        }
+        
+        .favorite-info {
+            flex: 1;
+        }
+        
+        .favorite-name {
+            font-weight: 600;
+            color: #007BFF;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        
+        .favorite-details {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .favorite-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            margin: 12px 0;
+            border: 1px dashed #dee2e6;
+        }
+        
+        /* 항목 카운터 */
+        .item-counter {
+            background-color: #007BFF;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        /* 공유하기 섹션 */
+        .share-section {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .share-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 600px) {
+            .wrapper {
+                padding: 16px;
+            }
+            
+            .header {
+                padding: 20px 0;
+            }
+            
+            .header h1 {
+                font-size: 1.7rem;
+            }
+            
+            .section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            input[type="text"] {
+                min-width: auto;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            #start-game-btn {
+                padding: 18px 32px;
+                font-size: 1.2rem;
+            }
+            
+            .favorite-item {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .favorite-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .share-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        /* 접근성 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        *:focus {
+            outline: 2px solid #007BFF;
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
+            max-width: 300px;
+            word-wrap: break-word;
+            transform: translateX(350px);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            background: #28a745;
+        }
+        
+        .toast.error {
+            background: #dc3545;
+        }
+        
+        .toast.info {
+            background: #17a2b8;
+        }
     </style>
 </head>
 <body>
+    <!-- 메인 앱 -->
     <div class="wrapper">
+        <!-- 카카오톡 브라우저 안내 -->
+        <div class="kakao-notice" id="kakao-notice">
+            ⚠️ 카카오톡 브라우저에서는 일부 기능이 제한될 수 있습니다. 우측 상단 메뉴에서 '다른 브라우저로 열기'를 이용해주세요.
+        </div>
+        
+        <!-- 헤더 -->
         <header class="header">
-            <h1>🎯 결정장애 돌림판</h1>
-            <p>선택할 항목들을 준비해보세요</p>
+            <h1>🎯 결정장애 다트</h1>
+            <p>다트로 결정을 내려보세요!</p>
         </header>
+        
+        <!-- 항목 추가 섹션 -->
         <section class="section">
-            <h2 class="section-title">항목 추가</h2>
+            <h2 class="section-title">
+                <span>🎯</span>
+                다트 과녁 항목
+                <span class="item-counter" id="item-counter">0개</span>
+            </h2>
             <div class="input-group">
-                <input type="text" id="item-input" placeholder="항목 입력 (예: 치킨)">
-                <button class="btn" id="add-btn">추가</button>
+                <input 
+                    type="text" 
+                    id="item-input" 
+                    placeholder="선택할 항목을 입력하세요 (예: 치킨, 피자, 햄버거)"
+                    maxlength="20"
+                    aria-label="다트 과녁에 추가할 항목을 입력하세요"
+                >
+                <button type="button" class="btn" id="add-btn">
+                    <span>➕</span>
+                    추가
+                </button>
             </div>
-            <div class="items-container" id="items-container"></div>
+            <div class="items-container" id="items-container">
+                <div class="empty-state">아직 추가된 항목이 없습니다. 위에서 항목을 추가해보세요!</div>
+            </div>
         </section>
+        
+        <!-- 즐겨찾기 섹션 -->
         <section class="section">
-            <h2 class="section-title">⭐ 즐겨찾기</h2>
+            <h2 class="section-title">
+                <span>⭐</span>
+                즐겨찾기
+            </h2>
             <div class="input-group">
-                <input type="text" id="favorite-name-input" placeholder="돌림판 이름">
-                <button class="btn" id="save-favorite-btn" disabled>저장</button>
+                <input 
+                    type="text" 
+                    id="favorite-name-input" 
+                    placeholder="다트 게임 이름을 입력하세요"
+                    maxlength="30"
+                    aria-label="즐겨찾기에 저장할 다트 게임 이름을 입력하세요"
+                >
+                <button type="button" class="btn" id="save-favorite-btn" disabled>
+                    <span>💾</span>
+                    저장
+                </button>
             </div>
-            <div class="favorites-list" id="favorites-list"></div>
+            <ul class="favorites-list" id="favorites-list">
+                <div class="empty-state">저장된 즐겨찾기가 없습니다.</div>
+            </ul>
         </section>
-        <button class="btn" id="spin-button" disabled>돌리기!</button>
+        
+        <!-- 공유하기 섹션 -->
+        <section class="share-section">
+            <div class="share-title">🎯 친구들과 공유하기</div>
+            <div class="share-buttons">
+                <button type="button" class="btn btn-success share-btn" id="share-btn">
+                    <span>📤</span>
+                    공유하기
+                </button>
+                <button type="button" class="btn btn-outline share-btn" id="copy-btn">
+                    <span>📋</span>
+                    링크 복사
+                </button>
+            </div>
+        </section>
+        
+        <!-- 게임 시작 버튼 -->
+        <button type="button" id="start-game-btn" disabled>
+            <span>🎯</span>
+            게임 시작!
+        </button>
     </div>
+
     <script>
+        // ===================================== //
+        // 🎯 다트 게임 메인 페이지              //
+        // ===================================== //
+        
+        // 상태 관리
+        let items = [];
+        let favorites = [];
+        
+        // DOM 요소 참조
         const itemInput = document.getElementById('item-input');
         const addBtn = document.getElementById('add-btn');
         const itemsContainer = document.getElementById('items-container');
+        const itemCounter = document.getElementById('item-counter');
         const favoriteNameInput = document.getElementById('favorite-name-input');
         const saveFavoriteBtn = document.getElementById('save-favorite-btn');
         const favoritesList = document.getElementById('favorites-list');
-        const spinButton = document.getElementById('spin-button');
-
-        let items = [];
-        let favorites = JSON.parse(localStorage.getItem('rouletteFavorites')) || [];
-
-        function updateItemsDisplay() {
+        const startGameBtn = document.getElementById('start-game-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const kakaoNotice = document.getElementById('kakao-notice');
+        
+        // ===================================== //
+        // 📱 카카오톡 브라우저 감지              //
+        // ===================================== //
+        
+        const detectKakaoBrowser = () => {
+            const userAgent = navigator.userAgent;
+            return userAgent.includes('KAKAOTALK');
+        };
+        
+        // ===================================== //
+        // 📝 항목 관리                          //
+        // ===================================== //
+        
+        // 항목 추가
+        const addItem = () => {
+            const value = itemInput.value.trim();
+            
+            if (!value) {
+                showToast('항목을 입력해주세요!', 'error');
+                itemInput.focus();
+                return;
+            }
+            
+            if (value.length > 20) {
+                showToast('항목은 20자 이하로 입력해주세요!', 'error');
+                itemInput.focus();
+                return;
+            }
+            
+            if (items.includes(value)) {
+                showToast('이미 추가된 항목입니다!', 'error');
+                itemInput.focus();
+                return;
+            }
+            
+            if (items.length >= 12) {
+                showToast('최대 12개까지만 추가할 수 있습니다!', 'error');
+                return;
+            }
+            
+            items.push(value);
+            itemInput.value = '';
+            itemInput.focus();
+            
+            updateItemsDisplay();
+            updateStartGameButton();
+            updateSaveFavoriteButton();
+            
+            showToast(`"${value}" 항목이 추가되었습니다!`, 'success');
+        };
+        
+        // 항목 제거
+        const removeItem = (index) => {
+            if (index < 0 || index >= items.length) return;
+            
+            const removedItem = items[index];
+            items.splice(index, 1);
+            
+            updateItemsDisplay();
+            updateStartGameButton();
+            updateSaveFavoriteButton();
+            
+            showToast(`"${removedItem}" 항목이 삭제되었습니다!`, 'info');
+        };
+        
+        // 항목 목록 UI 업데이트
+        const updateItemsDisplay = () => {
             itemsContainer.innerHTML = '';
+            itemCounter.textContent = `${items.length}개`;
+            
+            if (items.length === 0) {
+                itemsContainer.innerHTML = '<div class="empty-state">아직 추가된 항목이 없습니다. 위에서 항목을 추가해보세요!</div>';
+                return;
+            }
+            
             items.forEach((item, index) => {
                 const tag = document.createElement('div');
                 tag.className = 'item-tag';
-                tag.innerHTML = `<span>${item}</span><button class="remove-btn" data-index="${index}">×</button>`;
+                
+                const itemText = document.createElement('span');
+                itemText.textContent = item;
+                
+                const removeButton = document.createElement('button');
+                removeButton.className = 'remove-btn';
+                removeButton.textContent = '×';
+                removeButton.setAttribute('aria-label', `${item} 삭제`);
+                removeButton.onclick = () => removeItem(index);
+                
+                tag.appendChild(itemText);
+                tag.appendChild(removeButton);
                 itemsContainer.appendChild(tag);
             });
-            spinButton.disabled = items.length < 2;
+        };
+        
+        // 게임 시작 버튼 상태 업데이트
+        const updateStartGameButton = () => {
+            const canStart = items.length >= 2;
+            startGameBtn.disabled = !canStart;
+            
+            if (canStart) {
+                startGameBtn.innerHTML = '<span>🎯</span> 게임 시작!';
+            } else {
+                startGameBtn.innerHTML = '<span>❌</span> 최소 2개 항목 필요';
+            }
+        };
+        
+        // ===================================== //
+        // ⭐ 즐겨찾기 시스템                    //
+        // ===================================== //
+        
+        // 즐겨찾기 저장
+        const saveFavorite = () => {
+            const name = favoriteNameInput.value.trim();
+            
+            if (!name) {
+                showToast('다트 게임 이름을 입력해주세요!', 'error');
+                favoriteNameInput.focus();
+                return;
+            }
+            
+            if (name.length > 30) {
+                showToast('이름은 30자 이하로 입력해주세요!', 'error');
+                favoriteNameInput.focus();
+                return;
+            }
+            
+            if (items.length < 2) {
+                showToast('최소 2개 항목이 필요합니다!', 'error');
+                return;
+            }
+            
+            const existingIndex = favorites.findIndex(fav => fav.name === name);
+            
+            if (existingIndex !== -1) {
+                if (!confirm(`"${name}" 이름의 즐겨찾기가 이미 있습니다. 덮어쓰시겠습니까?`)) {
+                    return;
+                }
+                favorites[existingIndex] = {
+                    name: name,
+                    items: [...items],
+                    createdAt: Date.now()
+                };
+            } else {
+                favorites.push({
+                    name: name,
+                    items: [...items],
+                    createdAt: Date.now()
+                });
+            }
+            
+            saveFavoritesToStorage();
+            favoriteNameInput.value = '';
+            updateFavoritesDisplay();
             updateSaveFavoriteButton();
-        }
-
-        function updateFavoritesDisplay() {
+            
+            showToast(`"${name}" 즐겨찾기가 저장되었습니다!`, 'success');
+        };
+        
+        // 즐겨찾기 불러오기
+        const loadFavorite = (index) => {
+            if (index < 0 || index >= favorites.length) return;
+            
+            const favorite = favorites[index];
+            
+            if (items.length > 0) {
+                if (!confirm(`현재 항목들이 "${favorite.name}" 즐겨찾기로 바뀝니다. 계속하시겠습니까?`)) {
+                    return;
+                }
+            }
+            
+            items = [...favorite.items];
+            
+            updateItemsDisplay();
+            updateStartGameButton();
+            updateSaveFavoriteButton();
+            
+            showToast(`"${favorite.name}" 즐겨찾기를 불러왔습니다!`, 'info');
+        };
+        
+        // 즐겨찾기 삭제
+        const deleteFavorite = (index) => {
+            if (index < 0 || index >= favorites.length) return;
+            
+            const favorite = favorites[index];
+            
+            if (!confirm(`"${favorite.name}" 즐겨찾기를 삭제하시겠습니까?`)) {
+                return;
+            }
+            
+            favorites.splice(index, 1);
+            saveFavoritesToStorage();
+            updateFavoritesDisplay();
+            
+            showToast(`"${favorite.name}" 즐겨찾기가 삭제되었습니다!`, 'info');
+        };
+        
+        // 즐겨찾기 목록 UI 업데이트
+        const updateFavoritesDisplay = () => {
             favoritesList.innerHTML = '';
-            favorites.forEach((fav, index) => {
-                const li = document.createElement('div');
-                li.className = 'favorite-item';
-                li.innerHTML = `<span class="favorite-name">${fav.name} (${fav.items.length}개)</span>
-                                <div>
-                                    <button class="btn" data-action="load" data-index="${index}">불러오기</button>
-                                    <button class="btn" data-action="delete" data-index="${index}">삭제</button>
-                                </div>`;
-                favoritesList.appendChild(li);
+            
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<div class="empty-state">저장된 즐겨찾기가 없습니다.</div>';
+                return;
+            }
+            
+            favorites.forEach((favorite, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'favorite-item';
+                
+                const info = document.createElement('div');
+                info.className = 'favorite-info';
+                
+                const name = document.createElement('div');
+                name.className = 'favorite-name';
+                name.textContent = favorite.name;
+                
+                const details = document.createElement('div');
+                details.className = 'favorite-details';
+                const date = new Date(favorite.createdAt).toLocaleDateString();
+                details.textContent = `${favorite.items.length}개 항목 • ${date}`;
+                
+                info.appendChild(name);
+                info.appendChild(details);
+                
+                const actions = document.createElement('div');
+                actions.className = 'favorite-actions';
+                
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'btn btn-small';
+                loadBtn.innerHTML = '<span>📂</span> 불러오기';
+                loadBtn.onclick = () => loadFavorite(index);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-small btn-outline';
+                deleteBtn.innerHTML = '<span>🗑️</span> 삭제';
+                deleteBtn.onclick = () => deleteFavorite(index);
+                
+                actions.appendChild(loadBtn);
+                actions.appendChild(deleteBtn);
+                
+                listItem.appendChild(info);
+                listItem.appendChild(actions);
+                favoritesList.appendChild(listItem);
+            });
+        };
+        
+        // 저장 버튼 상태 업데이트
+        const updateSaveFavoriteButton = () => {
+            const hasItems = items.length >= 2;
+            const hasName = favoriteNameInput.value.trim().length > 0;
+            
+            saveFavoriteBtn.disabled = !hasItems || !hasName;
+        };
+        
+        // localStorage 관리
+        const saveFavoritesToStorage = () => {
+            try {
+                localStorage.setItem('dart-favorites', JSON.stringify(favorites));
+            } catch (error) {
+                console.error('즐겨찾기 저장 실패:', error);
+                showToast('저장 공간이 부족합니다!', 'error');
+            }
+        };
+        
+        const loadFavoritesFromStorage = () => {
+            try {
+                const saved = localStorage.getItem('dart-favorites');
+                if (saved) {
+                    favorites = JSON.parse(saved);
+                    updateFavoritesDisplay();
+                }
+            } catch (error) {
+                console.error('즐겨찾기 불러오기 실패:', error);
+                favorites = [];
+            }
+        };
+        
+        // ===================================== //
+        // 🎯 게임 시작 버튼 - URL 파라미터 전달 //
+        // ===================================== //
+        
+        // 게임 시작 버튼 클릭 처리 (URL 파라미터 방식)
+        const handleStartGame = () => {
+            if (items.length < 2) {
+                showToast('최소 2개 항목이 필요합니다!', 'error');
+                return;
+            }
+            
+            try {
+                // items 배열을 URL 파라미터로 변환 (한글 깨짐 방지)
+                const encodedItems = items.map(item => encodeURIComponent(item)).join(',');
+                const targetUrl = `game.html?items=${encodedItems}`;
+                
+                console.log('🎯 전달할 항목들:', items);
+                console.log('📦 URL 파라미터:', encodedItems);
+                console.log('🚀 이동할 주소:', targetUrl);
+                
+                // game.html 페이지로 이동
+                window.location.href = targetUrl;
+                
+            } catch (error) {
+                console.error('URL 생성 실패:', error);
+                showToast('게임 시작에 실패했습니다. 다시 시도해주세요.', 'error');
+            }
+        };
+        
+        // ===================================== //
+        // 📤 공유하기 기능                      //
+        // ===================================== //
+        
+        // 공유하기 버튼
+        const handleShare = async () => {
+            const shareData = {
+                title: '결정장애 다트 🎯',
+                text: '다트로 결정을 내려보세요!',
+                url: window.location.href
+            };
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    showToast('공유가 완료되었습니다!', 'success');
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('공유 실패:', error);
+                        fallbackShare();
+                    }
+                }
+            } else {
+                fallbackShare();
+            }
+        };
+        
+        // 링크 복사
+        const handleCopyLink = async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                showToast('링크가 클립보드에 복사되었습니다!', 'success');
+            } catch (error) {
+                console.error('링크 복사 실패:', error);
+                showToast('링크 복사에 실패했습니다.', 'error');
+            }
+        };
+        
+        // 공유 대체 방법
+        const fallbackShare = () => {
+            const text = `다트로 결정을 내려보세요! ${window.location.href}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('공유 텍스트가 클립보드에 복사되었습니다!', 'success');
+                });
+            } else {
+                showToast('공유 기능을 사용할 수 없습니다.', 'error');
+            }
+        };
+        
+        // ===================================== //
+        // 🔔 알림 시스템                        //
+        // ===================================== //
+        
+        // 토스트 알림
+        const showToast = (message, type = 'info') => {
+            const existing = document.querySelector('.toast');
+            if (existing) {
+                existing.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 300);
+            }, 3000);
+        };
+        
+        // ===================================== //
+        // 🎮 이벤트 리스너 및 초기화            //
+        // ===================================== //
+        
+        // 키보드 이벤트
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (event.target === itemInput) {
+                    addItem();
+                } else if (event.target === favoriteNameInput) {
+                    if (!saveFavoriteBtn.disabled) {
+                        saveFavorite();
+                    }
+                }
+            }
+        };
+        
+        // 전역 키보드 단축키
+        const handleGlobalKeyDown = (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                event.preventDefault();
+                if (!startGameBtn.disabled) {
+                    handleStartGame();
+                }
+            }
+        };
+        
+        // 초기화 함수
+        const init = () => {
+            // 카카오톡 브라우저 감지
+            if (detectKakaoBrowser()) {
+                kakaoNotice.classList.add('show');
+            }
+            
+            // 이벤트 리스너 등록
+            addBtn.addEventListener('click', addItem);
+            startGameBtn.addEventListener('click', handleStartGame);
+            saveFavoriteBtn.addEventListener('click', saveFavorite);
+            shareBtn.addEventListener('click', handleShare);
+            copyBtn.addEventListener('click', handleCopyLink);
+            itemInput.addEventListener('keypress', handleKeyPress);
+            favoriteNameInput.addEventListener('keypress', handleKeyPress);
+            favoriteNameInput.addEventListener('input', updateSaveFavoriteButton);
+            document.addEventListener('keydown', handleGlobalKeyDown);
+            
+            // 저장된 데이터 불러오기
+            loadFavoritesFromStorage();
+            
+            // 초기 UI 설정
+            updateItemsDisplay();
+            updateFavoritesDisplay();
+            updateStartGameButton();
+            updateSaveFavoriteButton();
+            
+            // 초기 포커스
+            if (window.innerWidth > 600) {
+                itemInput.focus();
+            }
+            
+            console.log('🎯 다트 게임 메인 페이지 초기화 완료!');
+            console.log('📦 URL 파라미터 전달 방식: game.html');
+        };
+        
+        // DOM 로드 완료 후 초기화
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+        
+        console.log('🎨 다트 게임 메인 페이지 로드 완료');
+    </script>
+    
+    <!-- PWA Service Worker 등록 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker 등록 성공:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('❌ Service Worker 등록 실패:', error);
+                    });
             });
         }
-        
-        function updateSaveFavoriteButton() {
-            saveFavoriteBtn.disabled = items.length < 2 || !favoriteNameInput.value.trim();
-        }
 
-        addBtn.onclick = () => {
-            const value = itemInput.value.trim();
-            if (value && !items.includes(value)) {
-                items.push(value);
-                itemInput.value = '';
-                updateItemsDisplay();
-            }
-        };
-        
-        itemInput.onkeyup = (e) => {
-            if (e.key === 'Enter') addBtn.onclick();
-        };
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('📱 PWA 설치 가능');
+        });
 
-        itemsContainer.onclick = (e) => {
-            if (e.target.classList.contains('remove-btn')) {
-                items.splice(e.target.dataset.index, 1);
-                updateItemsDisplay();
-            }
-        };
-        
-        favoriteNameInput.oninput = updateSaveFavoriteButton;
-
-        saveFavoriteBtn.onclick = () => {
-            const name = favoriteNameInput.value.trim();
-            favorites.push({ name, items: [...items] });
-            localStorage.setItem('rouletteFavorites', JSON.stringify(favorites));
-            updateFavoritesDisplay();
-            favoriteNameInput.value = '';
-        };
-
-        favoritesList.onclick = (e) => {
-            const { action, index } = e.target.dataset;
-            if (action === 'load') {
-                items = [...favorites[index].items];
-                updateItemsDisplay();
-            } else if (action === 'delete') {
-                favorites.splice(index, 1);
-                localStorage.setItem('rouletteFavorites', JSON.stringify(favorites));
-                updateFavoritesDisplay();
-            }
-        };
-
-        spinButton.onclick = () => {
-            const encodedItems = items.map(item => encodeURIComponent(item)).join(',');
-            window.location.href = `result.html?items=${encodedItems}`;
-        };
-
-        updateItemsDisplay();
-        updateFavoritesDisplay();
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 PWA 설치 완료!');
+            deferredPrompt = null;
+        });
     </script>
 </body>
 </html>
