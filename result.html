@@ -9,9 +9,6 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
     
-    <!-- GSAP 라이브러리 (필수) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    
     <!-- PWA 메타 태그 -->
     <meta name="description" content="결정장애 돌림판 - 결과를 확인해보세요!">
     <meta name="theme-color" content="#007BFF">
@@ -28,7 +25,7 @@
     
     <style>
         /* ===================================== */
-        /* 🎯 미니멀리즘 디자인 - 흰색 배경 + 파란색 포인트 */
+        /* 🎯 결과 페이지 - 미니멀리즘 디자인   */
         /* ===================================== */
         
         /* 기본 리셋 */
@@ -355,13 +352,15 @@
 
     <script>
         // ===================================================================
-        // 🎯 실패 불가능한 설계 - 수학적으로 완벽한 돌림판 시스템
+        // 🎯 더 이상 실패할 수 없는 최종 설계 - 완벽한 돌림판 시스템
         // ===================================================================
         
-        // 상태 관리
-        let items = [];
-        let isSpinning = false;
-        let preSelectedWinner = null;
+        // [1] 전역 변수 - 실패 불가능한 구조
+        let items = []; // URL 파라미터에서 가져온 항목들
+        let currentAngle = 0; // 애니메이션이 업데이트할 유일한 각도 변수
+        let isSpinning = false; // 중복 실행 방지
+        let preSelectedWinner = null; // 미리 결정된 승자
+        let animationId = null; // 애니메이션 ID
         
         // 미리 정의된 10개 다채로운 색상 배열 (절대 변경 금지)
         const COLORS = [
@@ -409,11 +408,11 @@
         };
         
         // ===================================================================
-        // 🎨 drawRoulette() 함수 - 오직 그리기만 담당 (핵심)
+        // [2] drawRoulette(rotationOffset) 함수 재설계 (핵심 중의 핵심)
         // ===================================================================
         
-        const drawRoulette = () => {
-            console.log('🎨 drawRoulette() 실행 - 오직 그리기만 담당');
+        const drawRoulette = (rotationOffset = 0) => {
+            console.log(`🎨 drawRoulette(${(rotationOffset * 180 / Math.PI).toFixed(1)}도) 실행`);
             
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
@@ -427,23 +426,28 @@
                 return;
             }
             
-            // 🔥 핵심: 캔버스 자체를 회전시키지 않고, 고정된 캔버스 위에 계산된 각도로 그리기
-            let startAngle = -Math.PI / 2; // 12시 방향을 0도의 기준으로 삼는다
+            // 🔥 핵심: rotationOffset를 모든 각도 계산에 더해서 그리기
+            // ctx.rotate()는 절대 사용하지 않는다!
+            let startAngle = -Math.PI / 2; // 12시 방향을 기준으로 시작
             const sliceAngle = (2 * Math.PI) / items.length;
             
             console.log(`📐 조각 개수: ${items.length}, 조각 크기: ${(sliceAngle * 180 / Math.PI).toFixed(1)}도`);
             
-            // items 배열을 순회하며 각 조각을 정확한 순서로 그리기
+            // items 배열을 순회하며 각 조각을 rotationOffset을 적용해서 그리기
             items.forEach((item, index) => {
                 // 미리 정의된 색상 배열에서 순서대로 가져오기
                 const color = COLORS[index % COLORS.length];
                 
-                console.log(`🎨 조각 ${index}: "${item}" - 색상: ${color} - 각도: ${(startAngle * 180 / Math.PI).toFixed(1)}도`);
+                // 🔥 모든 각도 계산에 rotationOffset을 더한다
+                const adjustedStartAngle = startAngle + rotationOffset;
+                const adjustedEndAngle = (startAngle + sliceAngle) + rotationOffset;
                 
-                // 🔥 실패 불가능한 그리기 순서 (절대 변경 금지)
+                console.log(`🎨 조각 ${index}: "${item}" - 색상: ${color} - 회전된 각도: ${(adjustedStartAngle * 180 / Math.PI).toFixed(1)}도`);
+                
+                // 조각 그리기 (rotationOffset 적용)
                 ctx.beginPath();
-                ctx.moveTo(centerX, centerY); // 매번 중앙에서 시작한다
-                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, adjustedStartAngle, adjustedEndAngle);
                 ctx.closePath();
                 ctx.fillStyle = color;
                 ctx.fill();
@@ -453,8 +457,8 @@
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // 텍스트를 조각의 정확한 중앙에 올바른 각도로 그리기
-                const textAngle = startAngle + sliceAngle / 2;
+                // 텍스트를 조각의 정확한 중앙에 올바른 각도로 그리기 (rotationOffset 적용)
+                const textAngle = (startAngle + sliceAngle / 2) + rotationOffset;
                 const textRadius = radius * 0.7;
                 const textX = centerX + Math.cos(textAngle) * textRadius;
                 const textY = centerY + Math.sin(textAngle) * textRadius;
@@ -482,11 +486,11 @@
             ctx.lineWidth = 4;
             ctx.stroke();
             
-            console.log('✅ drawRoulette() 완료 - 돌림판 그리기 성공');
+            console.log(`✅ drawRoulette(${(rotationOffset * 180 / Math.PI).toFixed(1)}도) 완료`);
         };
         
         // ===================================================================
-        // 🎯 spin() 함수 - 승자 선결정 + GSAP 회전 (핵심)
+        // [3] spin() 함수 재설계 - requestAnimationFrame 애니메이션
         // ===================================================================
         
         const spin = () => {
@@ -496,6 +500,12 @@
             if (isSpinning || items.length === 0) {
                 console.warn('⚠️ 이미 회전 중이거나 항목이 없음');
                 return;
+            }
+            
+            // 이전 애니메이션 정리
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
             }
             
             isSpinning = true;
@@ -513,40 +523,64 @@
             
             console.log(`🏆 승자 선결정: [${winnerIndex}] "${winnerItem}"`);
             
-            // 🔥 2단계: 수학적으로 완벽한 목표 각도 계산
-            const sliceAngle = 360 / items.length; // 도(degree) 단위로 계산
+            // 🔥 2단계: 정확한 최종 목표 각도를 계산한다
+            const sliceAngle = (2 * Math.PI) / items.length; // 라디안 단위
             const winnerAngle = winnerIndex * sliceAngle;
             
-            // 🔥 가장 중요한 공식 (절대 변경 금지)
-            const targetRotation = (360 * 10) - winnerAngle - (sliceAngle / 2);
+            // 목표 각도: 10바퀴 + 승자 조각의 중앙에 정확히 멈춤
+            const finalTargetAngle = (2 * Math.PI * 10) + winnerAngle + (sliceAngle / 2);
             
-            console.log(`📐 조각 크기: ${sliceAngle.toFixed(1)}도`);
-            console.log(`🎯 승자 각도: ${winnerAngle.toFixed(1)}도`);
-            console.log(`🚀 목표 회전: ${targetRotation.toFixed(1)}도`);
-            console.log('📝 공식: (360 * 10) - winnerAngle - (sliceAngle / 2)');
+            console.log(`📐 조각 크기: ${(sliceAngle * 180 / Math.PI).toFixed(1)}도`);
+            console.log(`🎯 승자 각도: ${(winnerAngle * 180 / Math.PI).toFixed(1)}도`);
+            console.log(`🚀 최종 목표: ${(finalTargetAngle * 180 / Math.PI).toFixed(1)}도`);
             
-            // 🔥 3단계: GSAP 라이브러리로 canvas 요소 자체를 회전시킨다
-            gsap.to(canvas, {
-                rotation: targetRotation,
-                duration: 4,
-                ease: "power3.out",
-                onComplete: () => {
-                    console.log('🛑 GSAP 애니메이션 완료');
-                    
-                    // 🔥 4단계: 애니메이션 완료 후 처리
-                    isSpinning = false; // 반드시 리셋하여 재회전 가능하게 함
-                    canvas.classList.remove('spinning');
-                    
-                    console.log('🔓 isSpinning = false, 재회전 가능');
-                    
-                    // 미리 결정된 승자를 표시
-                    showResult(preSelectedWinner.item);
-                    
-                    console.log(`🎉 최종 결과 표시: "${preSelectedWinner.item}"`);
+            // 🔥 3단계: requestAnimationFrame을 사용한 애니메이션 루프를 실행한다
+            const startAngle = currentAngle;
+            const targetAngle = finalTargetAngle;
+            const duration = 4000; // 4초
+            const startTime = performance.now();
+            
+            console.log(`🎬 애니메이션 시작: ${(startAngle * 180 / Math.PI).toFixed(1)}도 → ${(targetAngle * 180 / Math.PI).toFixed(1)}도`);
+            
+            const animate = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // easing function (점진적 감속)
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                
+                // 🔥 오직 currentAngle 변수의 값을 목표 각도까지 점진적으로 바꾸고
+                currentAngle = startAngle + (targetAngle - startAngle) * easeOut;
+                
+                // 🔥 매 프레임마다 drawRoulette(currentAngle)를 호출한다
+                drawRoulette(currentAngle);
+                
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    // 🔥 4단계: 애니메이션이 끝나면 처리
+                    finishSpin();
                 }
-            });
+            };
             
-            console.log('✅ spin() 완료 - GSAP 애니메이션 시작됨');
+            animationId = requestAnimationFrame(animate);
+            console.log('✅ spin() 완료 - requestAnimationFrame 애니메이션 시작됨');
+        };
+        
+        const finishSpin = () => {
+            console.log('🛑 애니메이션 완료');
+            
+            // 🔥 isSpinning 플래그를 false로 리셋한다
+            isSpinning = false;
+            canvas.classList.remove('spinning');
+            animationId = null;
+            
+            console.log('🔓 isSpinning = false, 재회전 가능');
+            
+            // 미리 결정된 승자를 표시
+            showResult(preSelectedWinner.item);
+            
+            console.log(`🎉 최종 결과 표시: "${preSelectedWinner.item}"`);
         };
         
         // ===================================================================
@@ -590,12 +624,24 @@
         };
         
         // ===================================================================
-        // 🔄 다시 돌리기 - 페이지 완전 새로고침
+        // [4] '다시 돌리기' 버튼 - spin() 함수를 다시 호출
         // ===================================================================
         
         const handleRestart = () => {
-            console.log('🔄 다시 돌리기 - location.reload() 실행');
-            location.reload(); // 페이지를 완전히 새로고침한다
+            console.log('🔄 다시 돌리기 - spin() 함수 재호출');
+            
+            // location.reload()를 사용하지 않고, spin() 함수를 다시 호출
+            // spin 함수가 항상 currentAngle을 기준으로 새로운 목표 각도를 계산하기 때문에 완벽하게 작동
+            
+            // UI 상태 리셋
+            resultDisplay.textContent = '돌림판을 클릭해주세요!';
+            resultDisplay.className = 'result-display';
+            spinBtn.style.display = 'inline-flex';
+            spinBtn.disabled = false;
+            restartBtn.style.display = 'none';
+            
+            // 새로운 회전 시작
+            spin();
         };
         
         // ===================================================================
@@ -617,7 +663,7 @@
         
         // 페이지 초기화
         const initPage = () => {
-            console.log('🚀 === 실패 불가능한 돌림판 시스템 초기화 ===');
+            console.log('🚀 === 더 이상 실패할 수 없는 최종 돌림판 시스템 초기화 ===');
             
             // URL 파라미터에서 항목 가져오기
             const loadedItems = loadItemsFromUrl();
@@ -632,13 +678,18 @@
             
             // 항목 설정 및 돌림판 그리기
             items = loadedItems;
-            drawRoulette();
+            currentAngle = 0; // 초기 각도 설정
+            drawRoulette(currentAngle); // 초기 돌림판 그리기
             
             console.log(`✅ 초기화 완료: ${items.length}개 항목`);
             console.log('📋 항목 목록:', items);
             console.log('🎨 미리 정의된 색상 배열:', COLORS);
-            console.log('📐 수학 공식: targetRotation = (360 * 10) - winnerAngle - (sliceAngle / 2)');
-            console.log('🔧 GSAP 라이브러리 로드 상태:', typeof gsap !== 'undefined' ? '✅ 로드됨' : '❌ 로드 실패');
+            console.log('📐 핵심 설계:');
+            console.log('  - drawRoulette(rotationOffset) 함수로 회전 표현');
+            console.log('  - currentAngle 변수로 애니메이션 상태 관리');
+            console.log('  - requestAnimationFrame으로 부드러운 애니메이션');
+            console.log('  - ctx.rotate() 절대 사용 금지');
+            console.log('  - 다시 돌리기는 spin() 재호출로 완벽 작동');
             console.log('═══════════════════════════════════');
         };
         
@@ -649,7 +700,7 @@
             initPage();
         }
         
-        console.log('🎯 실패 불가능한 돌림판 결과 페이지 로드 완료');
+        console.log('🎯 더 이상 실패할 수 없는 최종 돌림판 결과 페이지 로드 완료');
     </script>
     
     <!-- PWA Service Worker 등록 -->

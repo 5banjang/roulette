@@ -920,18 +920,6 @@
                     });
             });
         }
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            console.log('📱 PWA 설치 가능');
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('🎉 PWA 설치 완료!');
-            deferredPrompt = null;
-        });
     </script>
 </body>
 </html> 
