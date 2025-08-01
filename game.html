@@ -494,31 +494,49 @@
     </div>
 
     <script>
-        // 🎯 다트 게임 엔진 - 최적화된 구조
+        // 🎯 다트 게임 엔진 - 완전 재설계 (게임플레이 경험 최적화)
         
-        // 게임 상태 객체
+        // ===================================================================
+        // 🎮 게임 상태 관리 객체
+        // ===================================================================
+        
         const gameState = {
-            items: [],
+            // 게임 실행 상태
             running: false,
             loopId: null,
-            board: { rotation: 0, speed: 0.5 },
-            arrow: { flying: false, y: 0, speed: 0, startY: 100 },
-            drag: { active: false, startY: 0, distance: 0, maxDistance: 60 }
+            
+            // 과녁판 상태
+            board: {
+                rotation: 0,
+                rotationSpeed: 0.5, // 초당 30도 = 0.5도/프레임 (60fps 기준)
+                isSlowingDown: false,
+                targetRotation: 0,
+                slowDownSpeed: 0.98 // ease-out 감속비
+            },
+            
+            // 화살 상태
+            arrow: {
+                isFlying: false,
+                y: 25, // 초기 bottom 위치
+                speed: 0,
+                isStuckInBoard: false,
+                boardAttachAngle: 0 // 과녁판에 꽂힌 각도
+            },
+            
+            // 드래그 상태
+            drag: {
+                active: false,
+                startY: 0,
+                currentPower: 0,
+                maxPower: 60
+            },
+            
+            // 게임 데이터
+            items: [],
+            hitResult: null
         };
         
-        // 게임 설정
-        const config = {
-            maxItems: 12,
-            minArrowSpeed: 3,
-            maxArrowSpeed: 12,
-            boardRotationSpeed: 0.5,
-            colors: [
-                '#FF8B8B', '#FFC977', '#FFFB8B', '#C2FF8B', '#8BFFC2', '#8BFFFF',
-                '#8BC2FF', '#C28BFF', '#FF8BFF', '#FFC28B', '#FFB3E6', '#B3E5FF'
-            ]
-        };
-        
-        // DOM 요소 참조 (캐싱)
+        // DOM 요소 캐싱
         const elements = {
             targetBoard: document.getElementById('target-board'),
             bow: document.getElementById('bow'),
@@ -533,22 +551,47 @@
             restartBtn: document.getElementById('restart-btn')
         };
         
-        // 유틸리티 함수들
-        const utils = {
-            getEventY: (event) => event.type.includes('touch') ? 
-                (event.touches[0]?.clientY || event.changedTouches[0]?.clientY) : event.clientY,
-            
-            normalizeAngle: (angle) => ((angle % 360) + 360) % 360,
-            
-            calculateDistance: (x1, y1, x2, y2) => 
-                Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
+        // 게임 설정
+        const config = {
+            colors: [
+                '#FF8B8B', '#FFC977', '#FFFB8B', '#C2FF8B', '#8BFFC2', '#8BFFFF',
+                '#8BC2FF', '#C28BFF', '#FF8BFF', '#FFC28B', '#FFB3E6', '#B3E5FF'
+            ]
         };
         
         // ===================================================================
-        // 🔧 초기화 함수들
+        // 🔧 유틸리티 함수
         // ===================================================================
         
-        // URL 파라미터에서 항목 가져오기
+        const utils = {
+            // 터치/마우스 이벤트 Y 좌표 통합
+            getEventY: (event) => {
+                return event.type.includes('touch') ? 
+                    (event.touches[0]?.clientY || event.changedTouches[0]?.clientY) : 
+                    event.clientY;
+            },
+            
+            // 각도 정규화 (0-360)
+            normalizeAngle: (angle) => {
+                return ((angle % 360) + 360) % 360;
+            },
+            
+            // 두 점 사이 거리
+            distance: (x1, y1, x2, y2) => {
+                return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+            },
+            
+            // ease-out 함수
+            easeOut: (t) => {
+                return 1 - Math.pow(1 - t, 3);
+            }
+        };
+        
+        // ===================================================================
+        // 🎯 게임 초기화
+        // ===================================================================
+        
+        // URL에서 항목 로드
         const loadItemsFromUrl = () => {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -559,315 +602,380 @@
                     return [];
                 }
                 
-                const decodedItems = itemsParam.split(',').map(item => decodeURIComponent(item));
-                return decodedItems;
-                
+                return itemsParam.split(',').map(item => decodeURIComponent(item));
             } catch (error) {
                 console.error('URL 파라미터 파싱 실패:', error);
                 return [];
             }
         };
         
-        // 과녁판에 항목들을 원형으로 배치
+        // 과녁판 항목 생성
         const createTargetItems = () => {
-            // 기존 항목들 제거 (중앙 원 제외)
-            const existingItems = targetBoard.querySelectorAll('.target-item');
+            // 기존 항목 제거 (중앙 원 제외)
+            const existingItems = elements.targetBoard.querySelectorAll('.target-item');
             existingItems.forEach(item => item.remove());
             
-            if (items.length === 0) return;
+            if (gameState.items.length === 0) return;
             
-            const angleStep = 360 / items.length;
+            const angleStep = 360 / gameState.items.length;
             
-            items.forEach((item, index) => {
+            gameState.items.forEach((item, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = `target-item color-${index % 12}`;
                 itemDiv.textContent = item;
-                itemDiv.style.backgroundColor = colors[index % colors.length];
+                itemDiv.style.backgroundColor = config.colors[index % config.colors.length];
                 
-                // 각 항목을 원형으로 배치 (피자 조각 모양)
+                // 원형 배치 (피자 조각)
                 const angle = index * angleStep;
                 itemDiv.style.transform = `rotate(${angle}deg) translate(25%, -50%)`;
                 itemDiv.style.clipPath = `polygon(0 0, 100% 25%, 100% 75%, 0 100%)`;
                 
-                // 데이터 속성으로 항목 정보 저장
+                // 데이터 저장
                 itemDiv.dataset.index = index;
                 itemDiv.dataset.item = item;
                 itemDiv.dataset.angle = angle;
                 
-                targetBoard.appendChild(itemDiv);
+                elements.targetBoard.appendChild(itemDiv);
             });
-            
-            // 과녁판 배치 완료
         };
         
         // ===================================================================
         // 🎮 메인 게임 루프 (requestAnimationFrame)
         // ===================================================================
         
-        // 메인 게임 루프 - 최적화된 버전
         const gameLoop = () => {
             if (!gameState.running) return;
             
             // 1. 과녁판 회전 업데이트
-            if (!gameState.arrow.flying) {
-                gameState.board.rotation += gameState.board.speed;
-                if (gameState.board.rotation >= 360) gameState.board.rotation -= 360;
-                elements.targetBoard.style.transform = `rotate(${gameState.board.rotation}deg)`;
-            }
+            updateBoardRotation();
             
             // 2. 화살 움직임 업데이트
-            if (gameState.arrow.flying) {
-                gameState.arrow.y += gameState.arrow.speed;
-                elements.arrow.style.bottom = `${gameState.arrow.y}px`;
-                
-                // 화살이 화면을 벗어나면 리셋
-                if (gameState.arrow.y > window.innerHeight + 100) {
-                    resetArrow();
-                } else {
-                    // 3. 충돌 감지
-                    checkCollision();
-                }
+            updateArrowMovement();
+            
+            // 3. 충돌 감지
+            if (gameState.arrow.isFlying && !gameState.arrow.isStuckInBoard) {
+                checkCollision();
             }
             
             // 다음 프레임 예약
             gameState.loopId = requestAnimationFrame(gameLoop);
         };
         
-        // ===================================================================
-        // 🏹 화살 발사 시스템 (손맛 구현)
-        // ===================================================================
-        
-        // 터치/마우스 이벤트 통합
-        const getEventY = (event) => {
-            return event.type.includes('touch') ? 
-                (event.touches[0]?.clientY || event.changedTouches[0]?.clientY) : 
-                event.clientY;
+        // 과녁판 회전 업데이트
+        const updateBoardRotation = () => {
+            if (gameState.board.isSlowingDown) {
+                // 서서히 멈추는 중
+                gameState.board.rotationSpeed *= gameState.board.slowDownSpeed;
+                
+                // 거의 멈췄으면 완전히 정지
+                if (gameState.board.rotationSpeed < 0.01) {
+                    gameState.board.rotationSpeed = 0;
+                    gameState.board.isSlowingDown = false;
+                    
+                    // 1초 후 결과 모달 표시
+                    setTimeout(() => {
+                        showResultModal();
+                        playSound('success');
+                    }, 1000);
+                }
+            }
+            
+            // 회전 적용
+            gameState.board.rotation += gameState.board.rotationSpeed;
+            gameState.board.rotation = utils.normalizeAngle(gameState.board.rotation);
+            
+            // DOM 업데이트
+            elements.targetBoard.style.transform = `rotate(${gameState.board.rotation}deg)`;
         };
         
+        // 화살 움직임 업데이트
+        const updateArrowMovement = () => {
+            if (gameState.arrow.isFlying && !gameState.arrow.isStuckInBoard) {
+                gameState.arrow.y += gameState.arrow.speed;
+                elements.arrow.style.bottom = `${gameState.arrow.y}px`;
+                
+                // 화면을 벗어나면 리셋
+                if (gameState.arrow.y > window.innerHeight + 100) {
+                    resetArrow();
+                }
+            }
+        };
+        
+        // ===================================================================
+        // 🏹 화살 발사 시스템
+        // ===================================================================
+        
         // 드래그 시작
-        const startDrag = (event) => {
-            if (arrowFlying) return;
+        const handleDragStart = (event) => {
+            if (gameState.arrow.isFlying || gameState.arrow.isStuckInBoard) return;
             
-            isDragging = true;
-            dragStartY = getEventY(event);
+            gameState.drag.active = true;
+            gameState.drag.startY = utils.getEventY(event);
+            gameState.drag.currentPower = 0;
             
-            powerGauge.classList.add('show');
-            
+            elements.powerGauge.classList.add('show');
             console.log('🏹 활시위 당기기 시작');
         };
         
-        // 드래그 중 (활시위 당기기)
-        const onDrag = (event) => {
-            if (!isDragging || arrowFlying) return;
+        // 드래그 중
+        const handleDrag = (event) => {
+            if (!gameState.drag.active || gameState.arrow.isFlying) return;
             
             event.preventDefault();
-            const currentY = getEventY(event);
-            const deltaY = currentY - dragStartY;
+            const currentY = utils.getEventY(event);
+            const deltaY = currentY - gameState.drag.startY;
             
-            // 아래쪽으로만 당길 수 있도록 제한
+            // 아래쪽으로만 당기기
             if (deltaY > 0) {
-                pullDistance = Math.min(deltaY, maxPullDistance);
+                gameState.drag.currentPower = Math.min(deltaY, gameState.drag.maxPower);
                 
-                // 활시위 변형 효과
-                if (pullDistance > 10) {
-                    bow.classList.add('pulled');
-                    arrow.classList.add('pulled');
+                // 시각적 효과
+                if (gameState.drag.currentPower > 10) {
+                    elements.bow.classList.add('pulled');
+                    elements.arrow.classList.add('pulled');
                 } else {
-                    bow.classList.remove('pulled');
-                    arrow.classList.remove('pulled');
+                    elements.bow.classList.remove('pulled');
+                    elements.arrow.classList.remove('pulled');
                 }
                 
                 // 파워 게이지 업데이트
-                const powerPercentage = (pullDistance / maxPullDistance) * 100;
-                powerFill.style.width = `${powerPercentage}%`;
+                const powerPercentage = (gameState.drag.currentPower / gameState.drag.maxPower) * 100;
+                elements.powerFill.style.width = `${powerPercentage}%`;
                 
-                // 지침 텍스트 업데이트
+                // 지침 업데이트
                 if (powerPercentage < 30) {
-                    instructions.textContent = '더 아래로 당기세요!';
+                    elements.instructions.textContent = '더 아래로 당기세요!';
                 } else if (powerPercentage < 70) {
-                    instructions.textContent = '좋습니다! 더 당기거나 놓으세요!';
+                    elements.instructions.textContent = '좋습니다! 더 당기거나 놓으세요!';
                 } else {
-                    instructions.textContent = '완벽한 파워! 이제 놓으세요!';
+                    elements.instructions.textContent = '완벽한 파워! 이제 놓으세요!';
                 }
             }
         };
         
         // 드래그 종료 (화살 발사)
-        const endDrag = (event) => {
-            if (!isDragging || arrowFlying) return;
+        const handleDragEnd = (event) => {
+            if (!gameState.drag.active || gameState.arrow.isFlying) return;
             
-            isDragging = false;
-            powerGauge.classList.remove('show');
+            gameState.drag.active = false;
+            elements.powerGauge.classList.remove('show');
             
-            if (pullDistance > 15) { // 최소 당김 거리
-                fireArrow(pullDistance);
+            if (gameState.drag.currentPower > 15) {
+                fireArrow(gameState.drag.currentPower);
             } else {
-                // 발사 실패 - 활시위 복원
-                bow.classList.remove('pulled');
-                arrow.classList.remove('pulled');
-                powerFill.style.width = '0%';
-                instructions.textContent = '더 세게 당겨서 발사하세요!';
+                // 발사 실패
+                elements.bow.classList.remove('pulled');
+                elements.arrow.classList.remove('pulled');
+                elements.powerFill.style.width = '0%';
+                elements.instructions.textContent = '더 세게 당겨서 발사하세요!';
             }
             
-            pullDistance = 0;
-            console.log('🏹 활시위 당기기 종료');
+            gameState.drag.currentPower = 0;
         };
         
         // 화살 발사
         const fireArrow = (power) => {
             console.log(`🚀 화살 발사! 파워: ${power}`);
             
-            arrowFlying = true;
-            arrowY = arrowStartY;
-            
-            // 파워에 비례한 속도 계산 (3-12 픽셀/프레임)
-            arrowSpeed = 3 + (power / maxPullDistance) * 9;
+            gameState.arrow.isFlying = true;
+            gameState.arrow.speed = 3 + (power / gameState.drag.maxPower) * 9;
             
             // 시각적 효과
-            arrow.classList.add('flying');
-            arrow.classList.remove('pulled');
-            bow.classList.remove('pulled');
-            powerFill.style.width = '0%';
+            elements.arrow.classList.add('flying');
+            elements.arrow.classList.remove('pulled');
+            elements.bow.classList.remove('pulled');
+            elements.powerFill.style.width = '0%';
             
-            instructions.textContent = '화살이 날아갑니다...';
-            
-            console.log(`화살 속도: ${arrowSpeed} px/frame`);
+            elements.instructions.textContent = '화살이 날아갑니다...';
         };
         
         // 화살 리셋
         const resetArrow = () => {
-            arrowFlying = false;
-            arrowY = 0;
-            arrowSpeed = 0;
+            gameState.arrow.isFlying = false;
+            gameState.arrow.isStuckInBoard = false;
+            gameState.arrow.y = 25;
+            gameState.arrow.speed = 0;
             
-            arrow.style.bottom = '25px';
-            arrow.classList.remove('flying', 'pulled');
-            bow.classList.remove('pulled');
+            elements.arrow.style.bottom = '25px';
+            elements.arrow.classList.remove('flying', 'pulled');
+            elements.bow.classList.remove('pulled');
             
-            instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
+            elements.instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
         };
         
         // ===================================================================
-        // 💥 충돌 감지 시스템
+        // 💥 충돌 감지 및 명중 처리
         // ===================================================================
         
         const checkCollision = () => {
-            if (!arrowFlying) return;
+            const boardRect = elements.targetBoard.getBoundingClientRect();
+            const arrowRect = elements.arrow.getBoundingClientRect();
             
-            // 과녁판과 화살의 위치 관계 확인
-            const boardRect = targetBoard.getBoundingClientRect();
-            const arrowRect = arrow.getBoundingClientRect();
-            
-            // 화살촉이 과녁판 영역에 있는지 확인
+            // 화살촉 위치
             const arrowTipX = arrowRect.left + arrowRect.width / 2;
             const arrowTipY = arrowRect.top;
             
+            // 과녁판 중심
             const boardCenterX = boardRect.left + boardRect.width / 2;
             const boardCenterY = boardRect.top + boardRect.height / 2;
             const boardRadius = boardRect.width / 2;
             
-            // 화살촉과 과녁판 중심 사이의 거리
-            const distance = Math.sqrt(
-                Math.pow(arrowTipX - boardCenterX, 2) + 
-                Math.pow(arrowTipY - boardCenterY, 2)
-            );
+            // 거리 계산
+            const distance = utils.distance(arrowTipX, arrowTipY, boardCenterX, boardCenterY);
             
-            // 과녁판 영역에 충돌했는지 확인
-            if (distance <= boardRadius - 10) { // 약간의 여유
-                const hitItem = calculateHitItem(arrowTipX, arrowTipY, boardCenterX, boardCenterY);
-                onHit(hitItem);
+            // 충돌 감지
+            if (distance <= boardRadius - 10) {
+                const hitResult = calculateHitItem(arrowTipX, arrowTipY, boardCenterX, boardCenterY);
+                onHit(hitResult);
             }
         };
         
         // 명중한 항목 계산
         const calculateHitItem = (arrowX, arrowY, boardCenterX, boardCenterY) => {
-            // 화살의 각도 계산 (12시 방향 기준)
+            // 화살의 각도 계산
             const deltaX = arrowX - boardCenterX;
             const deltaY = arrowY - boardCenterY;
             let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
             
-            // 각도를 0-360 범위로 정규화하고 12시 방향을 0도로 조정
-            angle = (angle + 90 + 360) % 360;
+            // 각도 정규화 (12시 방향 기준)
+            angle = utils.normalizeAngle(angle + 90);
             
-            // 과녁판의 현재 회전 고려
-            angle = (angle - boardRotation + 360) % 360;
+            // 과녁판 회전 고려
+            angle = utils.normalizeAngle(angle - gameState.board.rotation);
             
-            // 어느 조각에 속하는지 계산
-            const anglePerSlice = 360 / items.length;
+            // 명중 구역 계산
+            const anglePerSlice = 360 / gameState.items.length;
             const hitIndex = Math.floor(angle / anglePerSlice);
             
-            const hitItem = items[hitIndex];
-            
-            console.log(`🎯 충돌 감지:`);
-            console.log(`  화살 각도: ${angle.toFixed(1)}도`);
-            console.log(`  과녁판 회전: ${boardRotation.toFixed(1)}도`);
-            console.log(`  명중 항목: [${hitIndex}] "${hitItem}"`);
-            
-            return { index: hitIndex, item: hitItem };
+            return {
+                index: hitIndex,
+                item: gameState.items[hitIndex],
+                angle: angle
+            };
         };
         
-        // ===================================================================
-        // 🎯 명중 처리 및 결과 표시
-        // ===================================================================
-        
-        const onHit = (hitData) => {
-            console.log(`💥 명중! "${hitData.item}"`);
+        // 명중 처리
+        const onHit = (hitResult) => {
+            console.log(`💥 명중! "${hitResult.item}"`);
             
-            // 게임 루프 정지
-            gameRunning = false;
-            if (gameLoopId) {
-                cancelAnimationFrame(gameLoopId);
-                gameLoopId = null;
-            }
+            gameState.hitResult = hitResult;
+            gameState.arrow.isStuckInBoard = true;
+            gameState.arrow.isFlying = false;
             
-            // 화살 정지
-            arrowFlying = false;
+            // 명중 효과음 재생
+            playSound('hit');
             
-            // 명중한 항목에 시각적 효과
-            const targetItems = targetBoard.querySelectorAll('.target-item');
-            const hitElement = targetItems[hitData.index];
+            // 화살을 과녁판에 고정 (중요: 화살을 과녁판의 자식 요소로 만들기)
+            attachArrowToBoard(hitResult.angle);
+            
+            // 과녁판 서서히 멈추기 시작
+            gameState.board.isSlowingDown = true;
+            
+            // 명중한 항목 시각적 효과
+            const targetItems = elements.targetBoard.querySelectorAll('.target-item');
+            const hitElement = targetItems[hitResult.index];
             if (hitElement) {
                 hitElement.classList.add('hit');
             }
             
-            instructions.textContent = `🎯 "${hitData.item}" 명중!`;
-            
-            // 1초 후 결과 모달 표시
-            setTimeout(() => {
-                showResult(hitData.item);
-            }, 1000);
+            elements.instructions.textContent = `🎯 "${hitResult.item}" 명중!`;
         };
         
-        // 결과 모달 표시
-        const showResult = (selectedItem) => {
-            resultEmoji.textContent = '🎉';
-            resultText.textContent = selectedItem;
+        // 화살을 과녁판에 고정
+        const attachArrowToBoard = (angle) => {
+            // 화살을 과녁판의 자식으로 이동
+            const arrow = elements.arrow;
+            const board = elements.targetBoard;
             
-            resultModal.classList.add('show');
+            // 현재 화살의 절대 위치 계산
+            const arrowRect = arrow.getBoundingClientRect();
+            const boardRect = board.getBoundingClientRect();
             
-            console.log(`🎊 결과 표시: "${selectedItem}"`);
+            // 상대 위치 계산
+            const relativeX = arrowRect.left - boardRect.left;
+            const relativeY = arrowRect.top - boardRect.top;
+            
+            // 화살을 과녁판의 자식으로 이동
+            arrow.style.position = 'absolute';
+            arrow.style.left = `${relativeX}px`;
+            arrow.style.top = `${relativeY}px`;
+            arrow.style.bottom = 'auto';
+            arrow.style.transform = 'none';
+            
+            board.appendChild(arrow);
+            
+            gameState.arrow.boardAttachAngle = angle;
         };
         
         // ===================================================================
-        // 🔄 게임 재시작
+        // 🎵 사운드 효과 (준비)
         // ===================================================================
+        
+        const playSound = (type) => {
+            // 사운드 파일이 있을 경우 재생
+            try {
+                let audio;
+                if (type === 'hit') {
+                    // 명중 효과음
+                    console.log('🎵 명중 효과음 재생 (파일 필요)');
+                    // audio = new Audio('sounds/hit.mp3');
+                } else if (type === 'success') {
+                    // 성공 효과음
+                    console.log('🎵 성공 효과음 재생 (파일 필요)');
+                    // audio = new Audio('sounds/success.mp3');
+                }
+                // audio?.play();
+            } catch (error) {
+                console.log('사운드 재생 실패:', error);
+            }
+        };
+        
+        // ===================================================================
+        // 🎊 결과 모달 및 재시작
+        // ===================================================================
+        
+        const showResultModal = () => {
+            if (!gameState.hitResult) return;
+            
+            elements.resultEmoji.textContent = '🎉';
+            elements.resultText.textContent = gameState.hitResult.item;
+            elements.resultModal.classList.add('show');
+            
+            console.log(`🎊 결과 표시: "${gameState.hitResult.item}"`);
+        };
         
         const restartGame = () => {
             console.log('🔄 게임 재시작');
             
             // 모달 숨기기
-            resultModal.classList.remove('show');
+            elements.resultModal.classList.remove('show');
             
             // 명중 효과 제거
-            const hitElements = targetBoard.querySelectorAll('.target-item.hit');
+            const hitElements = elements.targetBoard.querySelectorAll('.target-item.hit');
             hitElements.forEach(el => el.classList.remove('hit'));
             
-            // 화살 리셋
+            // 화살을 원래 위치로 복원
+            const arrow = elements.arrow;
+            const gameArea = document.querySelector('.game-area');
+            
+            arrow.style.position = 'absolute';
+            arrow.style.left = '50%';
+            arrow.style.top = 'auto';
+            arrow.style.bottom = '25px';
+            arrow.style.transform = 'translateX(-50%)';
+            
+            // 화살을 원래 부모로 이동
+            document.querySelector('.bow-and-arrow').appendChild(arrow);
+            
+            // 게임 상태 리셋
+            gameState.board.rotation = 0;
+            gameState.board.rotationSpeed = 0.5;
+            gameState.board.isSlowingDown = false;
+            gameState.hitResult = null;
+            
             resetArrow();
             
-            // 게임 루프 재시작
-            gameRunning = true;
-            gameLoop();
+            elements.instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
             
             console.log('✅ 게임 재시작 완료');
         };
@@ -876,27 +984,26 @@
         // 🎮 이벤트 리스너 등록
         // ===================================================================
         
-        // 활과 화살 드래그 이벤트 (마우스)
-        bowAndArrow.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', onDrag);
-        document.addEventListener('mouseup', endDrag);
+        // 마우스 이벤트
+        elements.bowAndArrow.addEventListener('mousedown', handleDragStart);
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('mouseup', handleDragEnd);
         
-        // 활과 화살 드래그 이벤트 (터치)
-        bowAndArrow.addEventListener('touchstart', startDrag, { passive: false });
-        document.addEventListener('touchmove', onDrag, { passive: false });
-        document.addEventListener('touchend', endDrag);
+        // 터치 이벤트
+        elements.bowAndArrow.addEventListener('touchstart', handleDragStart, { passive: false });
+        document.addEventListener('touchmove', handleDrag, { passive: false });
+        document.addEventListener('touchend', handleDragEnd);
         
         // 재시작 버튼
-        restartBtn.addEventListener('click', restartGame);
+        elements.restartBtn.addEventListener('click', restartGame);
         
         // 키보드 접근성
         document.addEventListener('keydown', (event) => {
             if (event.key === ' ' || event.key === 'Enter') {
-                if (resultModal.classList.contains('show')) {
+                if (elements.resultModal.classList.contains('show')) {
                     restartGame();
-                } else if (!arrowFlying && gameRunning) {
-                    // 스페이스바로 즉시 발사 (중간 파워)
-                    fireArrow(maxPullDistance * 0.7);
+                } else if (!gameState.arrow.isFlying && gameState.running) {
+                    fireArrow(gameState.drag.maxPower * 0.7);
                 }
             }
         });
@@ -906,56 +1013,49 @@
         // ===================================================================
         
         const initGame = () => {
-            console.log('🎯 === 다트 게임 엔진 초기화 ===');
+            console.log('🎯 === 다트 게임 엔진 초기화 (재설계 버전) ===');
             
             // URL에서 항목 로드
-            items = loadItemsFromUrl();
+            gameState.items = loadItemsFromUrl();
             
-            if (items.length < 2) {
-                // 항목이 부족한 경우
-                instructions.textContent = '항목이 부족합니다. 메인으로 돌아가서 최소 2개 항목을 추가해주세요.';
-                
-                resultEmoji.textContent = '⚠️';
-                resultText.textContent = '항목 부족';
-                resultModal.querySelector('.result-subtitle').textContent = '메인에서 항목을 추가해주세요';
-                resultModal.classList.add('show');
+            if (gameState.items.length < 2) {
+                elements.instructions.textContent = '항목이 부족합니다. 메인으로 돌아가서 최소 2개 항목을 추가해주세요.';
+                elements.resultEmoji.textContent = '⚠️';
+                elements.resultText.textContent = '항목 부족';
+                elements.resultModal.querySelector('.result-subtitle').textContent = '메인에서 항목을 추가해주세요';
+                elements.resultModal.classList.add('show');
                 return;
             }
             
             // 과녁판 생성
             createTargetItems();
             
-            // 화살 초기 위치 설정
+            // 화살 초기화
             resetArrow();
             
-            // 메인 게임 루프 시작
-            gameRunning = true;
+            // 게임 루프 시작
+            gameState.running = true;
             gameLoop();
             
-            // 다트 게임 엔진 초기화 완료
+            console.log('✅ 새로운 다트 게임 엔진 시작!');
         };
         
-        // DOM 로드 완료 후 게임 시작
+        // DOM 로드 후 게임 시작
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initGame);
         } else {
             initGame();
         }
         
-        // 화면 크기 변경 시 처리
-        window.addEventListener('resize', () => {
-            console.log('📱 화면 크기 변경');
-        });
-        
-        // 페이지 언로드 시 게임 루프 정리
+        // 페이지 언로드 시 정리
         window.addEventListener('beforeunload', () => {
-            gameRunning = false;
-            if (gameLoopId) {
-                cancelAnimationFrame(gameLoopId);
+            gameState.running = false;
+            if (gameState.loopId) {
+                cancelAnimationFrame(gameState.loopId);
             }
         });
         
-        console.log('🎯 진짜 게임다운 다트 엔진 로드 완료');
+        console.log('🎯 짜릿한 손맛의 다트 게임 엔진 로드 완료!');
     </script>
 </body>
 </html> 
