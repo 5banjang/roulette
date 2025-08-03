@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
     
+    <!-- GSAP 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     <style>
         /* 🎯 다트 게임 - 최적화된 스타일 */
         
@@ -550,15 +553,13 @@
         const gameState = {
             // 게임 실행 상태
             running: false,
-            loopId: null,
             
-            // 과녁판 상태
+            // 과녁판 상태 (GSAP 전용)
             board: {
                 rotation: 0,
-                rotationSpeed: 0.5, // 초당 30도 = 0.5도/프레임 (60fps 기준)
-                isSlowingDown: false,
-                targetRotation: 0,
-                slowDownSpeed: 0.98 // ease-out 감속비
+                isSpinning: false,
+                gsapTween: null, // GSAP 트위닝 참조
+                finalRotation: 0
             },
             
             // 화살 상태
@@ -709,52 +710,85 @@
         };
         
         // ===================================================================
-        // 🎮 메인 게임 루프 (requestAnimationFrame)
+        // 🎮 GSAP 기반 게임 애니메이션 시스템
         // ===================================================================
         
         const gameLoop = () => {
             if (!gameState.running) return;
             
-            // 1. 과녁판 회전 업데이트
-            updateBoardRotation();
-            
-            // 2. 화살 움직임 업데이트
+            // 화살 움직임 업데이트 (기존 로직 유지)
             updateArrowMovement();
             
-            // 3. 충돌 감지
+            // 충돌 감지
             if (gameState.arrow.isFlying && !gameState.arrow.isStuckInBoard) {
                 checkCollision();
             }
             
-            // 다음 프레임 예약
-            gameState.loopId = requestAnimationFrame(gameLoop);
+            // 다음 프레임 예약 (화살 움직임만 처리)
+            requestAnimationFrame(gameLoop);
         };
         
-        // 과녁판 회전 업데이트
-        const updateBoardRotation = () => {
-            if (gameState.board.isSlowingDown) {
-                // 서서히 멈추는 중
-                gameState.board.rotationSpeed *= gameState.board.slowDownSpeed;
-                
-                // 거의 멈췄으면 완전히 정지
-                if (gameState.board.rotationSpeed < 0.01) {
-                    gameState.board.rotationSpeed = 0;
-                    gameState.board.isSlowingDown = false;
+        // GSAP로 과녁판 회전 시작
+        const startBoardRotation = () => {
+            if (gameState.board.isSpinning) return;
+            
+            gameState.board.isSpinning = true;
+            
+            // 무한 회전 애니메이션
+            gameState.board.gsapTween = gsap.to(elements.targetBoard, {
+                rotation: "+=360",
+                duration: 1,
+                ease: "none",
+                repeat: -1,
+                onUpdate: () => {
+                    // 현재 회전 각도 업데이트
+                    gameState.board.rotation = gsap.getProperty(elements.targetBoard, "rotation");
+                    gameState.board.rotation = utils.normalizeAngle(gameState.board.rotation);
+                }
+            });
+            
+            console.log('🎯 GSAP 과녁판 회전 시작');
+        };
+        
+        // GSAP로 과녁판 서서히 정지
+        const stopBoardRotation = () => {
+            if (!gameState.board.isSpinning || !gameState.board.gsapTween) return;
+            
+            // 현재 회전 각도 가져오기
+            const currentRotation = gsap.getProperty(elements.targetBoard, "rotation");
+            
+            // 기존 애니메이션 중단
+            gameState.board.gsapTween.kill();
+            
+            // 추가 회전 각도 계산 (2-4바퀴 추가 회전)
+            const additionalRotation = 720 + Math.random() * 720; // 2-4바퀴
+            gameState.board.finalRotation = utils.normalizeAngle(currentRotation + additionalRotation);
+            
+            // 5초에 걸쳐 부드럽게 정지
+            gameState.board.gsapTween = gsap.to(elements.targetBoard, {
+                rotation: currentRotation + additionalRotation,
+                duration: 5,
+                ease: "power1.out",
+                onComplete: () => {
+                    gameState.board.isSpinning = false;
+                    gameState.board.rotation = gameState.board.finalRotation;
                     
                     // 1초 후 결과 모달 표시
                     setTimeout(() => {
                         showResultModal();
                         playSound('success');
                     }, 1000);
+                    
+                    console.log(`🎯 GSAP 과녁판 정지 완료 - 최종 각도: ${gameState.board.finalRotation}`);
+                },
+                onUpdate: () => {
+                    // 실시간 각도 업데이트
+                    gameState.board.rotation = gsap.getProperty(elements.targetBoard, "rotation");
+                    gameState.board.rotation = utils.normalizeAngle(gameState.board.rotation);
                 }
-            }
+            });
             
-            // 회전 적용
-            gameState.board.rotation += gameState.board.rotationSpeed;
-            gameState.board.rotation = utils.normalizeAngle(gameState.board.rotation);
-            
-            // DOM 업데이트
-            elements.targetBoard.style.transform = `rotate(${gameState.board.rotation}deg)`;
+            console.log('🎯 GSAP 과녁판 감속 시작');
         };
         
         // 화살 움직임 업데이트
@@ -934,7 +968,7 @@
             }
         };
         
-        // 명중한 항목 계산
+        // 명중한 항목 계산 (GSAP 연동)
         const calculateHitItem = (arrowX, arrowY, boardCenterX, boardCenterY) => {
             // 화살의 각도 계산
             const deltaX = arrowX - boardCenterX;
@@ -944,8 +978,9 @@
             // 각도 정규화 (12시 방향 기준)
             angle = utils.normalizeAngle(angle + 90);
             
-            // 과녁판 회전 고려
-            angle = utils.normalizeAngle(angle - gameState.board.rotation);
+            // GSAP에서 현재 과녁판 회전 각도 가져오기
+            const currentBoardRotation = gsap.getProperty(elements.targetBoard, "rotation") || 0;
+            angle = utils.normalizeAngle(angle - currentBoardRotation);
             
             // 명중 구역 계산
             const anglePerSlice = 360 / gameState.items.length;
@@ -954,11 +989,30 @@
             return {
                 index: hitIndex,
                 item: gameState.items[hitIndex],
-                angle: angle
+                angle: angle,
+                boardRotation: currentBoardRotation
             };
         };
         
-        // 명중 처리
+        // 최종 결과 계산 (과녁판이 완전히 멈춘 후)
+        const calculateFinalResult = () => {
+            // 최종 회전 각도로 다시 계산
+            const finalRotation = gameState.board.finalRotation;
+            
+            // 12시 방향(0도)을 기준으로 한 명중 계산
+            const adjustedAngle = utils.normalizeAngle(360 - finalRotation);
+            const anglePerSlice = 360 / gameState.items.length;
+            const finalHitIndex = Math.floor(adjustedAngle / anglePerSlice);
+            
+            return {
+                index: finalHitIndex,
+                item: gameState.items[finalHitIndex],
+                angle: adjustedAngle,
+                finalRotation: finalRotation
+            };
+        };
+        
+        // 명중 처리 (GSAP 연동)
         const onHit = (hitResult) => {
             console.log(`💥 명중! "${hitResult.item}"`);
             
@@ -969,17 +1023,26 @@
             // 명중 효과음 재생
             playSound('hit');
             
-            // 화살을 과녁판에 고정 (중요: 화살을 과녁판의 자식 요소로 만들기)
+            // 화살을 과녁판에 고정
             attachArrowToBoard(hitResult.angle);
             
-            // 과녁판 서서히 멈추기 시작
-            gameState.board.isSlowingDown = true;
+            // GSAP로 과녁판 서서히 정지
+            stopBoardRotation();
             
             // 명중한 항목 시각적 효과
             const targetItems = elements.targetBoard.querySelectorAll('.target-item');
             const hitElement = targetItems[hitResult.index];
             if (hitElement) {
                 hitElement.classList.add('hit');
+                
+                // GSAP로 명중 효과 애니메이션
+                gsap.to(hitElement, {
+                    scale: 1.2,
+                    duration: 0.3,
+                    ease: "back.out(1.7)",
+                    yoyo: true,
+                    repeat: 1
+                });
             }
             
             elements.instructions.textContent = `🎯 "${hitResult.item}" 명중!`;
@@ -1039,13 +1102,40 @@
         // ===================================================================
         
         const showResultModal = () => {
-            if (!gameState.hitResult) return;
+            // GSAP 애니메이션이 끝난 후 최종 결과 계산
+            const finalResult = calculateFinalResult();
+            
+            // 결과 업데이트
+            gameState.hitResult = finalResult;
             
             elements.resultEmoji.textContent = '🎉';
-            elements.resultText.textContent = gameState.hitResult.item;
+            elements.resultText.textContent = finalResult.item;
             elements.resultModal.classList.add('show');
             
-            console.log(`🎊 결과 표시: "${gameState.hitResult.item}"`);
+            // 최종 명중 항목 하이라이트
+            const targetItems = elements.targetBoard.querySelectorAll('.target-item');
+            const finalHitElement = targetItems[finalResult.index];
+            if (finalHitElement) {
+                // 기존 하이라이트 제거
+                targetItems.forEach(item => item.classList.remove('hit'));
+                
+                // 최종 결과 하이라이트
+                finalHitElement.classList.add('hit');
+                
+                // GSAP 최종 효과
+                gsap.fromTo(finalHitElement, 
+                    { scale: 1 },
+                    { 
+                        scale: 1.3, 
+                        duration: 0.5, 
+                        ease: "elastic.out(1, 0.5)",
+                        yoyo: true,
+                        repeat: 3
+                    }
+                );
+            }
+            
+            console.log(`🎊 최종 결과: "${finalResult.item}" (인덱스: ${finalResult.index}, 최종각도: ${finalResult.finalRotation})`);
         };
         
         const restartGame = () => {
@@ -1054,13 +1144,22 @@
             // 모달 숨기기
             elements.resultModal.classList.remove('show');
             
+            // 모든 GSAP 애니메이션 중단
+            if (gameState.board.gsapTween) {
+                gameState.board.gsapTween.kill();
+            }
+            gsap.killTweensOf(elements.targetBoard);
+            gsap.killTweensOf('.target-item');
+            
             // 명중 효과 제거
             const hitElements = elements.targetBoard.querySelectorAll('.target-item.hit');
-            hitElements.forEach(el => el.classList.remove('hit'));
+            hitElements.forEach(el => {
+                el.classList.remove('hit');
+                gsap.set(el, { scale: 1 }); // 스케일 리셋
+            });
             
             // 화살을 원래 위치로 복원
             const arrow = elements.arrow;
-            const gameArea = document.querySelector('.game-area');
             
             arrow.style.position = 'absolute';
             arrow.style.left = '50%';
@@ -1071,17 +1170,24 @@
             // 화살을 원래 부모로 이동
             document.querySelector('.bow-and-arrow').appendChild(arrow);
             
+            // 과녁판 위치 리셋
+            gsap.set(elements.targetBoard, { rotation: 0 });
+            
             // 게임 상태 리셋
             gameState.board.rotation = 0;
-            gameState.board.rotationSpeed = 0.5;
-            gameState.board.isSlowingDown = false;
+            gameState.board.isSpinning = false;
+            gameState.board.gsapTween = null;
+            gameState.board.finalRotation = 0;
             gameState.hitResult = null;
             
             resetArrow();
             
+            // 새로운 게임 시작
+            startBoardRotation();
+            
             elements.instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
             
-            console.log('✅ 게임 재시작 완료');
+            console.log('✅ GSAP 게임 재시작 완료');
         };
         
         // ===================================================================
@@ -1140,7 +1246,10 @@
             // 활시위 초기화
             createBowstring();
             
-            // 게임 루프 시작
+            // GSAP 과녁판 회전 시작
+            startBoardRotation();
+            
+            // 게임 루프 시작 (화살 처리용)
             gameState.running = true;
             gameLoop();
             
@@ -1157,9 +1266,12 @@
         // 페이지 언로드 시 정리
         window.addEventListener('beforeunload', () => {
             gameState.running = false;
-            if (gameState.loopId) {
-                cancelAnimationFrame(gameState.loopId);
+            
+            // GSAP 애니메이션 정리
+            if (gameState.board.gsapTween) {
+                gameState.board.gsapTween.kill();
             }
+            gsap.killTweensOf(elements.targetBoard);
         });
         
         console.log('🎯 짜릿한 손맛의 다트 게임 엔진 로드 완료!');
