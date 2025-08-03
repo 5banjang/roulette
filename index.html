@@ -725,12 +725,12 @@
         // 게임 시작 버튼 상태 업데이트
         const updateStartGameButton = () => {
             const canStart = items.length >= 2;
-            startGameBtn.disabled = !canStart;
+            elements.startGameBtn.disabled = !canStart;
             
             if (canStart) {
-                startGameBtn.innerHTML = '<span>🎯</span> 게임 시작!';
+                elements.startGameBtn.innerHTML = '<span>🎯</span> 게임 시작!';
             } else {
-                startGameBtn.innerHTML = '<span>❌</span> 최소 2개 항목 필요';
+                elements.startGameBtn.innerHTML = '<span>❌</span> 최소 2개 항목 필요';
             }
         };
         
@@ -740,17 +740,17 @@
         
         // 즐겨찾기 저장
         const saveFavorite = () => {
-            const name = favoriteNameInput.value.trim();
+            const name = elements.favoriteNameInput.value.trim();
             
             if (!name) {
                 showToast('다트 게임 이름을 입력해주세요!', 'error');
-                favoriteNameInput.focus();
+                elements.favoriteNameInput.focus();
                 return;
             }
             
             if (name.length > 30) {
                 showToast('이름은 30자 이하로 입력해주세요!', 'error');
-                favoriteNameInput.focus();
+                elements.favoriteNameInput.focus();
                 return;
             }
             
@@ -779,7 +779,7 @@
             }
             
             saveFavoritesToStorage();
-            favoriteNameInput.value = '';
+            elements.favoriteNameInput.value = '';
             updateFavoritesDisplay();
             updateSaveFavoriteButton();
             
@@ -826,10 +826,10 @@
         
         // 즐겨찾기 목록 UI 업데이트
         const updateFavoritesDisplay = () => {
-            favoritesList.innerHTML = '';
+            elements.favoritesList.innerHTML = '';
             
             if (favorites.length === 0) {
-                favoritesList.innerHTML = '<div class="empty-state">저장된 즐겨찾기가 없습니다.</div>';
+                elements.favoritesList.innerHTML = '<div class="empty-state">저장된 즐겨찾기가 없습니다.</div>';
                 return;
             }
             
@@ -870,16 +870,16 @@
                 
                 listItem.appendChild(info);
                 listItem.appendChild(actions);
-                favoritesList.appendChild(listItem);
+                elements.favoritesList.appendChild(listItem);
             });
         };
         
         // 저장 버튼 상태 업데이트
         const updateSaveFavoriteButton = () => {
             const hasItems = items.length >= 2;
-            const hasName = favoriteNameInput.value.trim().length > 0;
+            const hasName = elements.favoriteNameInput.value.trim().length > 0;
             
-            saveFavoriteBtn.disabled = !hasItems || !hasName;
+            elements.saveFavoriteBtn.disabled = !hasItems || !hasName;
         };
         
         // localStorage 관리
@@ -1022,10 +1022,10 @@
         const handleKeyPress = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                if (event.target === itemInput) {
+                if (event.target === elements.itemInput) {
                     addItem();
-                } else if (event.target === favoriteNameInput) {
-                    if (!saveFavoriteBtn.disabled) {
+                } else if (event.target === elements.favoriteNameInput) {
+                    if (!elements.saveFavoriteBtn.disabled) {
                         saveFavorite();
                     }
                 }
@@ -1036,7 +1036,7 @@
         const handleGlobalKeyDown = (event) => {
             if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
                 event.preventDefault();
-                if (!startGameBtn.disabled) {
+                if (!elements.startGameBtn.disabled) {
                     handleStartGame();
                 }
             }
@@ -1046,18 +1046,18 @@
         const init = () => {
             // 카카오톡 브라우저 감지
             if (detectKakaoBrowser()) {
-                kakaoNotice.classList.add('show');
+                elements.kakaoNotice.classList.add('show');
             }
             
             // 이벤트 리스너 등록
-            addBtn.addEventListener('click', addItem);
-            startGameBtn.addEventListener('click', handleStartGame);
-            saveFavoriteBtn.addEventListener('click', saveFavorite);
-            shareBtn.addEventListener('click', handleShare);
-            copyBtn.addEventListener('click', handleCopyLink);
-            itemInput.addEventListener('keypress', handleKeyPress);
-            favoriteNameInput.addEventListener('keypress', handleKeyPress);
-            favoriteNameInput.addEventListener('input', updateSaveFavoriteButton);
+            elements.addBtn.addEventListener('click', addItem);
+            elements.startGameBtn.addEventListener('click', handleStartGame);
+            elements.saveFavoriteBtn.addEventListener('click', saveFavorite);
+            elements.shareBtn.addEventListener('click', handleShare);
+            elements.copyBtn.addEventListener('click', handleCopyLink);
+            elements.itemInput.addEventListener('keypress', handleKeyPress);
+            elements.favoriteNameInput.addEventListener('keypress', handleKeyPress);
+            elements.favoriteNameInput.addEventListener('input', updateSaveFavoriteButton);
             document.addEventListener('keydown', handleGlobalKeyDown);
             
             // 저장된 데이터 불러오기
@@ -1071,7 +1071,7 @@
             
             // 초기 포커스
             if (window.innerWidth > 600) {
-                itemInput.focus();
+                elements.itemInput.focus();
             }
             
             // 메인 페이지 초기화 완료
