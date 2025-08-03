@@ -38,7 +38,10 @@
         
         html, body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: white;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(101, 67, 33, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #2C1810 0%, #3D2517 25%, #4A2D1A 50%, #3D2517 75%, #2C1810 100%);
             color: var(--text-color);
             overflow: hidden;
             height: 100vh;
@@ -55,7 +58,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: white;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 215, 0, 0.05) 0%, transparent 60%),
+                linear-gradient(180deg, rgba(139, 69, 19, 0.1) 0%, transparent 40%, rgba(101, 67, 33, 0.15) 100%);
         }
         
         /* 헤더 */
@@ -63,18 +68,23 @@
             padding: 20px;
             text-align: center;
             z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
         
         .header h1 {
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #FFD700;
             margin-bottom: 5px;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.8),
+                0 0 10px rgba(255, 215, 0, 0.3);
         }
         
         .header p {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: #D2B48C;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
         }
         
         /* 과녁판 컨테이너 */
@@ -84,6 +94,7 @@
             position: relative;
             margin: 20px auto;
             flex-shrink: 0;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.7));
         }
         
         /* 과녁판 */
@@ -92,9 +103,20 @@
             height: 100%;
             border-radius: 50%;
             position: relative;
-            border: 4px solid #007BFF;
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
+            border: 6px solid #8B4513;
+            box-shadow: 
+                0 0 0 2px #654321,
+                0 8px 25px rgba(0, 0, 0, 0.6),
+                inset 0 0 30px rgba(139, 69, 19, 0.3),
+                inset 0 0 60px rgba(101, 67, 33, 0.2);
             overflow: hidden;
+            background: 
+                radial-gradient(circle at 40% 30%, rgba(160, 82, 45, 0.8) 0%, rgba(139, 69, 19, 0.9) 70%),
+                conic-gradient(from 0deg, 
+                    #D2B48C 0deg 2deg, #8B7355 2deg 4deg,
+                    #D2B48C 4deg 6deg, #8B7355 6deg 8deg,
+                    #D2B48C 8deg 10deg, #8B7355 10deg 12deg);
+            background-size: 100% 100%, 5% 5%;
             /* 동적으로 conic-gradient가 설정됩니다 */
         }
         
@@ -104,7 +126,9 @@
             font-weight: 700;
             font-size: 0.9rem;
             color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.8),
+                1px 1px 2px rgba(139, 69, 19, 0.6);
             white-space: nowrap;
             pointer-events: none;
             z-index: 5;
@@ -133,11 +157,16 @@
             left: 50%;
             width: 30px;
             height: 30px;
-            background: #007BFF;
+            background: 
+                radial-gradient(circle at 30% 30%, #FFD700 0%, #DAA520 40%, #B8860B 70%, #8B6914 100%);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            border: 2px solid #fff;
-            z-index: 10;
+            border: 3px solid #654321;
+            z-index: 20;
+            box-shadow: 
+                0 3px 8px rgba(0,0,0,0.6),
+                inset 0 2px 4px rgba(255, 215, 0, 0.3),
+                inset 0 -2px 4px rgba(0,0,0,0.3);
         }
         
         /* 게임 영역 */
@@ -154,13 +183,21 @@
         /* 지침 */
         .instructions {
             text-align: center;
-            color: #666;
+            color: #D2B48C;
             font-size: 0.9rem;
             margin-bottom: 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
+            padding: 15px;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(139, 69, 19, 0.2) 0%, 
+                    rgba(101, 67, 33, 0.15) 50%, 
+                    rgba(139, 69, 19, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(139, 69, 19, 0.3);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            box-shadow: 
+                0 4px 12px rgba(0,0,0,0.4),
+                inset 0 2px 6px rgba(255, 215, 0, 0.1);
         }
         
         /* 활과 화살 컨테이너 - 화면 하단 중앙 고정 (1.5배 확대) */
@@ -169,24 +206,25 @@
             bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
-            width: 180px; /* 120px * 1.5 */
-            height: 150px; /* 100px * 1.5 */
+            width: 220px; /* 더 큰 사이즈로 위협적 */
+            height: 180px; /* 더 큰 사이즈로 위협적 */
             cursor: grab;
             z-index: 10;
+            filter: drop-shadow(3px 8px 15px rgba(0,0,0,0.6));
         }
         
         .bow-and-arrow:active {
             cursor: grabbing;
         }
         
-        /* 활 (bow) - 더 사실적인 모양 (1.5배 확대) */
+        /* 활 (bow) - 더 사실적인 모양 (위협적 사이즈) */
         .bow {
             position: absolute;
-            bottom: 30px; /* .bow-and-arrow 컨테이너 내에서의 상대적 위치 (20px * 1.5) */
+            bottom: 35px;
             left: 50%;
             transform: translateX(-50%);
-            width: 135px; /* 90px * 1.5 */
-            height: 105px; /* 70px * 1.5 */
+            width: 160px; /* 더 크고 위협적인 활 */
+            height: 120px;
             transition: all 0.1s ease;
         }
         
@@ -197,40 +235,59 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 70px;
-            background: linear-gradient(to bottom, #D2691E 0%, #8B4513 30%, #654321 100%);
-            border-radius: 3px;
-            box-shadow: inset 2px 0 4px rgba(0,0,0,0.3), 2px 0 6px rgba(0,0,0,0.2);
+            width: 8px;
+            height: 85px;
+            background: 
+                linear-gradient(to bottom, 
+                    #F4A460 0%, #D2691E 15%, #CD853F 30%, 
+                    #8B4513 50%, #654321 70%, #3D2414 100%);
+            border-radius: 4px;
+            box-shadow: 
+                inset 3px 0 6px rgba(0,0,0,0.4),
+                inset -1px 0 3px rgba(139, 69, 19, 0.3),
+                3px 0 10px rgba(0,0,0,0.5),
+                0 0 20px rgba(139, 69, 19, 0.2);
         }
         
         /* 활의 양쪽 부분 */
         .bow::after {
             content: '';
             position: absolute;
-            bottom: 5px;
+            bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 60px;
-            border: 3px solid #8B4513;
+            width: 100px;
+            height: 75px;
+            border: 4px solid #654321;
             border-bottom: none;
-            border-radius: 40px 40px 0 0;
-            background: transparent;
-            box-shadow: 0 -2px 8px rgba(139, 69, 19, 0.3);
+            border-radius: 50px 50px 0 0;
+            background: 
+                linear-gradient(to bottom, 
+                    rgba(139, 69, 19, 0.1) 0%, 
+                    rgba(101, 67, 33, 0.2) 50%, 
+                    transparent 100%);
+            box-shadow: 
+                0 -5px 15px rgba(139, 69, 19, 0.4),
+                inset 0 3px 8px rgba(0,0,0,0.3),
+                0 0 25px rgba(101, 67, 33, 0.3);
         }
         
         /* 활시위 */
         .bowstring {
             position: absolute;
-            bottom: 5px;
-            left: 12px;
-            right: 12px;
-            height: 2px;
-            background: #8B4513;
-            border-radius: 1px;
+            bottom: 8px;
+            left: 15px;
+            right: 15px;
+            height: 3px;
+            background: 
+                linear-gradient(90deg, 
+                    transparent 0%, #444 10%, #666 50%, #444 90%, transparent 100%);
+            border-radius: 1.5px;
             transition: all 0.1s ease;
             z-index: 1;
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.5),
+                0 0 6px rgba(102, 102, 102, 0.3);
         }
         
         /* 활시위가 당겨진 상태 */
@@ -251,18 +308,23 @@
         /* SVG 화살 - top 기반 위치 시스템 (1.5배 확대에 맞춘 조정) */
         .arrow-svg {
             position: fixed;
-            top: calc(100vh - 180px); /* 화면 하단에서 180px 위 (더 큰 화살에 맞춤) */
+            top: calc(100vh - 200px); /* 더 큰 화살로 위협적 */
             left: 50%;
             transform: translateX(-50%);
             transition: all 0.1s ease;
             z-index: 5;
-            filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.3)); /* 그림자도 1.5배 */
+            filter: 
+                drop-shadow(4px 6px 12px rgba(0,0,0,0.6))
+                drop-shadow(0 0 15px rgba(139, 69, 19, 0.3));
         }
         
         /* SVG 화살이 당겨진 상태 */
         .arrow-svg.pulled {
-            top: calc(100vh - 165px); /* 15px 아래로 내려감 (10px * 1.5) */
-            transform: translateX(-50%) scale(0.9);
+            top: calc(100vh - 180px); /* 20px 아래로 내려감 */
+            transform: translateX(-50%) scale(0.85);
+            filter: 
+                drop-shadow(2px 4px 8px rgba(0,0,0,0.8))
+                drop-shadow(0 0 20px rgba(255, 68, 68, 0.4));
         }
         
         /* SVG 화살 발사 중 */
@@ -490,22 +552,39 @@
             <div class="bow-and-arrow" id="bow-and-arrow">
                 <div class="bow" id="bow"></div>
                 <!-- SVG 화살 -->
-                <svg id="arrow" class="arrow-svg" viewBox="0 0 100 400" width="45" height="180">
+                <svg id="arrow" class="arrow-svg" viewBox="0 0 100 400" width="55" height="220">
                     <defs>
                         <linearGradient id="shaftGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#8B4513" />
+                            <stop offset="0%" style="stop-color:#654321" />
+                            <stop offset="30%" style="stop-color:#8B4513" />
                             <stop offset="50%" style="stop-color:#A0522D" />
-                            <stop offset="100%" style="stop-color:#8B4513" />
+                            <stop offset="70%" style="stop-color:#8B4513" />
+                            <stop offset="100%" style="stop-color:#654321" />
+                        </linearGradient>
+                        <linearGradient id="arrowheadGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#C0C0C0" />
+                            <stop offset="30%" style="stop-color:#A9A9A9" />
+                            <stop offset="70%" style="stop-color:#696969" />
+                            <stop offset="100%" style="stop-color:#2F4F4F" />
+                        </linearGradient>
+                        <linearGradient id="featherGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFD700" />
+                            <stop offset="40%" style="stop-color:#FFA500" />
+                            <stop offset="70%" style="stop-color:#FF6347" />
+                            <stop offset="100%" style="stop-color:#8B0000" />
                         </linearGradient>
                     </defs>
                     <!-- 화살대 -->
-                    <path d="M 50,100 L 50,400" stroke="url(#shaftGradient)" stroke-width="15" />
+                    <path d="M 50,100 L 50,400" stroke="url(#shaftGradient)" stroke-width="18" />
+                    <path d="M 50,100 L 50,400" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-dasharray="5,5" />
                     <!-- 화살촉 -->
-                    <path d="M 50,0 L 0,100 L 100,100 Z" fill="#696969" />
+                    <path d="M 50,0 L 0,100 L 100,100 Z" fill="url(#arrowheadGradient)" stroke="#2F4F4F" stroke-width="2" />
                     <!-- 깃털 -->
-                    <g fill="#FFA500">
-                        <path d="M 50,300 Q 20,320 50,340 L 50,380 Q 20,360 50,340 Z" />
-                        <path d="M 50,300 Q 80,320 50,340 L 50,380 Q 80,360 50,340 Z" />
+                    <g fill="url(#featherGradient)" stroke="#8B0000" stroke-width="1">
+                        <path d="M 50,300 Q 15,315 50,340 L 50,385 Q 15,370 50,340 Z" />
+                        <path d="M 50,300 Q 85,315 50,340 L 50,385 Q 85,370 50,340 Z" />
+                        <path d="M 50,310 Q 25,320 50,335 L 50,375 Q 25,365 50,335 Z" opacity="0.8" />
+                        <path d="M 50,310 Q 75,320 50,335 L 50,375 Q 75,365 50,335 Z" opacity="0.8" />
                     </g>
                 </svg>
             </div>
@@ -667,7 +746,11 @@
                 gradientStops.push(`${color} ${startAngle}deg ${endAngle}deg`);
             });
             
-            elements.targetBoard.style.background = `conic-gradient(from 0deg, ${gradientStops.join(', ')})`;
+            elements.targetBoard.style.background = `
+                radial-gradient(circle at 40% 30%, rgba(160, 82, 45, 0.8) 0%, rgba(139, 69, 19, 0.9) 70%),
+                conic-gradient(from 0deg, ${gradientStops.join(', ')}),
+                radial-gradient(circle at center, transparent 88%, #654321 89%, #654321 91%, transparent 92%)
+            `;
             
             // 2. 각 부채꼴 중앙에 텍스트 라벨 배치
             gameState.items.forEach((item, index) => {
@@ -693,6 +776,23 @@
                 itemDiv.dataset.index = index;
                 itemDiv.dataset.item = item;
                 itemDiv.dataset.angle = angle;
+                
+                // 세그먼트 경계선 생성
+                const wireDiv = document.createElement('div');
+                wireDiv.className = 'wire-segment';
+                wireDiv.style.cssText = `
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    width: 2px;
+                    height: 140px;
+                    background: linear-gradient(to bottom, transparent 10%, #444  15%, #666 50%, #444 85%, transparent 90%);
+                    transform: translate(-50%, -50%) rotate(${index * angleStep}deg);
+                    transform-origin: 50% 50%;
+                    z-index: 15;
+                    box-shadow: 0 0 3px rgba(0,0,0,0.7);
+                `;
+                elements.targetBoard.appendChild(wireDiv);
                 
                 elements.targetBoard.appendChild(itemDiv);
             });
@@ -1038,8 +1138,8 @@
             gameState.arrow.y = 0;
             gameState.arrow.speed = 0;
             
-            // 초기 위치로 복원 (calc(100vh - 180px))
-            gameState.arrow.initialTop = window.innerHeight - 180;
+            // 초기 위치로 복원 (calc(100vh - 200px))
+            gameState.arrow.initialTop = window.innerHeight - 200;
             elements.arrow.style.top = `${gameState.arrow.initialTop}px`;
             elements.arrow.classList.remove('flying', 'pulled');
             elements.bow.classList.remove('pulled');
@@ -1121,7 +1221,7 @@
             
             arrow.style.position = 'fixed';
             arrow.style.left = '50%';
-            arrow.style.top = `${window.innerHeight - 180}px`;
+            arrow.style.top = `${window.innerHeight - 200}px`;
             arrow.style.bottom = 'auto';
             arrow.style.transform = 'translateX(-50%)';
             
@@ -1146,6 +1246,62 @@
             elements.instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
             
             console.log('✅ GSAP 게임 재시작 완료');
+        };
+        
+        // 펜트하우스 조명 효과 추가
+        const addAmbientLighting = () => {
+            // 주변 조명 요소 생성
+            const lightingOverlay = document.createElement('div');
+            lightingOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: 
+                    radial-gradient(ellipse 60% 40% at 30% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 70%),
+                    radial-gradient(ellipse 50% 30% at 70% 30%, rgba(255, 165, 0, 0.05) 0%, transparent 60%),
+                    radial-gradient(ellipse 80% 60% at 50% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 80%);
+                pointer-events: none;
+                z-index: 1;
+                mix-blend-mode: soft-light;
+            `;
+            document.body.appendChild(lightingOverlay);
+            
+            // 스포트라이트 효과
+            const spotlight = document.createElement('div');
+            spotlight.style.cssText = `
+                position: absolute;
+                top: -100px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 400px;
+                height: 600px;
+                background: 
+                    radial-gradient(ellipse 60% 40% at center top, 
+                        rgba(255, 223, 0, 0.15) 0%, 
+                        rgba(255, 215, 0, 0.08) 30%, 
+                        rgba(255, 165, 0, 0.03) 60%, 
+                        transparent 100%);
+                pointer-events: none;
+                z-index: 2;
+                animation: spotlightFlicker 4s ease-in-out infinite alternate;
+            `;
+            
+            // 스포트라이트 깜빡임 애니메이션
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes spotlightFlicker {
+                    0% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+                    25% { opacity: 0.9; transform: translateX(-50%) scale(1.02); }
+                    50% { opacity: 0.85; transform: translateX(-50%) scale(0.98); }
+                    75% { opacity: 0.95; transform: translateX(-50%) scale(1.01); }
+                    100% { opacity: 0.9; transform: translateX(-50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.querySelector('.game-container').appendChild(spotlight);
         };
         
         // ===================================================================
@@ -1205,8 +1361,11 @@
             createBowstring();
             
             // 화살 초기 위치 설정
-            gameState.arrow.initialTop = window.innerHeight - 180;
+            gameState.arrow.initialTop = window.innerHeight - 200; // 더 큰 화살에 맞춤
             elements.arrow.style.top = `${gameState.arrow.initialTop}px`;
+            
+            // 펜트하우스 조명 효과 추가
+            addAmbientLighting();
             
             // GSAP 과녁판 회전 시작
             startBoardRotation();
