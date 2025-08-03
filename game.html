@@ -89,30 +89,24 @@
             height: 100%;
             border-radius: 50%;
             position: relative;
-            background: #f8f9fa;
             border: 4px solid #007BFF;
             box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
             overflow: hidden;
+            /* 동적으로 conic-gradient가 설정됩니다 */
         }
         
-        /* 과녁판 항목 */
+        /* 과녁판 항목 (단순 텍스트 라벨) */
         .target-item {
             position: absolute;
-            width: 50%;
-            height: 50%;
-            top: 50%;
-            left: 50%;
-            transform-origin: 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #333;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 5;
             text-align: center;
-            word-break: break-all;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            /* 동적으로 위치와 회전이 설정됩니다 */
         }
         
         /* 과녁판 항목 명중 효과 */
@@ -170,7 +164,7 @@
         .bow-and-arrow {
             position: relative;
             width: 120px;
-            height: 80px;
+            height: 100px;
             margin: 0 auto;
             cursor: grab;
         }
@@ -179,25 +173,73 @@
             cursor: grabbing;
         }
         
-        /* 활 (bow) */
+        /* 활 (bow) - 더 사실적인 모양 */
         .bow {
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 60px;
-            border: 4px solid #8B4513;
-            border-bottom: none;
-            border-radius: 50px 50px 0 0;
-            background: transparent;
+            width: 90px;
+            height: 70px;
             transition: all 0.1s ease;
         }
         
+        /* 활 모양 SVG */
+        .bow::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 70px;
+            background: linear-gradient(to bottom, #D2691E 0%, #8B4513 30%, #654321 100%);
+            border-radius: 3px;
+            box-shadow: inset 2px 0 4px rgba(0,0,0,0.3), 2px 0 6px rgba(0,0,0,0.2);
+        }
+        
+        /* 활의 양쪽 부분 */
+        .bow::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 60px;
+            border: 3px solid #8B4513;
+            border-bottom: none;
+            border-radius: 40px 40px 0 0;
+            background: transparent;
+            box-shadow: 0 -2px 8px rgba(139, 69, 19, 0.3);
+        }
+        
+        /* 활시위 */
+        .bowstring {
+            position: absolute;
+            bottom: 5px;
+            left: 12px;
+            right: 12px;
+            height: 2px;
+            background: #8B4513;
+            border-radius: 1px;
+            transition: all 0.1s ease;
+            z-index: 1;
+        }
+        
         /* 활시위가 당겨진 상태 */
-        .bow.pulled {
+        .bow.pulled::after {
             border-radius: 30px 30px 0 0;
-            height: 45px;
+            height: 50px;
+        }
+        
+        .bow.pulled .bowstring {
+            /* 활시위가 아래로 당겨진 모양 - CSS로 곡선 구현 */
+            border-radius: 50%;
+            height: 30px;
+            border: 2px solid #8B4513;
+            background: transparent;
+            border-top: none;
         }
         
         /* 화살 (arrow) */
@@ -214,31 +256,36 @@
             z-index: 5;
         }
         
-        /* 화살 끝 (화살촉) */
+        /* 화살 끝 (화살촉) - 더 날카로운 모양 */
         .arrow::before {
             content: '';
             position: absolute;
-            top: -8px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-bottom: 12px solid #FF4444;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-bottom: 16px solid #DC143C;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         
-        /* 화살 깃털 */
+        /* 화살 깃털 - 더 사실적인 모양 */
         .arrow::after {
             content: '';
             position: absolute;
             bottom: 2px;
             left: 50%;
             transform: translateX(-50%);
-            width: 12px;
-            height: 8px;
-            background: #FFA500;
-            border-radius: 50%;
+            width: 16px;
+            height: 12px;
+            background: 
+                radial-gradient(ellipse at 30% 20%, #FFD700 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 20%, #FF8C00 0%, transparent 50%),
+                linear-gradient(135deg, #FF6347 0%, #FF8C00 100%);
+            border-radius: 50% 50% 70% 70%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         
         /* 화살이 당겨진 상태 */
@@ -609,7 +656,7 @@
             }
         };
         
-        // 과녁판 항목 생성
+        // 과녁판 항목 생성 (conic-gradient + 텍스트 라벨)
         const createTargetItems = () => {
             // 기존 항목 제거 (중앙 원 제외)
             const existingItems = elements.targetBoard.querySelectorAll('.target-item');
@@ -617,18 +664,40 @@
             
             if (gameState.items.length === 0) return;
             
-            const angleStep = 360 / gameState.items.length;
+            const itemCount = gameState.items.length;
+            const angleStep = 360 / itemCount;
             
+            // 1. conic-gradient로 부채꼴 배경 생성
+            const gradientStops = [];
+            gameState.items.forEach((item, index) => {
+                const color = config.colors[index % config.colors.length];
+                const startAngle = index * angleStep;
+                const endAngle = (index + 1) * angleStep;
+                
+                gradientStops.push(`${color} ${startAngle}deg ${endAngle}deg`);
+            });
+            
+            elements.targetBoard.style.background = `conic-gradient(from 0deg, ${gradientStops.join(', ')})`;
+            
+            // 2. 각 부채꼴 중앙에 텍스트 라벨 배치
             gameState.items.forEach((item, index) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = `target-item color-${index % 12}`;
+                itemDiv.className = 'target-item';
                 itemDiv.textContent = item;
-                itemDiv.style.backgroundColor = config.colors[index % config.colors.length];
                 
-                // 원형 배치 (피자 조각)
-                const angle = index * angleStep;
-                itemDiv.style.transform = `rotate(${angle}deg) translate(25%, -50%)`;
-                itemDiv.style.clipPath = `polygon(0 0, 100% 25%, 100% 75%, 0 100%)`;
+                // 라벨 위치 계산 (부채꼴 중앙)
+                const angle = index * angleStep + (angleStep / 2); // 부채꼴 중앙
+                const radius = 80; // 과녁판 중심에서의 거리
+                
+                // 직교 좌표계로 변환 (-90도는 12시 방향 조정)
+                const radian = (angle - 90) * (Math.PI / 180);
+                const x = Math.cos(radian) * radius;
+                const y = Math.sin(radian) * radius;
+                
+                // 중심 기준 위치 설정
+                itemDiv.style.left = `calc(50% + ${x}px)`;
+                itemDiv.style.top = `calc(50% + ${y}px)`;
+                itemDiv.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
                 
                 // 데이터 저장
                 itemDiv.dataset.index = index;
@@ -733,9 +802,13 @@
                 if (gameState.drag.currentPower > 10) {
                     elements.bow.classList.add('pulled');
                     elements.arrow.classList.add('pulled');
+                    
+                    // 활시위 동적 변형
+                    updateBowstring(gameState.drag.currentPower);
                 } else {
                     elements.bow.classList.remove('pulled');
                     elements.arrow.classList.remove('pulled');
+                    resetBowstring();
                 }
                 
                 // 파워 게이지 업데이트
@@ -753,6 +826,34 @@
             }
         };
         
+        // 활시위 동적 변형
+        const updateBowstring = (power) => {
+            const bowstring = elements.bow.querySelector('.bowstring') || createBowstring();
+            const pullRatio = power / gameState.drag.maxPower;
+            
+            // 활시위가 당겨지는 정도에 따라 변형
+            const curve = pullRatio * 25; // 최대 25px 아래로 당겨짐
+            bowstring.style.transform = `translateY(${curve}px)`;
+            bowstring.style.borderRadius = `50% / ${50 + pullRatio * 50}%`;
+        };
+        
+        // 활시위 리셋
+        const resetBowstring = () => {
+            const bowstring = elements.bow.querySelector('.bowstring');
+            if (bowstring) {
+                bowstring.style.transform = 'translateY(0px)';
+                bowstring.style.borderRadius = '1px';
+            }
+        };
+        
+        // 활시위 생성
+        const createBowstring = () => {
+            const bowstring = document.createElement('div');
+            bowstring.className = 'bowstring';
+            elements.bow.appendChild(bowstring);
+            return bowstring;
+        };
+        
         // 드래그 종료 (화살 발사)
         const handleDragEnd = (event) => {
             if (!gameState.drag.active || gameState.arrow.isFlying) return;
@@ -766,6 +867,7 @@
                 // 발사 실패
                 elements.bow.classList.remove('pulled');
                 elements.arrow.classList.remove('pulled');
+                resetBowstring();
                 elements.powerFill.style.width = '0%';
                 elements.instructions.textContent = '더 세게 당겨서 발사하세요!';
             }
@@ -784,6 +886,7 @@
             elements.arrow.classList.add('flying');
             elements.arrow.classList.remove('pulled');
             elements.bow.classList.remove('pulled');
+            resetBowstring();
             elements.powerFill.style.width = '0%';
             
             elements.instructions.textContent = '화살이 날아갑니다...';
@@ -799,6 +902,7 @@
             elements.arrow.style.bottom = '25px';
             elements.arrow.classList.remove('flying', 'pulled');
             elements.bow.classList.remove('pulled');
+            resetBowstring();
             
             elements.instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
         };
@@ -1032,6 +1136,9 @@
             
             // 화살 초기화
             resetArrow();
+            
+            // 활시위 초기화
+            createBowstring();
             
             // 게임 루프 시작
             gameState.running = true;
