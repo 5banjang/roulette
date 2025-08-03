@@ -163,27 +163,30 @@
             border: 1px solid #e9ecef;
         }
         
-        /* 활과 화살 컨테이너 */
+        /* 활과 화살 컨테이너 - 화면 하단 중앙 고정 (1.5배 확대) */
         .bow-and-arrow {
-            position: relative;
-            width: 120px;
-            height: 100px;
-            margin: 0 auto;
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px; /* 120px * 1.5 */
+            height: 150px; /* 100px * 1.5 */
             cursor: grab;
+            z-index: 10;
         }
         
         .bow-and-arrow:active {
             cursor: grabbing;
         }
         
-        /* 활 (bow) - 더 사실적인 모양 */
+        /* 활 (bow) - 더 사실적인 모양 (1.5배 확대) */
         .bow {
             position: absolute;
-            bottom: 0;
+            bottom: 30px; /* .bow-and-arrow 컨테이너 내에서의 상대적 위치 (20px * 1.5) */
             left: 50%;
             transform: translateX(-50%);
-            width: 90px;
-            height: 70px;
+            width: 135px; /* 90px * 1.5 */
+            height: 105px; /* 70px * 1.5 */
             transition: all 0.1s ease;
         }
         
@@ -232,76 +235,43 @@
         
         /* 활시위가 당겨진 상태 */
         .bow.pulled::after {
-            border-radius: 30px 30px 0 0;
-            height: 50px;
+            border-radius: 45px 45px 0 0; /* 30px * 1.5 */
+            height: 75px; /* 50px * 1.5 */
         }
         
         .bow.pulled .bowstring {
-            /* 활시위가 아래로 당겨진 모양 - CSS로 곡선 구현 */
+            /* 활시위가 아래로 당겨진 모양 - CSS로 곡선 구현 (1.5배 확대) */
             border-radius: 50%;
-            height: 30px;
-            border: 2px solid #8B4513;
+            height: 45px; /* 30px * 1.5 */
+            border: 3px solid #8B4513; /* 2px * 1.5 */
             background: transparent;
             border-top: none;
         }
         
-        /* 화살 (arrow) */
-        .arrow {
-            position: absolute;
-            bottom: 25px;
+        /* SVG 화살 - top 기반 위치 시스템 (1.5배 확대에 맞춘 조정) */
+        .arrow-svg {
+            position: fixed;
+            top: calc(100vh - 180px); /* 화면 하단에서 180px 위 (더 큰 화살에 맞춤) */
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
-            height: 40px;
-            background: #8B4513;
-            border-radius: 2px;
             transition: all 0.1s ease;
             z-index: 5;
+            filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.3)); /* 그림자도 1.5배 */
         }
         
-        /* 화살 끝 (화살촉) - 더 날카로운 모양 */
-        .arrow::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 7px solid transparent;
-            border-right: 7px solid transparent;
-            border-bottom: 16px solid #DC143C;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        /* SVG 화살이 당겨진 상태 */
+        .arrow-svg.pulled {
+            top: calc(100vh - 165px); /* 15px 아래로 내려감 (10px * 1.5) */
+            transform: translateX(-50%) scale(0.9);
         }
         
-        /* 화살 깃털 - 더 사실적인 모양 */
-        .arrow::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 16px;
-            height: 12px;
-            background: 
-                radial-gradient(ellipse at 30% 20%, #FFD700 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 20%, #FF8C00 0%, transparent 50%),
-                linear-gradient(135deg, #FF6347 0%, #FF8C00 100%);
-            border-radius: 50% 50% 70% 70%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        
-        /* 화살이 당겨진 상태 */
-        .arrow.pulled {
-            bottom: 15px;
-            height: 35px;
-        }
-        
-        /* 화살 발사 중 */
-        .arrow.flying {
+        /* SVG 화살 발사 중 */
+        .arrow-svg.flying {
             transition: none;
             transform: translateX(-50%);
+            /* top 속성은 JavaScript에서 동적으로 변경 */
         }
+        
         
         /* 결과 모달 */
         .result-modal {
@@ -519,7 +489,25 @@
             <!-- 활과 화살 -->
             <div class="bow-and-arrow" id="bow-and-arrow">
                 <div class="bow" id="bow"></div>
-                <div class="arrow" id="arrow"></div>
+                <!-- SVG 화살 -->
+                <svg id="arrow" class="arrow-svg" viewBox="0 0 100 400" width="45" height="180">
+                    <defs>
+                        <linearGradient id="shaftGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#8B4513" />
+                            <stop offset="50%" style="stop-color:#A0522D" />
+                            <stop offset="100%" style="stop-color:#8B4513" />
+                        </linearGradient>
+                    </defs>
+                    <!-- 화살대 -->
+                    <path d="M 50,100 L 50,400" stroke="url(#shaftGradient)" stroke-width="15" />
+                    <!-- 화살촉 -->
+                    <path d="M 50,0 L 0,100 L 100,100 Z" fill="#696969" />
+                    <!-- 깃털 -->
+                    <g fill="#FFA500">
+                        <path d="M 50,300 Q 20,320 50,340 L 50,380 Q 20,360 50,340 Z" />
+                        <path d="M 50,300 Q 80,320 50,340 L 50,380 Q 80,360 50,340 Z" />
+                    </g>
+                </svg>
             </div>
         </div>
     </div>
@@ -565,7 +553,8 @@
             // 화살 상태
             arrow: {
                 isFlying: false,
-                y: 25, // 초기 bottom 위치
+                y: 0, // top 기반 위치 (초기값: calc(100vh - 180px))
+                initialTop: 0, // 초기 top 위치 기록
                 speed: 0,
                 isStuckInBoard: false,
                 boardAttachAngle: 0 // 과녁판에 꽂힌 각도
@@ -713,18 +702,11 @@
         // 🎮 GSAP 기반 게임 애니메이션 시스템
         // ===================================================================
         
+        // 게임 루프 (GSAP 기반이므로 최소화)
         const gameLoop = () => {
             if (!gameState.running) return;
             
-            // 화살 움직임 업데이트 (기존 로직 유지)
-            updateArrowMovement();
-            
-            // 충돌 감지
-            if (gameState.arrow.isFlying && !gameState.arrow.isStuckInBoard) {
-                checkCollision();
-            }
-            
-            // 다음 프레임 예약 (화살 움직임만 처리)
+            // GSAP가 모든 애니메이션을 처리하므로 최소한의 루프만 유지
             requestAnimationFrame(gameLoop);
         };
         
@@ -792,17 +774,6 @@
         };
         
         // 화살 움직임 업데이트
-        const updateArrowMovement = () => {
-            if (gameState.arrow.isFlying && !gameState.arrow.isStuckInBoard) {
-                gameState.arrow.y += gameState.arrow.speed;
-                elements.arrow.style.bottom = `${gameState.arrow.y}px`;
-                
-                // 화면을 벗어나면 리셋
-                if (gameState.arrow.y > window.innerHeight + 100) {
-                    resetArrow();
-                }
-            }
-        };
         
         // ===================================================================
         // 🏹 화살 발사 시스템
@@ -910,169 +881,178 @@
         };
         
         // 화살 발사
+        // 화살 발사 - 결과 우선 결정 방식
         const fireArrow = (power) => {
             console.log(`🚀 화살 발사! 파워: ${power}`);
             
-            gameState.arrow.isFlying = true;
-            gameState.arrow.speed = 3 + (power / gameState.drag.maxPower) * 9;
+            // 1. 즉시 당체 아이템 결정
+            const winningIndex = Math.floor(Math.random() * gameState.items.length);
+            gameState.hitResult = {
+                index: winningIndex,
+                item: gameState.items[winningIndex],
+                power: power
+            };
             
-            // 시각적 효과
+            console.log(`🎆 결정된 당체: "${gameState.hitResult.item}" (인덱스: ${winningIndex})`);
+            
+            // 2. 목표 좌표 계산
+            const targetCoords = calculateTargetCoordinates(winningIndex);
+            const finalBoardRotation = calculateFinalRotation(winningIndex);
+            
+            // 3. 시각적 효과 설정
             elements.arrow.classList.add('flying');
             elements.arrow.classList.remove('pulled');
             elements.bow.classList.remove('pulled');
             resetBowstring();
             elements.powerFill.style.width = '0%';
-            
             elements.instructions.textContent = '화살이 날아갑니다...';
+            
+            // 4. 기존 과녁판 회전 중단
+            stopBoardRotation();
+            
+            // 5. GSAP 타임라인 애니메이션 실행
+            executeGameAnimation(targetCoords, finalBoardRotation, power);
         };
         
-        // 화살 리셋
+        // 목표 좌표 계산
+        const calculateTargetCoordinates = (winningIndex) => {
+            const boardRect = elements.targetBoard.getBoundingClientRect();
+            const boardCenterX = boardRect.left + boardRect.width / 2;
+            const boardCenterY = boardRect.top + boardRect.height / 2;
+            
+            // 당체 아이템의 각도 (부채꼴 중앙)
+            const angleStep = 360 / gameState.items.length;
+            const itemAngle = winningIndex * angleStep + (angleStep / 2);
+            
+            // 과녁판 중심에서 반지름 70% 지점에 명중
+            const radius = (boardRect.width / 2) * 0.7;
+            const radian = (itemAngle - 90) * (Math.PI / 180); // -90도는 12시 방향 조정
+            
+            return {
+                x: boardCenterX + Math.cos(radian) * radius,
+                y: boardCenterY + Math.sin(radian) * radius,
+                angle: itemAngle
+            };
+        };
+        
+        // 최종 회전 각도 계산 (당체 아이템이 12시 방향에 오도록)
+        const calculateFinalRotation = (winningIndex) => {
+            const angleStep = 360 / gameState.items.length;
+            const targetAngle = winningIndex * angleStep + (angleStep / 2);
+            
+            // 현재 회전 각도에서 시작해서 당체 아이템이 12시 방향에 오도록
+            const currentRotation = gsap.getProperty(elements.targetBoard, "rotation") || 0;
+            const additionalSpins = 720 + Math.random() * 360; // 2-3바퀴 추가 회전
+            
+            // 12시 방향에 맞추기 위해 목표 각도를 뺀음
+            const finalRotation = currentRotation + additionalSpins - targetAngle;
+            
+            return finalRotation;
+        };
+        
+        // GSAP 타임라인 애니메이션 실행
+        const executeGameAnimation = (targetCoords, finalBoardRotation, power) => {
+            // 타임라인 생성
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    console.log('🎯 애니메이션 완료!');
+                    
+                    // 화살을 과녁판에 고정
+                    attachArrowToBoard(targetCoords);
+                    
+                    // 1초 후 결과 모달 표시
+                    setTimeout(() => {
+                        showResultModal();
+                        playSound('success');
+                    }, 1000);
+                }
+            });
+            
+            // 파워에 따른 애니메이션 속도 조절
+            const animationDuration = Math.max(1, 2 - (power / gameState.drag.maxPower));
+            
+            // 화살 비행 애니메이션
+            tl.to(elements.arrow, {
+                x: targetCoords.x - window.innerWidth / 2, // 화면 중앙 기준 오프셋
+                y: targetCoords.y - gameState.arrow.initialTop,
+                duration: animationDuration,
+                ease: "power2.out"
+            }, 0); // 0초에 시작
+            
+            // 다트판 회전 애니메이션 (동시 시작)
+            tl.to(elements.targetBoard, {
+                rotation: finalBoardRotation,
+                duration: animationDuration,
+                ease: "power1.out"
+            }, 0); // 0초에 시작
+            
+            // 명중 효과 사운드
+            tl.call(() => {
+                playSound('hit');
+                
+                // 명중한 아이템 하이라이트
+                const targetItems = elements.targetBoard.querySelectorAll('.target-item');
+                const hitElement = targetItems[gameState.hitResult.index];
+                if (hitElement) {
+                    hitElement.classList.add('hit');
+                    
+                    // 명중 효과 애니메이션
+                    gsap.to(hitElement, {
+                        scale: 1.3,
+                        duration: 0.3,
+                        ease: "back.out(1.7)",
+                        yoyo: true,
+                        repeat: 1
+                    });
+                }
+                
+                elements.instructions.textContent = `🎯 "${gameState.hitResult.item}" 명중!`;
+            }, [], animationDuration - 0.1); // 애니메이션 종료 직전
+        };
+        
+        // 화살을 과녁판에 고정 (단순화된 버전)
+        const attachArrowToBoard = (targetCoords) => {
+            const arrow = elements.arrow;
+            const board = elements.targetBoard;
+            
+            // 화살을 과녁판의 자식으로 이동하여 함께 회전하도록
+            const boardRect = board.getBoundingClientRect();
+            const relativeX = targetCoords.x - boardRect.left;
+            const relativeY = targetCoords.y - boardRect.top;
+            
+            arrow.style.position = 'absolute';
+            arrow.style.left = `${relativeX}px`;
+            arrow.style.top = `${relativeY}px`;
+            arrow.style.transform = 'translate(-50%, -50%)';
+            arrow.style.zIndex = '20';
+            
+            board.appendChild(arrow);
+            
+            console.log(`🎯 화살 고정 완료: (${relativeX}, ${relativeY})`);
+        };
+        
+        // SVG 화살 리셋
         const resetArrow = () => {
             gameState.arrow.isFlying = false;
             gameState.arrow.isStuckInBoard = false;
-            gameState.arrow.y = 25;
+            gameState.arrow.y = 0;
             gameState.arrow.speed = 0;
             
-            elements.arrow.style.bottom = '25px';
+            // 초기 위치로 복원 (calc(100vh - 180px))
+            gameState.arrow.initialTop = window.innerHeight - 180;
+            elements.arrow.style.top = `${gameState.arrow.initialTop}px`;
             elements.arrow.classList.remove('flying', 'pulled');
             elements.bow.classList.remove('pulled');
             resetBowstring();
             
-            elements.instructions.textContent = '활을 누르고 아래로 당긴 다음 놓으세요!';
+            elements.instructions.textContent = '활을 누르고 아래로 당긄 다음 놓으세요!';
         };
         
         // ===================================================================
         // 💥 충돌 감지 및 명중 처리
         // ===================================================================
         
-        const checkCollision = () => {
-            const boardRect = elements.targetBoard.getBoundingClientRect();
-            const arrowRect = elements.arrow.getBoundingClientRect();
-            
-            // 화살촉 위치
-            const arrowTipX = arrowRect.left + arrowRect.width / 2;
-            const arrowTipY = arrowRect.top;
-            
-            // 과녁판 중심
-            const boardCenterX = boardRect.left + boardRect.width / 2;
-            const boardCenterY = boardRect.top + boardRect.height / 2;
-            const boardRadius = boardRect.width / 2;
-            
-            // 거리 계산
-            const distance = utils.distance(arrowTipX, arrowTipY, boardCenterX, boardCenterY);
-            
-            // 충돌 감지
-            if (distance <= boardRadius - 10) {
-                const hitResult = calculateHitItem(arrowTipX, arrowTipY, boardCenterX, boardCenterY);
-                onHit(hitResult);
-            }
-        };
         
-        // 명중한 항목 계산 (GSAP 연동)
-        const calculateHitItem = (arrowX, arrowY, boardCenterX, boardCenterY) => {
-            // 화살의 각도 계산
-            const deltaX = arrowX - boardCenterX;
-            const deltaY = arrowY - boardCenterY;
-            let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-            
-            // 각도 정규화 (12시 방향 기준)
-            angle = utils.normalizeAngle(angle + 90);
-            
-            // GSAP에서 현재 과녁판 회전 각도 가져오기
-            const currentBoardRotation = gsap.getProperty(elements.targetBoard, "rotation") || 0;
-            angle = utils.normalizeAngle(angle - currentBoardRotation);
-            
-            // 명중 구역 계산
-            const anglePerSlice = 360 / gameState.items.length;
-            const hitIndex = Math.floor(angle / anglePerSlice);
-            
-            return {
-                index: hitIndex,
-                item: gameState.items[hitIndex],
-                angle: angle,
-                boardRotation: currentBoardRotation
-            };
-        };
-        
-        // 최종 결과 계산 (과녁판이 완전히 멈춘 후)
-        const calculateFinalResult = () => {
-            // 최종 회전 각도로 다시 계산
-            const finalRotation = gameState.board.finalRotation;
-            
-            // 12시 방향(0도)을 기준으로 한 명중 계산
-            const adjustedAngle = utils.normalizeAngle(360 - finalRotation);
-            const anglePerSlice = 360 / gameState.items.length;
-            const finalHitIndex = Math.floor(adjustedAngle / anglePerSlice);
-            
-            return {
-                index: finalHitIndex,
-                item: gameState.items[finalHitIndex],
-                angle: adjustedAngle,
-                finalRotation: finalRotation
-            };
-        };
-        
-        // 명중 처리 (GSAP 연동)
-        const onHit = (hitResult) => {
-            console.log(`💥 명중! "${hitResult.item}"`);
-            
-            gameState.hitResult = hitResult;
-            gameState.arrow.isStuckInBoard = true;
-            gameState.arrow.isFlying = false;
-            
-            // 명중 효과음 재생
-            playSound('hit');
-            
-            // 화살을 과녁판에 고정
-            attachArrowToBoard(hitResult.angle);
-            
-            // GSAP로 과녁판 서서히 정지
-            stopBoardRotation();
-            
-            // 명중한 항목 시각적 효과
-            const targetItems = elements.targetBoard.querySelectorAll('.target-item');
-            const hitElement = targetItems[hitResult.index];
-            if (hitElement) {
-                hitElement.classList.add('hit');
-                
-                // GSAP로 명중 효과 애니메이션
-                gsap.to(hitElement, {
-                    scale: 1.2,
-                    duration: 0.3,
-                    ease: "back.out(1.7)",
-                    yoyo: true,
-                    repeat: 1
-                });
-            }
-            
-            elements.instructions.textContent = `🎯 "${hitResult.item}" 명중!`;
-        };
-        
-        // 화살을 과녁판에 고정
-        const attachArrowToBoard = (angle) => {
-            // 화살을 과녁판의 자식으로 이동
-            const arrow = elements.arrow;
-            const board = elements.targetBoard;
-            
-            // 현재 화살의 절대 위치 계산
-            const arrowRect = arrow.getBoundingClientRect();
-            const boardRect = board.getBoundingClientRect();
-            
-            // 상대 위치 계산
-            const relativeX = arrowRect.left - boardRect.left;
-            const relativeY = arrowRect.top - boardRect.top;
-            
-            // 화살을 과녁판의 자식으로 이동
-            arrow.style.position = 'absolute';
-            arrow.style.left = `${relativeX}px`;
-            arrow.style.top = `${relativeY}px`;
-            arrow.style.bottom = 'auto';
-            arrow.style.transform = 'none';
-            
-            board.appendChild(arrow);
-            
-            gameState.arrow.boardAttachAngle = angle;
-        };
         
         // ===================================================================
         // 🎵 사운드 효과 (준비)
@@ -1101,41 +1081,19 @@
         // 🎊 결과 모달 및 재시작
         // ===================================================================
         
+        // 결과 모달 표시 (단순화된 버전)
         const showResultModal = () => {
-            // GSAP 애니메이션이 끝난 후 최종 결과 계산
-            const finalResult = calculateFinalResult();
-            
-            // 결과 업데이트
-            gameState.hitResult = finalResult;
-            
-            elements.resultEmoji.textContent = '🎉';
-            elements.resultText.textContent = finalResult.item;
-            elements.resultModal.classList.add('show');
-            
-            // 최종 명중 항목 하이라이트
-            const targetItems = elements.targetBoard.querySelectorAll('.target-item');
-            const finalHitElement = targetItems[finalResult.index];
-            if (finalHitElement) {
-                // 기존 하이라이트 제거
-                targetItems.forEach(item => item.classList.remove('hit'));
-                
-                // 최종 결과 하이라이트
-                finalHitElement.classList.add('hit');
-                
-                // GSAP 최종 효과
-                gsap.fromTo(finalHitElement, 
-                    { scale: 1 },
-                    { 
-                        scale: 1.3, 
-                        duration: 0.5, 
-                        ease: "elastic.out(1, 0.5)",
-                        yoyo: true,
-                        repeat: 3
-                    }
-                );
+            // 이미 fireArrow에서 결정된 결과 사용
+            if (!gameState.hitResult) {
+                console.error('결과가 없습니다!');
+                return;
             }
             
-            console.log(`🎊 최종 결과: "${finalResult.item}" (인덱스: ${finalResult.index}, 최종각도: ${finalResult.finalRotation})`);
+            elements.resultEmoji.textContent = '🎉';
+            elements.resultText.textContent = gameState.hitResult.item;
+            elements.resultModal.classList.add('show');
+            
+            console.log(`🎊 결과 모달 표시: "${gameState.hitResult.item}"`);
         };
         
         const restartGame = () => {
@@ -1158,16 +1116,16 @@
                 gsap.set(el, { scale: 1 }); // 스케일 리셋
             });
             
-            // 화살을 원래 위치로 복원
+            // SVG 화살을 원래 위치로 복원
             const arrow = elements.arrow;
             
-            arrow.style.position = 'absolute';
+            arrow.style.position = 'fixed';
             arrow.style.left = '50%';
-            arrow.style.top = 'auto';
-            arrow.style.bottom = '25px';
+            arrow.style.top = `${window.innerHeight - 180}px`;
+            arrow.style.bottom = 'auto';
             arrow.style.transform = 'translateX(-50%)';
             
-            // 화살을 원래 부모로 이동
+            // SVG 화살을 원래 부모로 이동
             document.querySelector('.bow-and-arrow').appendChild(arrow);
             
             // 과녁판 위치 리셋
@@ -1245,6 +1203,10 @@
             
             // 활시위 초기화
             createBowstring();
+            
+            // 화살 초기 위치 설정
+            gameState.arrow.initialTop = window.innerHeight - 180;
+            elements.arrow.style.top = `${gameState.arrow.initialTop}px`;
             
             // GSAP 과녁판 회전 시작
             startBoardRotation();
